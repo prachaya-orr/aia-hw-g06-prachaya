@@ -134,6 +134,7 @@ damodaran:
       Telecom Services: Telecom. Services
       Real Estate - Development: Real Estate (Development)
       REIT - Retail: Retail (REITs)
+      Medical Care Facilities: Hospitals/Healthcare Facilities
 
 # ---------- Valuation (methods.py / excel.py) ----------
 valuation:

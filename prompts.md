@@ -160,3 +160,37 @@ Save
 - **ผลที่ได้:** แผนภาพ parse และ render ผ่านด้วย mermaid 11.4.1 ใน browser และ GitHub แสดงแผนภาพในไฟล์ .md ให้เอง · มีผู้เล่น 13 ตัว แผนภาพจึงกว้าง บนจอเล็กต้องเลื่อนดูด้านข้าง
 - **ตัดสินใจอะไร และเพราะอะไร:** ใช้ sequence diagram ตามที่ผู้เรียนขอ แบ่ง 6 ช่วงด้วยสีให้เห็นลำดับงานชัด และเก็บเป็นไฟล์ .md ใน `docs/` เพราะ GitHub render mermaid ให้โดยไม่ต้องติดตั้งอะไร
 - **ขั้นต่อไป:** เปลี่ยนสถานะใน `spec.md` และ `README.md` เป็นพร้อมตรวจ · ตรวจ repo จากหน้าต่าง incognito · ส่งลิงก์ผ่าน Google Form ในห้อง
+
+---
+
+## รอบ 8 · 2026-10-31 21:54
+
+- **ทำอะไร:**
+  - ใช้ pipeline เดิมกับหุ้นตัวที่สอง BDMS.BK (บริษัทกรุงเทพดุสิตเวชการ) ได้ `output/BDMS.BK/BDMS.BK_valuation.xlsx`, `.html` และ `_results.json`
+  - เพิ่ม `Medical Care Facilities: Hospitals/Healthcare Facilities` ใน `config.yaml` (industry_map) เพื่อให้ดึง unlevered beta ของอุตสาหกรรมโรงพยาบาลจาก Damodaran ได้
+  - เขียน `assumptions/BDMS.BK.yaml` (status: reviewed) และ `research/BDMS.BK_method_choice.md` (เลือกวิธี, discount rate, ตารางสมมติฐานที่เปลี่ยนผลมากที่สุด, เลือก peer, อ่าน football field)
+- **เครื่องมือ / model:** Claude Desktop (แท็บ Code) · Claude Opus 5.5 · LibreOffice headless ตรวจ Excel · browser pane ตรวจ HTML
+- **Prompt ที่ใช้:**
+
+```text
+valuation BDMS
+```
+
+```text
+ยืนยันตามร่าง
+```
+
+```text
+Save
+```
+
+- **ผลที่ได้:** Excel ตรงกับ Python ทั้ง 15 ค่า (ต่างกัน 0.0000%) · ผล BDMS (ราคา ฿19.60, WACC 4.89%): DCF ฿24.02–30.46 (base 26.90) ราคาต่ำกว่าช่วง, P/E ฿16.95–21.99 (base 19.48) ราคาอยู่ในช่วง, EV/EBITDA ฿14.84–18.67 (base 15.81) ราคาสูงกว่าช่วง, 52 สัปดาห์ ฿17.40–22.40 · สรุป: ราคาอยู่ในช่วงมูลค่ายุติธรรม ยังไม่เห็นส่วนลดชัดเจน · ยังขาด: beta ช่วง terminal ที่ playbook §4 บอกให้เข้าใกล้ 1 (โมเดลใช้ WACC เดียวทั้งโมเดล ถ้าใช้ beta ≈ 1 DCF เหลือ ฿16.88–20.18) และ terminal value สูงถึง 85% ของ EV
+- **ตัดสินใจอะไร และเพราะอะไร:**
+  - AI ตัด DDM เพราะปันผล ÷ FCFE ของ BDMS อยู่นอกช่วง 80–110% เกือบทุกปี (2023: 2.40 เท่า, 2025: 1.33 เท่า) ตาม playbook §1, §5 และตัด P/BV เพราะเหมาะกับธนาคาร และ book มี goodwill ฿17.5 พันล้าน (§9)
+  - ผู้เรียนยืนยันข้อเสนอ 4 ข้อของ AI ตามร่าง ("ยืนยันตามร่าง"):
+    1. peer เป็นโรงพยาบาลเอกชนไทย 4 ตัว (BH, BCH, CHG, PR9) เพราะสกุลเงิน country risk และมาตรฐานบัญชีเดียวกัน ตัด THG (P/E 55.8 เท่า ผิดปกติ), VIBHA (กำไรพึ่งเงินลงทุน), RJH และ EKH (เล็กกว่า ฿5 พันล้าน) และโรงพยาบาลต่างประเทศ (บทเรียนจาก help.md ข้อ 3)
+    2. รายได้โตตาม CAGR 2022–2025 6.65% ทุกปี (ทางเลือกที่ลดลงเส้นตรงหา g ได้ base ฿24.29)
+    3. ROC ช่วง terminal = WACC กฎเดียวกับ CPALL ตาม playbook §4 (ใช้ ROC ในอดีต 13.89% ได้ base ฿29.92)
+    4. minority interest แปลงเป็นมูลค่าตลาดด้วยมัธยฐาน P/BV ของ peer 2.27 เท่า เพราะ BDMS ไม่มีบริษัทลูกที่จดทะเบียน playbook §2 ให้ใช้ P/B ของ sector
+  - AI ทดลองเปลี่ยนสมมติฐานทีละข้อ (material question ข้อ 3) พบว่า beta เปลี่ยนผลมากที่สุด ส่วน terminal growth แทบไม่เปลี่ยนผล เพราะ ROC = WACC ทำให้การโตช่วง terminal ไม่สร้างมูลค่า
+- **ขั้นต่อไป:** เพิ่มคำถามเรื่อง beta ช่วง terminal และ WACC ต่ำของหุ้น beta ต่ำใน `help.md` · พิจารณาแยก WACC ช่วง terminal ในโมเดล · เปลี่ยนสถานะใน `spec.md` และ `README.md` เป็นพร้อมตรวจ แล้วส่งลิงก์ repo

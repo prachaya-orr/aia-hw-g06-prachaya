@@ -1,0 +1,205 @@
+# สมมติฐานของ BDMS.BK ร่างจากข้อมูลดิบเมื่อ 2026-10-31T21:40:27+07:00
+# status: draft = ยังไม่ผ่านการรีวิว · reviewed = ผู้เรียนยืนยันแล้ว
+# ค่า kind: derived คำนวณจากอดีต · assumption ต้องอ้างเหตุผลจาก research/playbook.md ก่อนเปลี่ยน status
+ticker: BDMS.BK
+status: reviewed   # ผู้เรียนยืนยันข้อเสนอ 4 ข้อใน research/BDMS.BK_method_choice.md เมื่อ 2026-10-31
+method_choice: research/BDMS.BK_method_choice.md
+# วิธีที่ใช้และเหตุผลอยู่ใน research/BDMS.BK_method_choice.md (ตัด DDM และ P/BV ออกตาม playbook §1, §5, §9)
+methods:
+- dcf_fcff
+- comps_pe
+- comps_ev_ebitda
+- week52
+# เหตุผลต่อวิธี (แสดงใน HTML) รายละเอียดเต็มอยู่ใน research/BDMS.BK_method_choice.md
+method_reasons:
+  dcf_fcff: โรงพยาบาลที่โตเต็มที่และมีกำไรสม่ำเสมอ ใช้ DCF แบบ 2-stage ได้ และหุ้นตลาดเกิดใหม่ต้องรวม country risk premium ใน discount rate (playbook §1, §2, §3)
+  comps_pe: ตัวคูณที่ใช้กับบริษัทที่มีกำไร ตัวขับคือ growth, payout และ ROE peer เป็นโรงพยาบาลไทยที่มีกำไรทุกตัว (playbook §9)
+  comps_ev_ebitda: ธุรกิจที่ใช้เงินลงทุนสูง ใช้ enterprise multiple ลดผลของโครงสร้างหนี้ที่ต่างกัน คิด EV/EBITDA ของ peer เองจากงบรายปีให้นิยามเดียวกัน (playbook §9)
+  week52: แท่งมาตรฐานของ football field (playbook §13)
+  ddm: ปันผลเทียบ FCFE อยู่นอกช่วง 80–110% เกือบทุกปี (2023 2.40 เท่า, 2025 1.33 เท่า) playbook ให้ใช้ FCFE แทน DDM (playbook §1, §5)
+  comps_pb: ตัวขับหลักของ P/BV คือ ROE เหมาะกับธนาคาร และ book ของ BDMS มี goodwill ฿17.5 พันล้าน (playbook §9)
+limitations:
+- WACC ต่ำ (beta อุตสาหกรรมโรงพยาบาลต่ำและหนี้น้อย) ส่วนต่างระหว่าง WACC กับ terminal growth จึงแคบ terminal value เป็นสัดส่วนใหญ่ของ EV และผล DCF อ่อนไหวกับ WACC มาก
+- playbook §4 บอกให้ beta ช่วง terminal เข้าใกล้ 1 แต่โมเดลใช้ WACC เดียวทั้งช่วง forecast และ terminal ถ้าใช้ beta 1 ในช่วง terminal มูลค่าจะต่ำลง
+- รายได้โตช้าลงทุกปี (9.7% → 7.0% → 3.4%) ร่างนี้ใช้ CAGR 2022–2025 6.65% ทุกปี ซึ่งอาจสูงเกินถ้าการเติบโตปี 2025 คือแนวโน้มใหม่
+- peer เป็นโรงพยาบาลไทย 4 ตัว ขนาดเล็กกว่า BDMS มาก (ใหญ่สุดคือ BH ฿161 พันล้าน เทียบ BDMS ฿311 พันล้าน) และ BCH, CHG มีสัดส่วนผู้ป่วยประกันสังคมสูงกว่า
+- ปลายแท่งใน football field (P25–P75 ของ peer และกล่อง ±0.5% ของ DCF) เป็นการเลือกของผู้เรียน notebook ไม่มีกฎ (playbook §13)
+- minority interest แปลงเป็นมูลค่าตลาดด้วยมัธยฐาน P/BV ของ peer เพราะไม่มีบริษัทลูกที่จดทะเบียน ใน EV/EBITDA ใช้ book ให้ตรงกับนิยาม EV ของ peer
+- ไม่นับเงินลงทุนระยะสั้นอื่น (฿0.9 พันล้าน) และเงินลงทุนในบริษัทร่วม (฿1.3 พันล้าน) ใน bridge จาก EV เป็น equity ผลต่างราว ฿0.14 ต่อหุ้น
+- ไม่มี precedent transactions และ analyst target price เพราะไม่มีข้อมูลใน Trust sources
+# โรงพยาบาลเอกชนไทย 4 ตัว ตรงเกณฑ์ peer ใน playbook §9 (ตัด THG.BK ที่ P/E ผิดปกติ 55.8 เท่า, VIBHA.BK ที่กำไรพึ่งเงินลงทุน,
+# RJH.BK และ EKH.BK ที่เล็กกว่า ฿5 พันล้าน และโรงพยาบาลต่างประเทศที่ต่างสกุลเงินและ country risk)
+peers:
+- BH.BK
+- BCH.BK
+- CHG.BK
+- PR9.BK
+minority_proxy: null
+inputs:
+  price:
+    from: info.price
+  shares:
+    from: info.shares_outstanding
+  week52_low:
+    from: info.week52_low
+  week52_high:
+    from: info.week52_high
+  beta:
+    from: info.beta
+  beta_unlevered:
+    from: damodaran.unlevered_beta
+  tax_rate_marginal:
+    from: damodaran.tax_rate_marginal
+  rf:
+    from: risk_free
+  country_default_spread:
+    from: damodaran.default_spread
+  erp:
+    from: damodaran.erp_country_total
+  revenue_base:
+    from:
+      stmt: income_stmt
+      item: Total Revenue
+  ebitda_ltm:
+    from:
+      stmt: income_stmt
+      item: EBITDA
+  eps_ltm:
+    from: info.trailing_eps
+  equity_book:
+    from:
+      stmt: balance_sheet
+      item: Stockholders Equity
+  total_debt:
+    from:
+      stmt: balance_sheet
+      item: Total Debt
+  lease_liabilities:
+    from:
+      stmt: balance_sheet
+      item: Capital Lease Obligations
+  cash:
+    from:
+      stmt: balance_sheet
+      item: Cash And Cash Equivalents
+  minority_interest:
+    from:
+      stmt: balance_sheet
+      item: Minority Interest
+  dps_ttm:
+    from:
+      dividends: ttm
+  tax_rate:
+    value: 0.192166
+    source: 'คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) งวด 2022–2025: เฉลี่ย Tax Provision ÷ Pretax
+      Income'
+    url: https://finance.yahoo.com/quote/BDMS.BK/financials/
+    asof: '2025-12-31'
+    kind: derived
+  interest_coverage:
+    value: 57.266508
+    source: 'คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) งวด 2025–2025: EBIT ÷ Interest Expense งวดล่าสุด'
+    url: https://finance.yahoo.com/quote/BDMS.BK/financials/
+    asof: '2025-12-31'
+    kind: derived
+  company_default_spread:
+    value: 0.004
+    source: 'Damodaran Online, Ratings, Interest Coverage Ratios and Default Spread (ตารางซ้าย: For large non-financial service
+      firms)'
+    url: https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ratings.html
+    asof: '2026-01-01'
+    kind: derived
+    note: coverage 57.27 อยู่ในช่วง > 8.5 ถึง ≤ 100000 → rating Aaa/AAA
+  terminal_roc:
+    value: wacc
+    source: 'research/playbook.md §4: ช่วง terminal ให้ excess return เข้าหา 0 จึงตั้ง ROC = WACC (กฎเดียวกับ CPALL.BK
+      ผู้เรียนยืนยัน 2026-10-31)'
+    url: null
+    asof: null
+    kind: assumption
+    note: 'ROC เฉลี่ยในอดีต 2022–2025 คือ 13.89% (EBIT × (1 − tax) ÷ (Equity + Minority + Debt − Cash) จาก Yahoo)'
+  revenue_growth:
+    value:
+    - 0.066456
+    - 0.066456
+    - 0.066456
+    - 0.066456
+    - 0.066456
+    source: 'คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) งวด 2022–2025: CAGR ของ Total Revenue (ใช้ค่าเดียวกันทุกปีที่ประมาณการ)'
+    url: https://finance.yahoo.com/quote/BDMS.BK/financials/
+    asof: '2025-12-31'
+    kind: derived
+  ebit_margin:
+    value:
+    - 0.188034
+    - 0.188034
+    - 0.188034
+    - 0.188034
+    - 0.188034
+    source: 'คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) งวด 2022–2025: เฉลี่ย EBIT ÷ Total Revenue
+      (ใช้ค่าเดียวกันทุกปีที่ประมาณการ)'
+    url: https://finance.yahoo.com/quote/BDMS.BK/financials/
+    asof: '2025-12-31'
+    kind: derived
+  da_pct_revenue:
+    value: 0.060241
+    source: 'คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.cashflow (งบรายปี) งวด 2022–2025: เฉลี่ย Depreciation And Amortization
+      ÷ Total Revenue'
+    url: https://finance.yahoo.com/quote/BDMS.BK/cash-flow/
+    asof: '2025-12-31'
+    kind: derived
+  capex_pct_revenue:
+    value: 0.086863
+    source: 'คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.cashflow (งบรายปี) งวด 2022–2025: เฉลี่ย −Capital Expenditure
+      ÷ Total Revenue'
+    url: https://finance.yahoo.com/quote/BDMS.BK/cash-flow/
+    asof: '2025-12-31'
+    kind: derived
+  nwc_pct_delta_revenue:
+    value: 0.125456
+    source: 'คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.cashflow (งบรายปี) งวด 2023–2025: เฉลี่ย −Change In Working Capital
+      ÷ รายได้ที่เพิ่มขึ้น'
+    url: https://finance.yahoo.com/quote/BDMS.BK/cash-flow/
+    asof: '2025-12-31'
+    kind: derived
+  minority_pb:
+    value: 2.270489
+    source: 'มัธยฐาน priceToBook ของ peer 4 ตัวจาก Yahoo Finance (yfinance 1.7.0) Ticker.info: BH.BK 5.89, BCH.BK 2.06,
+      CHG.BK 2.16, PR9.BK 2.38 (playbook §2: แปลง minority interest จาก book เป็น market ด้วย P/B ของ sector)'
+    url: https://finance.yahoo.com/quote/BH.BK/key-statistics/
+    asof: '2026-10-31'
+    kind: derived
+    note: 'BDMS ไม่มีบริษัทลูกที่จดทะเบียนให้ใช้เป็น minority proxy แบบ CPALL จึงใช้ P/B ของ sector แทน หน้า key-statistics
+      ของ peer อีก 3 ตัวใช้ URL รูปแบบเดียวกัน'
+  include_leases_in_debt:
+    value: true
+    source: ค่าตั้งต้นใน config.yaml ตาม research/playbook.md
+    url: null
+    asof: null
+    kind: assumption
+  beta_method:
+    value: bottom_up
+    source: ค่าตั้งต้นใน config.yaml ตาม research/playbook.md
+    url: null
+    asof: null
+    kind: assumption
+  rf_adjust_default:
+    value: true
+    source: 'research/playbook.md §3: ถ้าพันธบัตรรัฐบาลมี default risk ให้หัก country default spread ก่อนใช้เป็น Rf'
+    url: null
+    asof: null
+    kind: assumption
+  terminal_growth:
+    value: 0.007985
+    source: 'research/playbook.md §4: g ต้องไม่เกิน Rf จึงใช้ค่าต่ำกว่าระหว่าง 2.00% (config.yaml) กับ Rf หลังหัก default
+      spread 0.80%'
+    url: null
+    asof: null
+    kind: assumption
+  ddm_growth:
+    value: 0.007985
+    source: 'research/playbook.md §4: g ต้องไม่เกิน Rf จึงใช้ค่าต่ำกว่าระหว่าง 2.00% (config.yaml) กับ Rf หลังหัก default
+      spread 0.80%'
+    url: null
+    asof: null
+    kind: assumption

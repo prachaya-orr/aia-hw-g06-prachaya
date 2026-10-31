@@ -17,6 +17,7 @@
 - ห้าม commit ไฟล์ล็อกของ Office (`~$*`) เพราะมีชื่อผู้ใช้ในเครื่อง
 - ห้ามใช้ `enterpriseToEbitda` ของ Yahoo ให้คิด EV/EBITDA เองจากงบรายปีด้วยนิยามเดียวกันทั้งบริษัทเป้าหมายและ peer
 - เปลี่ยนโครง JSON ของข้อมูลดิบเมื่อไร ต้องเพิ่ม `SCHEMA_VERSION` ใน `fetch.py`
+- หุ้นอุตสาหกรรมใหม่ ต้องเพิ่ม Yahoo industry ใน `industry_map` ของ `config.yaml` ก่อน fetch และตรวจ ticker ต่างประเทศจากชื่อใน `longName` (หุ้นมาเลเซียบน Yahoo ใช้รหัสตัวเลข เช่น IHH = 5225.KL)
 
 ## บันทึกปัญหา
 
@@ -82,3 +83,12 @@
 - **เจออะไร:** `run AAPL` ขึ้น `KeyError: 'rating_table'` แล้วต่อด้วย `TypeError` ตอนคูณ minority interest
 - **สาเหตุ:** ไฟล์ดิบของ AAPL ดึงไว้ก่อนเพิ่มตาราง rating และ pipeline ไม่ได้ดึงใหม่ · AAPL ไม่มีรายการ Minority Interest ในงบ ค่าจึงเป็น None
 - **แก้อย่างไร:** เพิ่ม `SCHEMA_VERSION` ให้ดึงใหม่เองเมื่อไฟล์เก่ากว่า · ร่างสมมติฐานนับ minority และ lease ที่ไม่มีในงบเป็น 0 · `load()` แจ้งชื่อ input ที่ยังไม่มีค่าแทนการ error กลางการคำนวณ
+
+### 2026-10-31 · ใช้ pipeline กับ BDMS.BK (โรงพยาบาล)
+
+- **เจออะไร:**
+  - ticker `IHH.KL` และ `KPJ.KL` ไม่ error แต่ได้ info ว่างทุกช่อง
+  - Yahoo industry ของ BDMS (`Medical Care Facilities`) ยังไม่มีใน `industry_map` ถ้า fetch เลย unlevered beta จะเป็น null
+  - WACC ของ BDMS ได้ 4.89% และ terminal value เป็น 85% ของ EV DCF จึงสูงกว่า P/E และ EV/EBITDA
+- **สาเหตุ:** Yahoo ใช้รหัสตัวเลขกับหุ้นมาเลเซีย (IHH = 5225.KL, KPJ = 5878.KL) · beta อุตสาหกรรมโรงพยาบาลตลาดเกิดใหม่ต่ำ (0.646) และ BDMS หนี้น้อย ประกอบกับ Rf ไทยหลังหัก default spread เหลือ 0.80%
+- **แก้อย่างไร:** ค้นรหัสที่ถูกแล้วตรวจจาก `longName` · เพิ่ม mapping ใน `config.yaml` ก่อน fetch · WACC ต่ำไม่ได้แก้ แต่ทดลองเปลี่ยนสมมติฐานทีละข้อ พบว่าถ้าใช้ beta ≈ 1 ตามที่ playbook §4 บอกสำหรับช่วง terminal DCF เหลือ ฿16.88–20.18 บันทึกเป็นข้อจำกัดใน `research/BDMS.BK_method_choice.md`
