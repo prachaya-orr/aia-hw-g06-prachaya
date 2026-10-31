@@ -62,3 +62,34 @@
   - ใช้แหล่ง Rf และ ERP ตามที่ผู้เรียนเลือกในรอบ 1
 - **หมายเหตุ:** `fetch.py`, `config.yaml` และ `__main__.py` ใน commit นี้มีส่วนที่รอบ 4 เพิ่มแล้วด้วย (beta อุตสาหกรรม, synthetic rating, minority proxy, คำสั่ง draft/run/verify) เพราะแก้ไฟล์เดียวกันก่อนได้ commit
 - **ขั้นต่อไป:** เขียนส่วนคำนวณและ Excel (รอบ 4)
+
+---
+
+## รอบ 4 · 2026-10-31 21:02
+
+- **ทำอะไร:**
+  - เขียน `valuation/assumptions.py` (ร่างสมมติฐานจากข้อมูลจริง ทุกค่ามีที่มา), `methods.py` (DCF FCFF, DDM, comps P/E · EV/EBITDA · P/BV, ช่วง 52 สัปดาห์), `excel.py` (Excel 9 ชีต สูตรจริงทั้งหมด), `pipeline.py` และ `verify.py` (ให้ LibreOffice คำนวณ Excel ใหม่แล้วเทียบกับ Python)
+  - เพิ่มการดึง unlevered beta รายอุตสาหกรรม และตาราง synthetic rating จาก Damodaran และ P/BV ของบริษัทลูกที่จดทะเบียน (CPAXT.BK)
+  - ปรับโมเดลตาม playbook: Rf หัก country default spread, Kd = Rf + default spread, terminal reinvestment = g ÷ ROC, minority interest ตามมูลค่าตลาด, คำเตือนเมื่อสมมติฐานขัดกับ playbook
+  - เขียน `research/CPALL.BK_method_choice.md` และ `assumptions/CPALL.BK.yaml` (status: reviewed)
+- **เครื่องมือ / model:** Claude Desktop (แท็บ Code) · Claude Opus 5.5 · LibreOffice headless สำหรับตรวจ Excel
+- **Prompt ที่ใช้:**
+
+```text
+Apply all
+```
+
+```text
+Save first
+```
+
+- **ผลที่ได้:** `output/CPALL.BK/CPALL.BK_valuation.xlsx` และ `CPALL.BK_results.json` · Excel ตรงกับ Python ทั้ง 15 ค่า (ต่างกัน 0.0000%) · ผล CPALL (ราคา ฿43.75, WACC 6.49%): DCF ฿28.78–44.13 (base 35.85), P/E ฿42.83–57.94 (base 52.67), EV/EBITDA ฿18.86–61.04 (base 36.00), 52 สัปดาห์ ฿40.50–54.50 · ยังขาด: HTML ทีละขั้น และ football field ใน HTML (รอบ 5) · terminal value เป็น 77% ของ EV และ peer มีแค่ 3 ตัว
+- **ตัดสินใจอะไร และเพราะอะไร:**
+  - AI เปลี่ยนจาก beta ของ Yahoo (0.44) เป็น bottom-up beta (unlevered beta อุตสาหกรรม Retail Grocery ตลาดเกิดใหม่ 0.856 relever ได้ 1.63) เพราะ beta 0.44 ทำให้ WACC 3.8% และ DCF ได้ ฿293 ต่อหุ้น ซึ่งผิดชัดเจน และ playbook §3 บอกว่า regression beta มี standard error สูง
+  - ผู้เรียนยืนยันข้อเสนอ 4 ข้อ:
+    1. peer เป็นร้านสะดวกซื้อ 3 ตัว (2912.TW, 3382.T, AMRT.JK) เพราะตรงเกณฑ์ peer ใน playbook §9 มากกว่า BJC.BK (หลายธุรกิจ) และ CRC.BK (ห้างสรรพสินค้า)
+    2. capex = D&A (4.05% ของรายได้) เพราะ capex เฉลี่ยในอดีต 3.07% ต่ำกว่า D&A ทำให้ reinvestment ติดลบทั้งที่รายได้โต (playbook §12 ข้อ 4) สาเหตุคือค่าเสื่อมของสัญญาเช่าตาม TFRS 16
+    3. ROC ช่วง terminal = WACC เพราะ playbook §4 บอกให้ excess return เข้าหา 0
+    4. terminal growth 0.80% = Rf เพราะ playbook §4 บอกว่า g ไม่ควรเกิน Rf
+  - ตัด DDM ออกจาก football field ของ CPALL เพราะปันผลเทียบ FCFE ผันผวนมากช่วงลดหนี้ (playbook §1, §5) และตัด P/BV เพราะเหมาะกับธนาคาร (§9)
+- **ขั้นต่อไป:** รอบ 5 สร้าง HTML อธิบาย valuation ทีละขั้นพร้อมสมมติฐานและ football field · ตรวจปัญหา EV/EBITDA ของ yfinance ไม่ตรงกับหน้าเว็บ

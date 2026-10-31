@@ -1,0 +1,183 @@
+# สมมติฐานของ CPALL.BK ร่างจากข้อมูลดิบเมื่อ 2026-10-31T20:40:39+07:00
+# status: draft = ยังไม่ผ่านการรีวิว · reviewed = ผู้เรียนยืนยันแล้ว
+# ค่า kind: derived คำนวณจากอดีต · assumption ต้องอ้างเหตุผลจาก research/playbook.md ก่อนเปลี่ยน status
+ticker: CPALL.BK
+status: reviewed   # ผู้เรียนยืนยันข้อเสนอ 4 ข้อใน research/CPALL.BK_method_choice.md เมื่อ 2026-10-31
+method_choice: research/CPALL.BK_method_choice.md
+# วิธีที่ใช้และเหตุผลอยู่ใน research/CPALL.BK_method_choice.md (ตัด DDM และ P/BV ออกตาม playbook §1, §5, §9)
+methods:
+- dcf_fcff
+- comps_pe
+- comps_ev_ebitda
+- week52
+# ร้านสะดวกซื้อ 3 ตัว ตรงเกณฑ์ peer ใน playbook §9 มากที่สุด (ตัด BJC.BK ที่เป็นหลายธุรกิจ และ CRC.BK ที่เป็นห้างสรรพสินค้า)
+peers:
+- 2912.TW
+- 3382.T
+- AMRT.JK
+minority_proxy: CPAXT.BK
+inputs:
+  price:
+    from: info.price
+  shares:
+    from: info.shares_outstanding
+  week52_low:
+    from: info.week52_low
+  week52_high:
+    from: info.week52_high
+  beta:
+    from: info.beta
+  beta_unlevered:
+    from: damodaran.unlevered_beta
+  tax_rate_marginal:
+    from: damodaran.tax_rate_marginal
+  rf:
+    from: risk_free
+  country_default_spread:
+    from: damodaran.default_spread
+  erp:
+    from: damodaran.erp_country_total
+  revenue_base:
+    from:
+      stmt: income_stmt
+      item: Total Revenue
+  ebitda_ltm:
+    from:
+      stmt: income_stmt
+      item: EBITDA
+  eps_ltm:
+    from:
+      stmt: income_stmt
+      item: Diluted EPS
+  equity_book:
+    from:
+      stmt: balance_sheet
+      item: Stockholders Equity
+  total_debt:
+    from:
+      stmt: balance_sheet
+      item: Total Debt
+  lease_liabilities:
+    from:
+      stmt: balance_sheet
+      item: Capital Lease Obligations
+  cash:
+    from:
+      stmt: balance_sheet
+      item: Cash And Cash Equivalents
+  minority_interest:
+    from:
+      stmt: balance_sheet
+      item: Minority Interest
+  dps_ttm:
+    from:
+      dividends: ttm
+  tax_rate:
+    value: 0.181255
+    source: 'คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) งวด 2022–2025: เฉลี่ย Tax Provision ÷ Pretax
+      Income'
+    url: https://finance.yahoo.com/quote/CPALL.BK/financials/
+    asof: '2025-12-31'
+    kind: derived
+  interest_coverage:
+    value: 3.613153
+    source: 'คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) งวด 2025–2025: EBIT ÷ Interest Expense งวดล่าสุด'
+    url: https://finance.yahoo.com/quote/CPALL.BK/financials/
+    asof: '2025-12-31'
+    kind: derived
+  company_default_spread:
+    value: 0.0089
+    source: 'Damodaran Online, Ratings, Interest Coverage Ratios and Default Spread (ตารางซ้าย: For large non-financial service
+      firms)'
+    url: https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ratings.html
+    asof: '2026-01-01'
+    kind: derived
+    note: coverage 3.61 อยู่ในช่วง > 3 ถึง ≤ 4.25 → rating A3/A-
+  terminal_roc:
+    value: wacc
+    source: 'research/playbook.md §4: ช่วง terminal ให้ excess return เข้าหา 0 จึงตั้ง ROC = WACC (ผู้เรียนยืนยัน 2026-10-31)'
+    url: null
+    asof: null
+    kind: assumption
+    note: 'ROC เฉลี่ยในอดีต 2022–2025 คือ 5.52% (EBIT × (1 − tax) ÷ (Equity + Minority + Debt − Cash) จาก Yahoo)'
+  revenue_growth:
+    value:
+    - 0.061141
+    - 0.061141
+    - 0.061141
+    - 0.061141
+    - 0.061141
+    source: 'คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) งวด 2022–2025: CAGR ของ Total Revenue (ใช้ค่าเดียวกันทุกปีที่ประมาณการ)'
+    url: https://finance.yahoo.com/quote/CPALL.BK/financials/
+    asof: '2025-12-31'
+    kind: derived
+  ebit_margin:
+    value:
+    - 0.050118
+    - 0.050118
+    - 0.050118
+    - 0.050118
+    - 0.050118
+    source: 'คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) งวด 2022–2025: เฉลี่ย EBIT ÷ Total Revenue
+      (ใช้ค่าเดียวกันทุกปีที่ประมาณการ)'
+    url: https://finance.yahoo.com/quote/CPALL.BK/financials/
+    asof: '2025-12-31'
+    kind: derived
+  da_pct_revenue:
+    value: 0.040467
+    source: 'คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.cashflow (งบรายปี) งวด 2022–2025: เฉลี่ย Depreciation And Amortization
+      ÷ Total Revenue'
+    url: https://finance.yahoo.com/quote/CPALL.BK/cash-flow/
+    asof: '2025-12-31'
+    kind: derived
+  capex_pct_revenue:
+    value: 0.040467
+    source: 'ตั้งเท่ากับ da_pct_revenue เพราะ D&A รวมค่าเสื่อมของสัญญาเช่า (TFRS 16) แต่ capex ไม่รวมสัญญาเช่าใหม่ ถ้า capex
+      ต่ำกว่า D&A reinvestment จะติดลบทั้งที่รายได้โต (playbook §12 ข้อ 4, nlm_log/2026-10-31_leases-ifrs16.md) ผู้เรียนยืนยัน
+      2026-10-31'
+    url: null
+    asof: null
+    kind: assumption
+    note: 'Capex ÷ รายได้เฉลี่ยในอดีต 2022–2025 คือ 3.07% (−Capital Expenditure ÷ Total Revenue จาก Yahoo)'
+  nwc_pct_delta_revenue:
+    value: 0.065258
+    source: 'คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.cashflow (งบรายปี) งวด 2023–2025: เฉลี่ย −Change In Working Capital
+      ÷ รายได้ที่เพิ่มขึ้น'
+    url: https://finance.yahoo.com/quote/CPALL.BK/cash-flow/
+    asof: '2025-12-31'
+    kind: derived
+  minority_pb:
+    from: minority_proxy.data.price_to_book
+    note: 'P/BV ของบริษัทลูกที่จดทะเบียน CPAXT.BK (playbook §2: แปลง minority interest จาก book เป็น market)'
+  include_leases_in_debt:
+    value: true
+    source: ค่าตั้งต้นใน config.yaml ตาม research/playbook.md
+    url: null
+    asof: null
+    kind: assumption
+  beta_method:
+    value: bottom_up
+    source: ค่าตั้งต้นใน config.yaml ตาม research/playbook.md
+    url: null
+    asof: null
+    kind: assumption
+  rf_adjust_default:
+    value: true
+    source: 'research/playbook.md §3: ถ้าพันธบัตรรัฐบาลมี default risk ให้หัก country default spread ก่อนใช้เป็น Rf'
+    url: null
+    asof: null
+    kind: assumption
+  terminal_growth:
+    value: 0.007985
+    source: 'research/playbook.md §4: g ต้องไม่เกิน Rf จึงใช้ค่าต่ำกว่าระหว่าง 2.00% (config.yaml) กับ Rf หลังหัก default
+      spread 0.80% (ผู้เรียนยืนยัน 2026-10-31)'
+    url: null
+    asof: null
+    kind: assumption
+  ddm_growth:
+    value: 0.007985
+    source: 'research/playbook.md §4: g ต้องไม่เกิน Rf จึงใช้ค่าต่ำกว่าระหว่าง 2.00% (config.yaml) กับ Rf หลังหัก default
+      spread 0.80%'
+    url: null
+    asof: null
+    kind: assumption

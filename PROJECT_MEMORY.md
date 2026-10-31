@@ -12,6 +12,9 @@
 - คำตอบของ NotebookLM ต้องตรวจกับ `cited_text` ทุกข้อ ประโยคไหนไม่มีข้อความใน source รองรับให้ย้ายไป "ไม่พบใน notebook"
 - งบจาก yfinance ต้องจับคู่ตามวันสิ้นงวด ไม่ใช่ตามลำดับคอลัมน์ และคอลัมน์ที่ว่างทั้งปีห้ามเติมเอง
 - ห้ามใช้ Free Cash Flow ของ Yahoo แทน FCFF ให้คำนวณจาก EBIT ตามสูตรใน playbook
+- สูตร Excel ที่เป็นฟังก์ชันรุ่นใหม่ (เช่น PERCENTILE.INC) ต้องเขียนเป็น `_xlfn.` ใน openpyxl และรัน `python -m valuation verify` ทุกครั้งหลังแก้สูตร
+- ผล valuation ที่ห่างจากราคาตลาดหลายเท่า ให้ไล่หาสมมติฐานที่ผิดก่อนเชื่อผล
+- ห้าม commit ไฟล์ล็อกของ Office (`~$*`) เพราะมีชื่อผู้ใช้ในเครื่อง
 
 ## บันทึกปัญหา
 
@@ -47,3 +50,21 @@
   - `totalDebt` และ `totalCash` ใน info เป็นค่าไตรมาสล่าสุด ไม่ใช่ปีงบ
 - **สาเหตุ:** ข้อมูลของ Yahoo มาจากหลายตาราง อัปเดตไม่พร้อมกัน และ yfinance ไม่ตรวจความถูกต้องให้
 - **แก้อย่างไร:** เก็บค่าว่างเป็น null พร้อมเหตุผล · จับคู่งวดตามวันที่ · ตรวจ `quoteType` ทุก ticker · ใช้งบรายปีแทน info สำหรับหนี้และเงินสด · EV/EBITDA ของ peer ยังไม่ได้แก้ (ดูรอบ 5)
+
+### 2026-10-31 · Excel ขึ้น #NAME? ในชีต Comps
+
+- **เจออะไร:** LibreOffice คำนวณ P25/P50/P75 ของ peer แล้วได้ `#NAME?` ทุกช่อง
+- **สาเหตุ:** openpyxl เขียนสูตรตามตัวอักษร ฟังก์ชันที่เพิ่มใน Excel 2010 อย่าง `PERCENTILE.INC` ต้องมี prefix `_xlfn.` ในไฟล์ xlsx
+- **แก้อย่างไร:** เปลี่ยนเป็น `_xlfn.PERCENTILE.INC` แล้ว `verify` ได้ค่าตรงกับ Python ทั้งหมด
+
+### 2026-10-31 · DCF ได้ ฿293 ต่อหุ้น จากราคา ฿43.75
+
+- **เจออะไร:** ใช้ beta ของ Yahoo (0.44) ได้ cost of equity 4.9% WACC 3.8% และ DCF สูงเกินราคาเกือบ 7 เท่า
+- **สาเหตุ:** regression beta ของหุ้นตัวเดียวมี standard error สูง (playbook §3) และ Rf ของไทยต่ำ ทำให้ WACC ใกล้ terminal growth
+- **แก้อย่างไร:** ใช้ bottom-up beta จากตาราง unlevered beta ของ Damodaran (Retail Grocery ตลาดเกิดใหม่ 0.856) relever ด้วย D/E ของ CPALL ได้ 1.63 แล้วปรับ Rf, Kd, terminal value และ minority interest ตาม playbook ได้ WACC 6.49%
+
+### 2026-10-31 · ไฟล์ล็อกของ Excel โผล่ใน git status
+
+- **เจออะไร:** `output/CPALL.BK/~$CPALL.BK_valuation.xlsx` ขึ้นเป็นไฟล์ใหม่ตอน `/save`
+- **สาเหตุ:** เปิดไฟล์ Excel ค้างไว้ Excel จึงสร้างไฟล์ล็อกที่มีชื่อผู้ใช้ในเครื่อง
+- **แก้อย่างไร:** เพิ่ม `~$*` ใน `.gitignore`
