@@ -8,6 +8,8 @@
 > กฎ 1 บรรทัด ที่ AI ต้องทำตามจากนี้ไป
 
 - เปลี่ยนชื่อ repo บน GitHub ก่อน แล้วค่อยแก้ `origin` ในเครื่อง และเช็กด้วย `git ls-remote origin` ทุกครั้ง
+- brief สั่ง `--mode deep` ต้องใช้ deep ทุกรอบที่ค้น source ห้ามลดเป็น fast เอง
+- คำตอบของ NotebookLM ต้องตรวจกับ `cited_text` ทุกข้อ ประโยคไหนไม่มีข้อความใน source รองรับให้ย้ายไป "ไม่พบใน notebook"
 
 ## บันทึกปัญหา
 
@@ -19,3 +21,16 @@
 - **สาเหตุ:** แก้ URL ในเครื่องก่อน ขณะที่ repo บน GitHub ยังชื่อ `aia-hw-prachaya` อยู่
 - **แก้อย่างไร:** เปลี่ยนชื่อบน GitHub ด้วย `gh repo rename aia-hw-g06-prachaya` แล้ว `git fetch` ผ่าน
 - **ลองวิธีไหนแล้วไม่เวิร์ก:** ให้ AI รัน `gh repo rename` ครั้งแรกถูกระบบ permission บล็อก ต้องให้ผู้เรียนสั่งยืนยันอีกครั้งจึงรันได้ · ย้ายโฟลเดอร์ระหว่างที่ session เปิดอยู่ทำให้ session เดิมหาโฟลเดอร์ไม่เจอ ต้องเปิดโฟลเดอร์ใหม่เป็นที่ทำงาน
+
+### 2026-10-31 · รอบเสริมของ NotebookLM ใช้ fast แทน deep
+
+- **เจออะไร:** รอบค้น source เสริม (multiples, REIT, cyclical, football field) ใช้ `nlm research --mode fast` ได้แค่ 10 รายการ
+- **สาเหตุ:** AI เลือก fast เองเพื่อให้เร็ว ทั้งที่ brief สั่ง deep
+- **แก้อย่างไร:** ผู้เรียนทักท้วง จึงค้นใหม่แบบ deep ได้ 43 รายการ เลือก import 13 รายการ notebook รวมเป็น 32 source
+- **ลองวิธีไหนแล้วไม่เวิร์ก:** source ของ ibinterviewquestions import ไม่ได้ทั้งแบบ research import และเพิ่มด้วย URL (เว็บไม่ให้ NotebookLM ดึงหน้า)
+
+### 2026-10-31 · NotebookLM ตอบเกินหลักฐาน
+
+- **เจออะไร:** log รอบแรกของ football field บอกว่าปลายแท่ง comps ใช้ percentile 25/75 และ PEG มีสูตร แต่ตรวจซ้ำแล้วไม่มีข้อความใน source รองรับ
+- **สาเหตุ:** NotebookLM เติมความรู้ทั่วไปเข้ามาในคำตอบ แม้ citation จะชี้ไปที่ source
+- **แก้อย่างไร:** ถามซ้ำแบบเจาะจง (log `-v2`) ให้ agent เทียบกับ `cited_text` แล้วย้ายข้อที่ไม่มีหลักฐานไปไว้ใน "ไม่พบใน notebook"
