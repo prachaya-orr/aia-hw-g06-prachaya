@@ -10,4 +10,8 @@
 
 ## ลิงก์ผลงาน
 
-- [ลิงก์]
+- [CPALL.BK_valuation.html](CPALL.BK/CPALL.BK_valuation.html): valuation ทีละขั้น พร้อมสมมติฐาน ที่มา และ football field (เปิดในเบราว์เซอร์ได้แบบ offline)
+- [CPALL.BK_valuation.xlsx](CPALL.BK/CPALL.BK_valuation.xlsx): Excel ที่ทุกตัวเลขเป็นสูตร แก้สมมติฐานในชีต Inputs แล้วคำนวณใหม่ได้
+- [CPALL.BK_results.json](CPALL.BK/CPALL.BK_results.json): ผลคำนวณทั้งหมดในรูป JSON (ใช้สร้าง HTML และตรวจ Excel)
+
+สร้างใหม่ด้วย `.venv/bin/python -m valuation run CPALL.BK` และตรวจ Excel เทียบ Python ด้วย `.venv/bin/python -m valuation verify CPALL.BK`

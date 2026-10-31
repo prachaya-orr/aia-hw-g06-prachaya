@@ -9,7 +9,7 @@ import yaml
 
 from . import CFG, ROOT
 from . import assumptions as A
-from . import excel, fetch, methods
+from . import excel, fetch, html, methods
 
 V = CFG["valuation"]
 
@@ -43,7 +43,8 @@ def ensure_raw(ticker: str, refetch: bool) -> dict:
     have = False
     if raw_path(ticker).exists():
         raw = load_raw(ticker)
-        have = (set(raw["peers"]["requested"]) == set(peers)
+        have = (raw.get("schema_version") == fetch.SCHEMA_VERSION
+                and set(raw["peers"]["requested"]) == set(peers)
                 and (raw.get("minority_proxy") or {}).get("requested") == proxy)
     if refetch or not have:
         code = fetch.main(ticker, peers, proxy)
@@ -64,6 +65,9 @@ def to_jsonable(a: A.Assumptions, raw: dict, out: dict) -> dict:
         "ticker": a.ticker,
         "status": a.status,
         "method_choice": a.method_choice,
+        "method_reasons": a.method_reasons,
+        "limitations": a.limitations,
+        "price": a["price"],
         "fetched_at": raw["fetched_at"],
         "company": {k: raw["info"][k]["value"] for k in ("long_name", "sector", "industry", "country", "currency",
                                                           "financial_currency")},
@@ -86,7 +90,9 @@ def run(ticker: str, refetch: bool) -> int:
     d = out_dir(ticker)
     xlsx = excel.build(a, raw, out, d / f"{ticker}_valuation.xlsx")
     res = d / f"{ticker}_results.json"
-    res.write_text(json.dumps(to_jsonable(a, raw, out), ensure_ascii=False, indent=1), encoding="utf-8")
+    payload = to_jsonable(a, raw, out)
+    res.write_text(json.dumps(payload, ensure_ascii=False, indent=1), encoding="utf-8")
+    page = html.build(payload, d / f"{ticker}_valuation.html")
     print(f"สถานะสมมติฐาน: {a.status} · WACC {out['wacc']['wacc']:.2%} · ราคา {a['price']}")
     for r in out["results"]:
         if r.skipped:
@@ -96,5 +102,5 @@ def run(ticker: str, refetch: bool) -> int:
             print(f"  {r.label}: {r.low:,.2f} – {r.high:,.2f} (base {base})")
     for w in out["warnings"]:
         print(f"  คำเตือน: {w}")
-    print(f"บันทึก {xlsx.relative_to(ROOT)} · {res.relative_to(ROOT)}")
+    print(f"บันทึก {xlsx.relative_to(ROOT)} · {page.relative_to(ROOT)} · {res.relative_to(ROOT)}")
     return 0

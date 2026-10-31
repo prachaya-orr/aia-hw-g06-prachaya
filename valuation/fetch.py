@@ -37,7 +37,7 @@ DM = CFG["damodaran"]
 TZ = ZoneInfo(CFG["timezone"])
 RAW_DIR = ROOT / CFG["paths"]["raw_dir"]
 YF_SOURCE = Y["source_label"].format(version=yf.__version__)
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2   # เพิ่มเมื่อโครง JSON เปลี่ยน pipeline จะดึงใหม่เองถ้าไฟล์เก่ากว่านี้
 
 
 # ---------- ตัวช่วยทั่วไป ----------
@@ -433,8 +433,50 @@ def fetch_peers(symbols: list[str]) -> dict:
             entry[name] = field(raw.get(key), f"{YF_SOURCE} Ticker.info['{key}'] ของ {sym}", url, asof=market_time,
                                 reason=err or f"Yahoo ไม่มีค่า {key} สำหรับ {sym}",
                                 asof_note="asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)")
+        entry["ev_to_ebitda"] = peer_ev_to_ebitda(yf.Ticker(sym), sym, raw, err)
         out[sym] = entry
     return out
+
+
+def _latest(sd: dict | None, item: str) -> tuple[float | None, str | None]:
+    if not sd or item not in sd["items"]:
+        return None, None
+    return next(((sd["items"][item][p], p) for p in sd["period_ends"] if sd["items"][item].get(p) is not None),
+                (None, None))
+
+
+def peer_ev_to_ebitda(t: yf.Ticker, sym: str, info: dict, err: str | None) -> dict:
+    """EV/EBITDA คิดเองจากงบรายปี นิยามเดียวกับบริษัทเป้าหมาย ไม่ใช้ enterpriseToEbitda ของ Yahoo
+    เพราะ Yahoo ใช้ EBITDA ย้อนหลัง 12 เดือนที่ไม่ตรงกับงบรายปี (CPALL: 12.98 เทียบหน้าเว็บ 10.67)"""
+    formula = "(marketCap + Total Debt + Minority Interest − Cash And Cash Equivalents) ÷ EBITDA งวดล่าสุดของงบรายปี"
+    src = f"คำนวณจาก {YF_SOURCE} Ticker.info['marketCap'] และงบรายปี balance_sheet / income_stmt ของ {sym}: {formula}"
+    url = yahoo_url("balance_sheet", sym)
+    if err:
+        return field(None, src, url, reason=err)
+    cur, fin = info.get("currency"), info.get("financialCurrency")
+    if cur != fin:
+        return field(None, src, url, reason=f"ราคาเป็น {cur} แต่งบเป็น {fin} ต้องแปลงสกุลเงินก่อน จึงไม่คำนวณ")
+    bs, e1 = attempt(lambda: stmt_to_dict(t.balance_sheet), f"peer {sym} balance_sheet")
+    inc, e2 = attempt(lambda: stmt_to_dict(t.income_stmt), f"peer {sym} income_stmt")
+    if e1 or e2:
+        return field(None, src, url, reason=e1 or e2)
+    mc = clean(info.get("marketCap"))
+    debt, p_debt = _latest(bs, "Total Debt")
+    cash, _ = _latest(bs, "Cash And Cash Equivalents")
+    minority, _ = _latest(bs, "Minority Interest")
+    ebitda, p_ebitda = _latest(inc, "EBITDA")
+    missing = [n for n, v in (("marketCap", mc), ("Total Debt", debt), ("Cash And Cash Equivalents", cash),
+                              ("EBITDA", ebitda)) if v is None]
+    if missing:
+        return field(None, src, url, reason=f"Yahoo ไม่มี {', '.join(missing)} ของ {sym}")
+    if ebitda <= 0:
+        return field(None, src, url, asof=p_ebitda, reason=f"EBITDA ของ {sym} ไม่เป็นบวก ({ebitda:,.0f})")
+    ev = mc + debt + (minority or 0) - cash
+    return field(round(ev / ebitda, 6), src, url, asof=p_ebitda,
+                 asof_note="asof = งวดของ EBITDA · marketCap เป็นค่าล่าสุด",
+                 components={"market_cap": mc, "total_debt": debt, "minority_interest": minority, "cash": cash,
+                             "ebitda": ebitda, "balance_sheet_period": p_debt, "currency": cur},
+                 note=None if minority is not None else "ไม่มีรายการ Minority Interest ในงบ นับเป็น 0")
 
 
 # ---------- 6) รวมและตรวจ ----------

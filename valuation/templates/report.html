@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ r.ticker }} Valuation</title>
+<style>
+:root {
+  --bg: #f7f6f2; --surface: #ffffff; --ink: #1d1f23; --muted: #5d636e; --line: #dcdad3;
+  --accent: #2f5fa7; --accent-soft: #dbe5f4; --price: #c2412d; --warn-bg: #fff4dc; --warn-ink: #7a5300;
+  --box: #fff1c2; --head: #eeece6; --bar: #4b77bd; --bar-base: #10284f;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171b; --surface: #1d2026; --ink: #e8e9ec; --muted: #a3a9b4; --line: #343841;
+    --accent: #8fb2ea; --accent-soft: #263652; --price: #ff8a73; --warn-bg: #3a2f14; --warn-ink: #f3d08a;
+    --box: #4a3f17; --head: #262a31; --bar: #6f97d8; --bar-base: #e8eefa;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171b; --surface: #1d2026; --ink: #e8e9ec; --muted: #a3a9b4; --line: #343841;
+  --accent: #8fb2ea; --accent-soft: #263652; --price: #ff8a73; --warn-bg: #3a2f14; --warn-ink: #f3d08a;
+  --box: #4a3f17; --head: #262a31; --bar: #6f97d8; --bar-base: #e8eefa;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.65 "IBM Plex Sans Thai", "Noto Sans Thai", "Sukhumvit Set", Thonburi, system-ui, sans-serif;
+}
+main { max-width: 980px; margin: 0 auto; padding: 32px 16px 64px; }
+h1 { font-size: 1.9rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.35rem; margin: 48px 0 12px; padding-top: 8px; border-top: 1px solid var(--line); }
+h3 { font-size: 1.08rem; margin: 28px 0 8px; }
+p { margin: 8px 0; }
+a { color: var(--accent); }
+.muted { color: var(--muted); }
+.small { font-size: .875rem; }
+.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 18px; color: var(--muted); font-size: .9rem; margin-bottom: 20px; }
+.badge { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: .8rem; background: var(--accent-soft); color: var(--accent); }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 16px 0; }
+.kpi .label { font-size: .82rem; color: var(--muted); }
+.kpi .value { font-size: 1.35rem; font-weight: 600; }
+nav.toc { font-size: .92rem; }
+nav.toc ol { margin: 6px 0 0; padding-left: 20px; columns: 2; column-gap: 24px; }
+@media (max-width: 600px) { nav.toc ol { columns: 1; } }
+
+/* football field */
+.ff { margin-top: 8px; }
+.ff-row { display: grid; grid-template-columns: 190px 1fr; gap: 12px; align-items: center; padding: 6px 0; }
+.ff-label { font-size: .92rem; line-height: 1.3; }
+.ff-label .small { display: block; }
+.ff-track { position: relative; height: 28px; }
+.ff-bar { position: absolute; top: 5px; height: 18px; background: var(--bar); border-radius: 3px; }
+.ff-base { position: absolute; top: 1px; width: 3px; height: 26px; background: var(--bar-base); border-radius: 1px; transform: translateX(-1px); }
+.ff-plot { position: relative; }
+.ff-price { position: absolute; top: 0; bottom: 22px; width: 0; border-left: 2px dashed var(--price); pointer-events: none; }
+.ff-price span { position: absolute; top: -22px; left: 4px; white-space: nowrap; font-size: .8rem; color: var(--price); font-weight: 600; }
+.ff-zero { position: absolute; top: 0; bottom: 22px; border-left: 1px solid var(--muted); opacity: .5; }
+.ff-axis { position: relative; height: 22px; border-top: 1px solid var(--line); margin-left: 202px; }
+.ff-axis span { position: absolute; top: 3px; transform: translateX(-50%); font-size: .75rem; color: var(--muted); }
+.ff-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .82rem; color: var(--muted); margin-top: 10px; }
+.swatch { display: inline-block; width: 18px; height: 10px; vertical-align: middle; margin-right: 6px; border-radius: 2px; }
+.ff-rows { position: relative; margin-left: 0; padding-top: 22px; }
+@media (max-width: 600px) {
+  .ff-row { grid-template-columns: 1fr; gap: 2px; }
+  .ff-axis { margin-left: 0; }
+  .ff-rows .ff-price, .ff-rows .ff-zero { display: none; }
+  .ff-track .ff-price-m { display: block; }
+}
+.ff-price-m { display: none; position: absolute; top: 0; bottom: 0; border-left: 2px dashed var(--price); }
+
+/* tables */
+.scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; background: var(--surface); }
+th, td { border-bottom: 1px solid var(--line); padding: 7px 10px; text-align: left; vertical-align: top; }
+th { background: var(--head); font-weight: 600; }
+td.r, th.r { text-align: right; }
+tr.hl td { font-weight: 600; }
+td.box { background: var(--box); }
+td.center { outline: 2px solid var(--ink); outline-offset: -2px; }
+.steps td:first-child { width: 34%; }
+.formula { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: .84rem; color: var(--muted); }
+.warn { background: var(--warn-bg); color: var(--warn-ink); border-radius: 8px; padding: 10px 14px; margin: 8px 0; }
+ul.tight { margin: 6px 0; padding-left: 20px; }
+ul.tight li { margin: 3px 0; }
+.src { word-break: break-word; }
+footer { margin-top: 48px; color: var(--muted); font-size: .85rem; }
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <p class="muted small" style="margin:0">Valuation step by step · {{ r.ticker }}</p>
+  <h1>{{ r.company.long_name }}</h1>
+  <div class="meta">
+    <span>{{ r.company.sector }} · {{ r.company.industry }} · {{ r.company.country }}</span>
+    <span>ดึงข้อมูลเมื่อ {{ r.fetched_at[:16].replace('T', ' ') }}</span>
+    <span>สมมติฐาน <span class="badge">{{ r.status }}</span></span>
+  </div>
+</header>
+
+<div class="kpis">
+  <div class="card kpi"><div class="label">ราคาล่าสุด</div><div class="value num">{{ r.price | ps }}</div>
+    <div class="small muted">ณ {{ r.inputs.price.asof[:10] if r.inputs.price.asof else '–' }}</div></div>
+  <div class="card kpi"><div class="label">WACC</div><div class="value num">{{ r.wacc.wacc | pct }}</div>
+    <div class="small muted">Ke {{ r.wacc.ke | pct }} · Kd หลังภาษี {{ r.wacc.kd_after_tax | pct }}</div></div>
+  {% if dcf and not dcf.skipped %}
+  <div class="card kpi"><div class="label">DCF base</div><div class="value num">{{ dcf.base | ps }}</div>
+    <div class="small muted">ช่วง {{ dcf.low | ps }} – {{ dcf.high | ps }}</div></div>
+  {% endif %}
+  <div class="card kpi"><div class="label">วิธีที่ใช้</div><div class="value num">{{ ok | length }}</div>
+    <div class="small muted">ไม่ใช้ {{ not_used }} วิธี</div></div>
+</div>
+
+<nav class="toc card" aria-label="สารบัญ">
+  <strong>สารบัญ</strong>
+  <ol>
+    <li><a href="#football">Football field</a></li>
+    <li><a href="#methods">วิธีที่เลือกและเหตุผล</a></li>
+    <li><a href="#wacc">Discount rate (WACC)</a></li>
+    <li><a href="#dcf">DCF ทีละขั้น</a></li>
+    <li><a href="#sensitivity">Sensitivity</a></li>
+    <li><a href="#comps">Comparable companies</a></li>
+    <li><a href="#assumptions">สมมติฐานทั้งหมดและที่มา</a></li>
+    <li><a href="#limits">คำเตือนและข้อจำกัด</a></li>
+    <li><a href="#sources">แหล่งข้อมูล</a></li>
+  </ol>
+</nav>
+
+<!-- 1. football field -->
+<h2 id="football">1. Football field</h2>
+<p>แต่ละแท่งคือช่วงมูลค่าต่อหุ้นจากวิธีหนึ่ง ขีดเข้มในแท่งคือค่า base เส้นประสีแดงคือราคาปัจจุบัน</p>
+<div class="card ff">
+  <div class="ff-rows">
+    <div style="position:absolute; left:202px; right:0; top:0; bottom:0;" class="ff-plot" aria-hidden="true">
+      <div class="ff-price" style="left: {{ ff.price_pos }}%"><span>ราคา {{ r.price | ps }}</span></div>
+      {% if ff.zero_pos is not none %}<div class="ff-zero" style="left: {{ ff.zero_pos }}%"></div>{% endif %}
+    </div>
+    {% for b in ff.bars %}
+    <div class="ff-row">
+      <div class="ff-label">{{ b.label }}
+        <span class="small muted num">{{ b.low | ps }} – {{ b.high | ps }}{% if b.base is not none %} · base {{ b.base | ps }}{% endif %}</span>
+      </div>
+      <div class="ff-track" role="img" aria-label="{{ b.label }} {{ b.low | ps }} ถึง {{ b.high | ps }}, {{ b.reading }}">
+        <div class="ff-price-m" style="left: {{ ff.price_pos }}%"></div>
+        <div class="ff-bar" style="left: {{ b.left }}%; width: {{ b.width }}%"></div>
+        {% if b.base_pos is not none %}<div class="ff-base" style="left: {{ b.base_pos }}%"></div>{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="ff-axis" aria-hidden="true">
+    {% for t in ff.ticks %}<span style="left: {{ t.pos }}%">{{ '%g' | format(t.value) }}</span>{% endfor %}
+  </div>
+  <div class="ff-legend">
+    <span><span class="swatch" style="background:var(--bar)"></span>ช่วงมูลค่า (low–high)</span>
+    <span><span class="swatch" style="background:var(--bar-base); width:3px"></span>base</span>
+    <span><span class="swatch" style="border-top:2px dashed var(--price); height:0"></span>ราคาปัจจุบัน</span>
+  </div>
+</div>
+
+<div class="scroll" style="margin-top:14px">
+<table>
+  <thead><tr><th>วิธี</th><th class="r">Low</th><th class="r">Base</th><th class="r">High</th><th>เทียบราคา {{ r.price | ps }}</th></tr></thead>
+  <tbody>
+  {% for b in ff.bars %}
+    <tr><td>{{ b.label }}</td><td class="r num">{{ b.low | ps }}</td><td class="r num">{{ b.base | ps }}</td>
+      <td class="r num">{{ b.high | ps }}</td><td>{{ b.reading }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<p class="small muted">ปลายแท่ง: DCF ใช้ WACC และ terminal growth ±{{ (S.wacc_step * 100) | round(2) }}% จากตาราง sensitivity · comps ใช้ P{{ V.comps_percentiles[0] }}–P{{ V.comps_percentiles[2] }} ของ peer และ base = มัธยฐาน · notebook ไม่มีกฎตั้งปลายแท่ง จึงเป็นการเลือกของผู้เรียน (playbook §13)</p>
+
+<!-- 2. methods -->
+<h2 id="methods">2. วิธีที่เลือกและเหตุผล</h2>
+<p>เลือกตามประเภทธุรกิจใน <code>research/playbook.md</code> ซึ่งมาจาก NotebookLM notebook "Valuation Methods" รายละเอียดเต็มอยู่ใน <code>{{ r.method_choice }}</code></p>
+<div class="scroll">
+<table>
+  <thead><tr><th>วิธี</th><th>ใช้ไหม</th><th>เหตุผล</th></tr></thead>
+  <tbody>
+  {% for key, why in r.method_reasons.items() %}
+    {% set res = results.get(key) %}
+    <tr><td>{{ LABELS.get(key, key) }}</td>
+      <td>{% if res and not res.skipped %}ใช้{% elif res %}ข้าม{% else %}ไม่ใช้{% endif %}</td>
+      <td>{{ why }}{% if res and res.skipped %} · <em>ข้ามเพราะ {{ res.skipped }}</em>{% endif %}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<!-- 3. WACC -->
+<h2 id="wacc">3. Discount rate (WACC)</h2>
+{% if dcf and not dcf.skipped %}
+<div class="scroll">
+<table class="steps">
+  <thead><tr><th>ขั้น</th><th>สูตร</th><th class="r">ผล</th></tr></thead>
+  <tbody>
+  {% for s in dcf.steps[:split] %}
+    <tr><td>{{ s.label }}</td><td class="formula">{{ s.formula }}</td><td class="r num">{{ fmt(s.value, s.unit) }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endif %}
+<p class="small muted">ตัวเลขที่ใส่: พันธบัตรรัฐบาล {{ r.inputs.rf.value | pct }} · country default spread {{ r.inputs.country_default_spread.value | pct }} · unlevered beta อุตสาหกรรม {{ '%.3f' | format(r.inputs.beta_unlevered.value) }} · ERP {{ r.inputs.erp.value | pct }} · company default spread {{ r.inputs.company_default_spread.value | pct }} ({{ r.inputs.company_default_spread.note }}) · ภาษีตามกฎหมาย {{ r.inputs.tax_rate_marginal.value | pct(0) }} · หนี้ {{ r.wacc.debt | money }} · มูลค่าตลาดของทุน {{ r.wacc.equity_value_mkt | money }}</p>
+
+<!-- 4. DCF -->
+<h2 id="dcf">4. DCF (FCFF) ทีละขั้น</h2>
+{% if dcf and not dcf.skipped %}
+<h3>4.1 ประมาณการกระแสเงินสด {{ dcf.detail.forecast | length }} ปี</h3>
+<p>ปีฐานคือรายได้ {{ r.inputs.revenue_base.value | money }} (งวด {{ r.inputs.revenue_base.asof }})</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>รายการ</th>{% for f in dcf.detail.forecast %}<th class="r">ปี {{ f.t }}</th>{% endfor %}</tr></thead>
+  <tbody>
+    <tr><td>การเติบโตของรายได้</td>{% for g in r.inputs.revenue_growth.value %}<td class="r num">{{ g | pct }}</td>{% endfor %}</tr>
+    <tr><td>รายได้</td>{% for f in dcf.detail.forecast %}<td class="r num">{{ f.revenue | money }}</td>{% endfor %}</tr>
+    <tr><td>EBIT (margin {{ r.inputs.ebit_margin.value[0] | pct }})</td>{% for f in dcf.detail.forecast %}<td class="r num">{{ f.ebit | money }}</td>{% endfor %}</tr>
+    <tr><td>NOPAT = EBIT × (1 − {{ r.inputs.tax_rate.value | pct(1) }})</td>{% for f in dcf.detail.forecast %}<td class="r num">{{ f.nopat | money }}</td>{% endfor %}</tr>
+    <tr><td>+ D&amp;A ({{ r.inputs.da_pct_revenue.value | pct }} ของรายได้)</td>{% for f in dcf.detail.forecast %}<td class="r num">{{ f.da | money }}</td>{% endfor %}</tr>
+    <tr><td>− Capex ({{ r.inputs.capex_pct_revenue.value | pct }} ของรายได้)</td>{% for f in dcf.detail.forecast %}<td class="r num">{{ f.capex | money }}</td>{% endfor %}</tr>
+    <tr><td>− ΔNWC ({{ r.inputs.nwc_pct_delta_revenue.value | pct }} ของรายได้ที่เพิ่ม)</td>{% for f in dcf.detail.forecast %}<td class="r num">{{ f.dnwc | money }}</td>{% endfor %}</tr>
+    <tr class="hl"><td>FCFF</td>{% for f in dcf.detail.forecast %}<td class="r num">{{ f.fcff | money }}</td>{% endfor %}</tr>
+  </tbody>
+</table>
+</div>
+
+<h3>4.2 จาก FCFF เป็นมูลค่าต่อหุ้น</h3>
+<div class="scroll">
+<table class="steps">
+  <thead><tr><th>ขั้น</th><th>สูตร</th><th class="r">ผล</th></tr></thead>
+  <tbody>
+  {% for s in dcf.steps[split:] %}
+    <tr{% if loop.last %} class="hl"{% endif %}><td>{{ s.label }}</td><td class="formula">{{ s.formula }}</td><td class="r num">{{ fmt(s.value, s.unit) }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<p class="small muted">Terminal growth {{ r.inputs.terminal_growth.value | pct }} · ROC ช่วง terminal {{ dcf.detail.terminal_roc | pct }} · terminal value เป็น {{ dcf.detail.tv_share | pct(0) }} ของ EV · minority interest (book) {{ r.inputs.minority_interest.value | money }} × P/BV {{ '%.2f' | format(r.inputs.minority_pb.value) }}</p>
+{% else %}
+<p>ไม่ได้ใช้ DCF{% if dcf %}: {{ dcf.skipped }}{% endif %}</p>
+{% endif %}
+
+<!-- 5. sensitivity -->
+<h2 id="sensitivity">5. Sensitivity ของ DCF</h2>
+{% if dcf and not dcf.skipped %}
+<p>มูลค่าต่อหุ้นเมื่อเปลี่ยน WACC (แถว) และ terminal growth (คอลัมน์) ช่องสีเหลืองคือช่วงที่ใช้ใน football field กรอบเข้มคือ base</p>
+{% set n = S.grid %}{% set k = S.range_k %}
+<div class="scroll">
+<table>
+  <thead><tr><th>WACC \ g</th>{% for g in dcf.detail.y_axis %}<th class="r">{{ g | pct }}</th>{% endfor %}</tr></thead>
+  <tbody>
+  {% for row in dcf.detail.table %}{% set i = loop.index0 %}
+    <tr><th>{{ dcf.detail.x_axis[i] | pct }}</th>
+    {% for v in row %}{% set j = loop.index0 %}
+      <td class="r num{% if (i - n) | abs <= k and (j - n) | abs <= k %} box{% endif %}{% if i == n and j == n %} center{% endif %}">{{ v | ps }}</td>
+    {% endfor %}</tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endif %}
+
+<!-- 6. comps -->
+<h2 id="comps">6. Comparable companies</h2>
+{% set pe = results.get('comps_pe') %}{% set ev = results.get('comps_ev_ebitda') %}
+{% if r.peers %}
+<div class="scroll">
+<table>
+  <thead><tr><th>Ticker</th><th>บริษัท</th><th>Industry</th><th class="r">P/E (TTM)</th><th class="r">EV/EBITDA (คิดเอง)</th><th class="r">EV/EBITDA ของ Yahoo</th></tr></thead>
+  <tbody>
+  {% for sym, d in r.peers.items() %}
+    <tr><td>{{ sym }}</td><td>{{ d.long_name.value }}</td><td>{{ d.industry.value }}</td>
+      <td class="r num">{{ d.trailing_pe.value | mult }}</td><td class="r num">{{ d.ev_to_ebitda.value | mult }}</td>
+      <td class="r num muted">{{ d.ev_to_ebitda_yahoo.value | mult }}</td></tr>
+  {% endfor %}
+    <tr class="hl"><td>{{ r.ticker }}</td><td>ตัวคูณปัจจุบัน</td><td></td>
+      <td class="r num">{{ pe.detail.target | mult if pe else '–' }}</td><td class="r num">{{ ev.detail.target | mult if ev else '–' }}</td><td></td></tr>
+  </tbody>
+</table>
+</div>
+<p class="small muted">EV/EBITDA คิดเองจากงบรายปีของทุกบริษัทด้วยนิยามเดียวกัน: (มูลค่าตลาด + หนี้รวมสัญญาเช่า + minority interest − เงินสด) ÷ EBITDA ไม่ใช้ค่าของ Yahoo เพราะ Yahoo ใช้ EBITDA ย้อนหลัง 12 เดือนที่ไม่ตรงกับงบรายปี (ตัวคูณของ {{ r.ticker }} ตามนิยามนี้ใกล้กับค่าที่หน้าเว็บ Yahoo แสดง)</p>
+
+{% for res in [pe, ev] if res %}
+<h3>{{ res.label }}</h3>
+{% if res.skipped %}<p>ข้าม: {{ res.skipped }}</p>{% else %}
+<div class="scroll">
+<table class="steps">
+  <thead><tr><th>ขั้น</th><th>สูตร</th><th class="r">ผล</th></tr></thead>
+  <tbody>
+  {% for s in res.steps if s.value is not none %}
+    <tr{% if loop.last %} class="hl"{% endif %}><td>{{ s.label }}</td><td class="formula">{{ s.formula }}</td><td class="r num">{{ fmt(s.value, s.unit) }}</td></tr>
+  {% endfor %}
+    <tr><td>ช่วงที่ใช้ใน football field</td><td class="formula">P{{ V.comps_percentiles[0] }} – P{{ V.comps_percentiles[2] }}</td><td class="r num">{{ res.low | ps }} – {{ res.high | ps }}</td></tr>
+  </tbody>
+</table>
+</div>
+{% endif %}
+{% endfor %}
+{% else %}
+<p>ยังไม่ได้ยืนยันรายชื่อ peer</p>
+{% endif %}
+
+<!-- 7. assumptions -->
+<h2 id="assumptions">7. สมมติฐานทั้งหมดและที่มา</h2>
+<p>ประเภท: <strong>ข้อเท็จจริง</strong> = ดึงจากแหล่งข้อมูล · <strong>คำนวณจากอดีต</strong> = คำนวณจากงบย้อนหลัง · <strong>สมมติฐาน</strong> = ผู้เรียนกำหนดโดยอ้าง playbook</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>รายการ</th><th class="r">ค่า</th><th>ประเภท</th><th>ที่มา</th><th>ข้อมูล ณ</th></tr></thead>
+  <tbody>
+  {% for key, i in r.inputs.items() %}
+    <tr><td>{{ i.label }}</td><td class="r num">{{ fmt(i.value, i.unit) }}</td><td>{{ KIND[i.kind] }}</td>
+      <td class="src small">{% if i.url %}<a href="{{ i.url }}" rel="noopener">{{ i.source }}</a>{% else %}{{ i.source }}{% endif %}{% if i.note %}<br><span class="muted">{{ i.note }}</span>{% endif %}</td>
+      <td class="small num">{{ (i.asof or '–')[:10] }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<!-- 8. limits -->
+<h2 id="limits">8. คำเตือนและข้อจำกัด</h2>
+{% for w in r.warnings %}<div class="warn">{{ w }}</div>{% endfor %}
+{% if skipped %}
+<p><strong>วิธีที่คำนวณไม่ได้</strong></p>
+<ul class="tight">{% for x in skipped %}<li>{{ x.label }}: {{ x.skipped }}</li>{% endfor %}</ul>
+{% endif %}
+{% if r.limitations %}
+<p><strong>ข้อจำกัดที่ต้องรู้ก่อนใช้ผล</strong></p>
+<ul class="tight">{% for x in r.limitations %}<li>{{ x }}</li>{% endfor %}</ul>
+{% endif %}
+<p class="small muted">รายงานนี้เป็นการบ้านเพื่อฝึกวิธี valuation ไม่ใช่คำแนะนำการลงทุน</p>
+
+<!-- 9. sources -->
+<h2 id="sources">9. แหล่งข้อมูล</h2>
+<div class="scroll">
+<table>
+  <thead><tr><th>แหล่ง</th><th>ข้อมูล ณ</th><th>ใช้กับ</th></tr></thead>
+  <tbody>
+  {% for s in sources %}
+    <tr><td class="src small">{% if s.url %}<a href="{{ s.url }}" rel="noopener">{{ s.source }}</a>{% else %}{{ s.source }}{% endif %}</td>
+      <td class="small num">{{ (s.asof or '–')[:10] }}</td><td class="small">{{ s.used | join(', ') }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<p class="small muted">วิธีการและเหตุผลมาจาก NotebookLM notebook "Valuation Methods" รายชื่อ source อยู่ใน <code>research/sources.md</code> ตัวเลขทุกตัวคำนวณซ้ำได้จาก <code>{{ r.ticker }}_valuation.xlsx</code></p>
+
+<footer>สร้างด้วย <code>python -m valuation run {{ r.ticker }}</code> · ข้อมูลดึงเมื่อ {{ r.fetched_at }}</footer>
+</main>
+</body>
+</html>

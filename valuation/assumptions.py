@@ -38,7 +38,7 @@ SPEC = {
     # งบการเงินงวดล่าสุด
     "revenue_base":     ("รายได้งวดล่าสุด (ปีฐานของ DCF)", "สกุลงบ"),
     "ebitda_ltm":       ("EBITDA งวดล่าสุด", "สกุลงบ"),
-    "eps_ltm":          ("EPS (diluted) งวดล่าสุด", "ต่อหุ้น"),
+    "eps_ltm":          ("EPS ย้อนหลัง 12 เดือน (TTM) ให้ตรงกับ trailing P/E ของ peer", "ต่อหุ้น"),
     "equity_book":      ("ส่วนของผู้ถือหุ้นบริษัทใหญ่", "สกุลงบ"),
     "total_debt":       ("หนี้สินที่มีภาระดอกเบี้ยรวม (รวม lease)", "สกุลงบ"),
     "lease_liabilities": ("หนี้สินตามสัญญาเช่า", "สกุลงบ"),
@@ -63,6 +63,9 @@ SPEC = {
     "ddm_growth":       ("อัตราเติบโตปันผลระยะยาว (DDM)", "%"),
 }
 
+# รายการในงบที่บางบริษัทไม่มี (เช่น ไม่มีบริษัทลูกที่มีผู้ถือหุ้นอื่น) ถ้าไม่มีในงบให้นับเป็น 0
+ZERO_IF_MISSING = ("minority_interest", "lease_liabilities")
+
 # ค่าที่ draft ดึงตรงจากข้อมูลดิบ
 DIRECT = {
     "price": "info.price",
@@ -77,7 +80,7 @@ DIRECT = {
     "erp": "damodaran.erp_country_total",
     "revenue_base": {"stmt": "income_stmt", "item": "Total Revenue"},
     "ebitda_ltm": {"stmt": "income_stmt", "item": "EBITDA"},
-    "eps_ltm": {"stmt": "income_stmt", "item": "Diluted EPS"},
+    "eps_ltm": "info.trailing_eps",
     "equity_book": {"stmt": "balance_sheet", "item": "Stockholders Equity"},
     "total_debt": {"stmt": "balance_sheet", "item": "Total Debt"},
     "lease_liabilities": {"stmt": "balance_sheet", "item": "Capital Lease Obligations"},
@@ -114,6 +117,8 @@ class Assumptions:
     methods: list[str]
     peers: list[str]
     method_choice: str | None
+    method_reasons: dict[str, str] = dc_field(default_factory=dict)
+    limitations: list[str] = dc_field(default_factory=list)
     inputs: dict[str, Input] = dc_field(default_factory=dict)
 
     def __getitem__(self, key: str):
@@ -202,6 +207,12 @@ def draft_inputs(raw: dict) -> dict:
     dwc = series(raw, "cash_flow", "Change In Working Capital")
 
     out: dict = {k: {"from": ref} for k, ref in DIRECT.items()}
+    for key in ZERO_IF_MISSING:
+        ref = DIRECT[key]
+        f = raw["statements"][ref["stmt"]]
+        if latest(f, ref["item"])[0] is None:
+            out[key] = {"value": 0, "source": f"{f['source']}: ไม่มีรายการ '{ref['item']}' ในงบ จึงนับเป็น 0",
+                        "url": f.get("url"), "asof": f.get("asof"), "kind": "derived"}
 
     yrs = [p for p in pretax if p in tax and pretax[p] > 0]
     out["tax_rate"] = _derived(raw, "income_stmt", _avg([tax[p] / pretax[p] for p in yrs]),
@@ -294,6 +305,8 @@ def draft(raw: dict) -> dict:
         "status": "draft",
         "method_choice": f"research/{raw['ticker']}_method_choice.md",
         "methods": ["dcf_fcff", "ddm", "comps_pe", "comps_ev_ebitda", "comps_pb", "week52"],
+        "method_reasons": {},
+        "limitations": [],
         "peers": raw["peers"]["requested"],
         "minority_proxy": (raw.get("minority_proxy") or {}).get("requested"),
         "inputs": draft_inputs(raw),
@@ -323,7 +336,7 @@ def write_draft(raw: dict) -> Path:
 def load(ticker: str, raw: dict) -> Assumptions:
     doc = yaml.safe_load(path_for(ticker).read_text(encoding="utf-8"))
     a = Assumptions(doc["ticker"], doc.get("status", "draft"), doc["methods"], doc.get("peers") or [],
-                    doc.get("method_choice"))
+                    doc.get("method_choice"), doc.get("method_reasons") or {}, doc.get("limitations") or [])
     unknown = set(doc["inputs"]) - set(SPEC)
     if unknown:
         raise ValueError(f"ไม่รู้จัก input: {sorted(unknown)}")
@@ -341,6 +354,9 @@ def load(ticker: str, raw: dict) -> Assumptions:
             inp = Input(key, entry["value"], entry["source"], entry.get("url"), entry.get("asof"),
                         note=entry.get("note"), kind=entry.get("kind", "assumption"))
         a.inputs[key] = inp
+    missing = [f"{k} ({i.note or 'ไม่มีค่า'})" for k, i in a.inputs.items() if i.value is None]
+    if missing:
+        raise ValueError(f"{ticker}: input ที่ยังไม่มีค่า ต้องกำหนดเองใน {path_for(ticker).name}: " + "; ".join(missing))
     n = V["forecast_years"]
     for key in ("revenue_growth", "ebit_margin"):
         v = a.inputs[key].value

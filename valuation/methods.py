@@ -92,10 +92,10 @@ def rate_steps(a: Assumptions, w: dict) -> list[Step]:
     rf = [Step("Risk-free rate", "พันธบัตรรัฐบาล − country default spread", w["rf"], "%")] \
         if a["rf_adjust_default"] else [Step("Risk-free rate", "พันธบัตรรัฐบาล 10 ปี", w["rf"], "%")]
     if a["beta_method"] == "regression":
-        beta = [Step("Beta (regression จาก Yahoo)", "Yahoo beta", w["beta"], "x")]
+        beta = [Step("Beta (regression จาก Yahoo)", "Yahoo beta", w["beta"], "beta")]
     else:
         beta = [Step("D/E ตามมูลค่าตลาด", "หนี้ ÷ (ราคา × จำนวนหุ้น)", w["de"], "x"),
-                Step("Levered beta (bottom-up)", "βu × (1 + (1 − tax marginal) × D/E)", w["beta"], "x")]
+                Step("Levered beta (bottom-up)", "βu × (1 + (1 − tax marginal) × D/E)", w["beta"], "beta")]
     return [*rf, *beta, Step("Cost of equity (CAPM)", "Rf + Beta × ERP", w["ke"], "%")]
 
 
@@ -228,12 +228,27 @@ def ddm(a: Assumptions, w: dict) -> Result:
 
 # ---------- Comps ----------
 
+def bridge_book(a: Assumptions) -> float:
+    """EV ของ peer รวม minority interest ตาม book จึงหักกลับด้วย book เพื่อให้นิยามเดียวกัน (ต่างจาก DCF ที่ใช้มูลค่าตลาด)"""
+    return -debt_used(a) + a["cash"] - a["minority_interest"]
+
+
+def target_multiples(a: Assumptions) -> dict:
+    """ตัวคูณปัจจุบันของบริษัทเป้าหมาย คิดแบบเดียวกับ peer ใช้เทียบกับช่วงของ peer"""
+    mc = a["price"] * a["shares"]
+    return {"trailing_pe": a["price"] / a["eps_ltm"] if a["eps_ltm"] else None,
+            "ev_to_ebitda": (mc - bridge_book(a)) / a["ebitda_ltm"] if a["ebitda_ltm"] else None,
+            "price_to_book": mc / a["equity_book"] if a["equity_book"] else None}
+
+
+MULTIPLE_NAMES = {"trailing_pe": "P/E (TTM)", "ev_to_ebitda": "EV/EBITDA", "price_to_book": "P/BV"}
+
 COMPS = {
     # key: (ฟิลด์ multiple ของ peer, ฟังก์ชันแปลง multiple เป็นราคาต่อหุ้น, คำอธิบายสูตร)
-    "comps_pe": ("trailing_pe", lambda a, m: m * a["eps_ltm"], "P/E × EPS"),
+    "comps_pe": ("trailing_pe", lambda a, m: m * a["eps_ltm"], "P/E × EPS (TTM)"),
     "comps_pb": ("price_to_book", lambda a, m: m * a["equity_book"] / a["shares"], "P/BV × (ส่วนผู้ถือหุ้น ÷ จำนวนหุ้น)"),
-    "comps_ev_ebitda": ("ev_to_ebitda", lambda a, m: (m * a["ebitda_ltm"] + equity_bridge(a)) / a["shares"],
-                        "(EV/EBITDA × EBITDA − หนี้ + เงินสด − minority) ÷ จำนวนหุ้น"),
+    "comps_ev_ebitda": ("ev_to_ebitda", lambda a, m: (m * a["ebitda_ltm"] + bridge_book(a)) / a["shares"],
+                        "(EV/EBITDA × EBITDA − หนี้ + เงินสด − minority ตาม book) ÷ จำนวนหุ้น"),
 }
 
 
@@ -243,7 +258,7 @@ def comps(a: Assumptions, key: str, peers_data: dict) -> Result:
     used = {s: d[fld]["value"] for s, d in peers_data.items() if s in a.peers and (d[fld]["value"] or 0) > 0}
     dropped = {s: (d[fld].get("reason") or "ค่าติดลบหรือเป็นศูนย์") for s, d in peers_data.items()
                if s in a.peers and s not in used}
-    r.detail = {"field": fld, "used": used, "dropped": dropped}
+    r.detail = {"field": fld, "used": used, "dropped": dropped, "target": target_multiples(a)[fld]}
     if len(used) < 2:
         r.skipped = f"peer ที่มีค่า {fld} ใช้ได้มีแค่ {len(used)} ตัว (ต้องมีอย่างน้อย 2)" if a.peers else "ยังไม่ได้ยืนยันรายชื่อ peer"
         return r
@@ -253,7 +268,8 @@ def comps(a: Assumptions, key: str, peers_data: dict) -> Result:
     r.detail["multiples"] = ms
     r.steps = [
         Step(f"Multiple ของ peer P{lo_p} / P{mid_p} / P{hi_p}", "PERCENTILE ของ peer ที่ใช้ได้", None),
-        *[Step(f"P{p}", fld, m, "x") for p, m in zip((lo_p, mid_p, hi_p), ms)],
+        *[Step(f"P{p} ของ peer", f"PERCENTILE.INC ของ {MULTIPLE_NAMES[fld]} ที่ {p}%", m, "x")
+          for p, m in zip((lo_p, mid_p, hi_p), ms)],
         Step("มูลค่าต่อหุ้นที่ P%d" % mid_p, formula, r.base, "per_share"),
     ]
     return r

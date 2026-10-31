@@ -43,6 +43,7 @@ yahoo:
     industry:           {keys: [industry], page: profile, asof: none}
     country:            {keys: [country], page: profile, asof: none}
     long_name:          {keys: [longName, shortName], page: profile, asof: none}
+    trailing_eps:       {keys: [trailingEps], page: key_statistics, asof: mrq}
   min_statement_years: 4        # งบน้อยกว่านี้จะเตือนใน notes (ไม่เติมปีที่ขาด)
   statements:                   # ชื่อใน JSON: attribute ของ yf.Ticker (งบรายปี)
     income_stmt: income_stmt
@@ -50,7 +51,7 @@ yahoo:
     cash_flow: cashflow
   peer_fields:                  # multiple ของ peer สำหรับ comps
     trailing_pe: trailingPE
-    ev_to_ebitda: enterpriseToEbitda
+    ev_to_ebitda_yahoo: enterpriseToEbitda   # เก็บไว้เทียบเท่านั้น comps ใช้ ev_to_ebitda ที่คำนวณเองจากงบรายปี
     price_to_book: priceToBook
   peer_context_fields:          # ใช้ตรวจว่า peer ทำธุรกิจเดียวกันจริงไหม (spec ข้อ 4)
     long_name: longName

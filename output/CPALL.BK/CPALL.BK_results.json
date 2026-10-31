@@ -2,7 +2,25 @@
  "ticker": "CPALL.BK",
  "status": "reviewed",
  "method_choice": "research/CPALL.BK_method_choice.md",
- "fetched_at": "2026-10-31T20:58:06+07:00",
+ "method_reasons": {
+  "dcf_fcff": "ค้าปลีกที่มีสัญญาเช่ามากควรใช้ FCFF ที่นับสัญญาเช่าเป็นหนี้ และ FCFF เหมาะเมื่อ leverage กำลังเปลี่ยน (playbook §1, §2, §10)",
+  "comps_pe": "ตัวคูณที่ใช้กับบริษัทที่มีกำไร ตัวขับคือ growth, payout และ ROE (playbook §9)",
+  "comps_ev_ebitda": "playbook แนะนำสำหรับค้าปลีกที่มีสัญญาเช่ามาก คิด EV/EBITDA ของ peer เองจากงบรายปีให้นิยามเดียวกัน (playbook §1, §9, §10)",
+  "week52": "แท่งมาตรฐานของ football field (playbook §13)",
+  "ddm": "ปันผลเทียบ FCFE ผันผวนมากช่วงลดหนี้ playbook ให้ใช้ FCFE แทนเมื่อปันผลไม่ใกล้ FCFE (playbook §1, §5)",
+  "comps_pb": "ตัวขับหลักของ P/BV คือ ROE เหมาะกับธนาคาร และ book ของ CPALL มี goodwill มาก (playbook §9)"
+ },
+ "limitations": [
+  "terminal value เป็นสัดส่วนใหญ่ของ EV ผล DCF จึงอ่อนไหวกับ WACC และ terminal growth มาก (notebook ไม่มีกฎสัดส่วน)",
+  "peer มีแค่ 3 ตัว น้อยกว่าตัวอย่างใน notebook (5–11 ตัว) ค่า P25 และ P75 จึงได้จากการ interpolate",
+  "ปลายแท่งใน football field (P25–P75 ของ peer และกล่อง ±0.5% ของ DCF) เป็นการเลือกของผู้เรียน notebook ไม่มีกฎ (playbook §13)",
+  "EV/EBITDA หลัง IFRS 16 คิดเองแบบ EV รวมหนี้สัญญาเช่าคู่กับ EBITDA ในงบรายปี เป็นการอนุมานจาก EY ไม่มี source ระบุตรง ๆ และไม่ได้ตรวจว่า peer ทุกตัวนำสัญญาเช่าเข้างบดุล",
+  "CPALL มีหนี้รวมสัญญาเช่าและ minority interest สูงกว่า peer มาก ตัวคูณ EV/EBITDA ที่ต่ำลงเล็กน้อยทำให้มูลค่าส่วนผู้ถือหุ้นลดลงแรง ถึงขั้นติดลบที่ P25",
+  "minority interest ใน DCF ใช้ P/BV ของ CPAXT.BK แต่ใน EV/EBITDA ใช้ book เพื่อให้ตรงกับนิยาม EV ของ peer",
+  "ไม่มี precedent transactions และ analyst target price เพราะไม่มีข้อมูลใน Trust sources"
+ ],
+ "price": 43.75,
+ "fetched_at": "2026-10-31T21:12:18+07:00",
  "company": {
   "long_name": "CP ALL Public Company Limited",
   "sector": "Consumer Defensive",
@@ -20,7 +38,7 @@
    "asof": "2026-10-30T16:37:22+07:00",
    "note": "asof = regularMarketTime (เวลาราคาล่าสุดตามเขตเวลาตลาด)",
    "kind": "fact",
-   "fetched_at": "2026-10-31T20:58:05+07:00",
+   "fetched_at": "2026-10-31T21:12:17+07:00",
    "label": "ราคาหุ้นล่าสุด",
    "unit": "ต่อหุ้น"
   },
@@ -32,7 +50,7 @@
    "asof": null,
    "note": "Yahoo ไม่ระบุวันที่ของค่านี้ เป็นค่าสด ณ fetched_at",
    "kind": "fact",
-   "fetched_at": "2026-10-31T20:58:05+07:00",
+   "fetched_at": "2026-10-31T21:12:17+07:00",
    "label": "จำนวนหุ้นที่ออกจำหน่าย",
    "unit": "หุ้น"
   },
@@ -44,7 +62,7 @@
    "asof": "2026-10-30T16:37:22+07:00",
    "note": "asof = regularMarketTime (เวลาราคาล่าสุดตามเขตเวลาตลาด)",
    "kind": "fact",
-   "fetched_at": "2026-10-31T20:58:05+07:00",
+   "fetched_at": "2026-10-31T21:12:17+07:00",
    "label": "ราคาต่ำสุด 52 สัปดาห์",
    "unit": "ต่อหุ้น"
   },
@@ -56,7 +74,7 @@
    "asof": "2026-10-30T16:37:22+07:00",
    "note": "asof = regularMarketTime (เวลาราคาล่าสุดตามเขตเวลาตลาด)",
    "kind": "fact",
-   "fetched_at": "2026-10-31T20:58:05+07:00",
+   "fetched_at": "2026-10-31T21:12:17+07:00",
    "label": "ราคาสูงสุด 52 สัปดาห์",
    "unit": "ต่อหุ้น"
   },
@@ -68,7 +86,7 @@
    "asof": null,
    "note": "Yahoo ไม่ระบุวันที่ของค่านี้ เป็นค่าสด ณ fetched_at",
    "kind": "fact",
-   "fetched_at": "2026-10-31T20:58:05+07:00",
+   "fetched_at": "2026-10-31T21:12:17+07:00",
    "label": "Beta จาก regression ของ Yahoo",
    "unit": "เท่า"
   },
@@ -80,7 +98,7 @@
    "asof": "2026-01-05",
    "note": null,
    "kind": "fact",
-   "fetched_at": "2026-10-31T20:58:11+07:00",
+   "fetched_at": "2026-10-31T21:12:22+07:00",
    "label": "Unlevered beta ของอุตสาหกรรม (corrected for cash)",
    "unit": "เท่า"
   },
@@ -92,7 +110,7 @@
    "asof": "2026-10-30",
    "note": null,
    "kind": "fact",
-   "fetched_at": "2026-10-31T20:58:06+07:00",
+   "fetched_at": "2026-10-31T21:12:18+07:00",
    "label": "อัตราผลตอบแทนพันธบัตรรัฐบาล 10 ปี (ก่อนหัก default spread)",
    "unit": "%"
   },
@@ -104,7 +122,7 @@
    "asof": "2026-01-05",
    "note": null,
    "kind": "fact",
-   "fetched_at": "2026-10-31T20:58:09+07:00",
+   "fetched_at": "2026-10-31T21:12:21+07:00",
    "label": "Default spread ของประเทศ (จาก rating ของรัฐบาล)",
    "unit": "%"
   },
@@ -116,7 +134,7 @@
    "asof": "2026-01-05",
    "note": null,
    "kind": "fact",
-   "fetched_at": "2026-10-31T20:58:09+07:00",
+   "fetched_at": "2026-10-31T21:12:21+07:00",
    "label": "Equity risk premium รวม country risk",
    "unit": "%"
   },
@@ -128,7 +146,7 @@
    "asof": "2026-01-05",
    "note": null,
    "kind": "fact",
-   "fetched_at": "2026-10-31T20:58:09+07:00",
+   "fetched_at": "2026-10-31T21:12:21+07:00",
    "label": "อัตราภาษีนิติบุคคลตามกฎหมาย",
    "unit": "%"
   },
@@ -140,7 +158,7 @@
    "asof": "2025-12-31",
    "note": null,
    "kind": "fact",
-   "fetched_at": "2026-10-31T20:58:05+07:00",
+   "fetched_at": "2026-10-31T21:12:17+07:00",
    "label": "รายได้งวดล่าสุด (ปีฐานของ DCF)",
    "unit": "สกุลงบ"
   },
@@ -152,20 +170,20 @@
    "asof": "2025-12-31",
    "note": null,
    "kind": "fact",
-   "fetched_at": "2026-10-31T20:58:05+07:00",
+   "fetched_at": "2026-10-31T21:12:17+07:00",
    "label": "EBITDA งวดล่าสุด",
    "unit": "สกุลงบ"
   },
   "eps_ltm": {
    "key": "eps_ltm",
-   "value": 3.1,
-   "source": "Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) รายการ 'Diluted EPS'",
-   "url": "https://finance.yahoo.com/quote/CPALL.BK/financials/",
-   "asof": "2025-12-31",
-   "note": null,
+   "value": 3.36,
+   "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['trailingEps']",
+   "url": "https://finance.yahoo.com/quote/CPALL.BK/key-statistics/",
+   "asof": "2026-06-30",
+   "note": "asof = mostRecentQuarter เพราะหน้า Key Statistics แสดงค่านี้เป็น (mrq)",
    "kind": "fact",
-   "fetched_at": "2026-10-31T20:58:05+07:00",
-   "label": "EPS (diluted) งวดล่าสุด",
+   "fetched_at": "2026-10-31T21:12:17+07:00",
+   "label": "EPS ย้อนหลัง 12 เดือน (TTM) ให้ตรงกับ trailing P/E ของ peer",
    "unit": "ต่อหุ้น"
   },
   "equity_book": {
@@ -176,7 +194,7 @@
    "asof": "2025-12-31",
    "note": null,
    "kind": "fact",
-   "fetched_at": "2026-10-31T20:58:05+07:00",
+   "fetched_at": "2026-10-31T21:12:18+07:00",
    "label": "ส่วนของผู้ถือหุ้นบริษัทใหญ่",
    "unit": "สกุลงบ"
   },
@@ -188,7 +206,7 @@
    "asof": "2025-12-31",
    "note": null,
    "kind": "fact",
-   "fetched_at": "2026-10-31T20:58:05+07:00",
+   "fetched_at": "2026-10-31T21:12:18+07:00",
    "label": "หนี้สินที่มีภาระดอกเบี้ยรวม (รวม lease)",
    "unit": "สกุลงบ"
   },
@@ -200,7 +218,7 @@
    "asof": "2025-12-31",
    "note": null,
    "kind": "fact",
-   "fetched_at": "2026-10-31T20:58:05+07:00",
+   "fetched_at": "2026-10-31T21:12:18+07:00",
    "label": "หนี้สินตามสัญญาเช่า",
    "unit": "สกุลงบ"
   },
@@ -212,7 +230,7 @@
    "asof": "2025-12-31",
    "note": null,
    "kind": "fact",
-   "fetched_at": "2026-10-31T20:58:05+07:00",
+   "fetched_at": "2026-10-31T21:12:18+07:00",
    "label": "เงินสดและรายการเทียบเท่า",
    "unit": "สกุลงบ"
   },
@@ -224,7 +242,7 @@
    "asof": "2025-12-31",
    "note": null,
    "kind": "fact",
-   "fetched_at": "2026-10-31T20:58:05+07:00",
+   "fetched_at": "2026-10-31T21:12:18+07:00",
    "label": "ส่วนได้เสียที่ไม่มีอำนาจควบคุม (book)",
    "unit": "สกุลงบ"
   },
@@ -236,7 +254,7 @@
    "asof": "2026-10-30T16:37:22+07:00",
    "note": "P/BV ของบริษัทลูกที่จดทะเบียน CPAXT.BK (playbook §2: แปลง minority interest จาก book เป็น market)",
    "kind": "fact",
-   "fetched_at": "2026-10-31T20:58:13+07:00",
+   "fetched_at": "2026-10-31T21:12:24+07:00",
    "label": "P/BV ที่ใช้แปลง minority interest เป็นมูลค่าตลาด",
    "unit": "เท่า"
   },
@@ -248,7 +266,7 @@
    "asof": "2026-04-30",
    "note": "XD ที่นับ: 2026-04-30 (1.65)",
    "kind": "fact",
-   "fetched_at": "2026-10-31T20:58:06+07:00",
+   "fetched_at": "2026-10-31T21:12:18+07:00",
    "label": "เงินปันผลต่อหุ้นย้อนหลัง 12 เดือน",
    "unit": "ต่อหุ้น"
   },
@@ -439,57 +457,57 @@
     "value": "President Chain Store Corporation",
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['longName'] ของ 2912.TW",
     "url": "https://finance.yahoo.com/quote/2912.TW/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:24+07:00",
     "asof": null
    },
    "sector": {
     "value": "Consumer Defensive",
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['sector'] ของ 2912.TW",
     "url": "https://finance.yahoo.com/quote/2912.TW/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:24+07:00",
     "asof": null
    },
    "industry": {
     "value": "Grocery Stores",
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['industry'] ของ 2912.TW",
     "url": "https://finance.yahoo.com/quote/2912.TW/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:24+07:00",
     "asof": null
    },
    "country": {
     "value": "Taiwan",
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['country'] ของ 2912.TW",
     "url": "https://finance.yahoo.com/quote/2912.TW/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:24+07:00",
     "asof": null
    },
    "currency": {
     "value": "TWD",
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['currency'] ของ 2912.TW",
     "url": "https://finance.yahoo.com/quote/2912.TW/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:24+07:00",
     "asof": null
    },
    "market_cap": {
     "value": 234434822144,
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['marketCap'] ของ 2912.TW",
     "url": "https://finance.yahoo.com/quote/2912.TW/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:24+07:00",
     "asof": null
    },
    "trailing_pe": {
     "value": 20.388788,
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['trailingPE'] ของ 2912.TW",
     "url": "https://finance.yahoo.com/quote/2912.TW/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:24+07:00",
     "asof": "2026-10-30T13:30:20+08:00",
     "asof_note": "asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)"
    },
-   "ev_to_ebitda": {
+   "ev_to_ebitda_yahoo": {
     "value": 13.653,
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['enterpriseToEbitda'] ของ 2912.TW",
     "url": "https://finance.yahoo.com/quote/2912.TW/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:24+07:00",
     "asof": "2026-10-30T13:30:20+08:00",
     "asof_note": "asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)"
    },
@@ -497,9 +515,27 @@
     "value": 5.296038,
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['priceToBook'] ของ 2912.TW",
     "url": "https://finance.yahoo.com/quote/2912.TW/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:24+07:00",
     "asof": "2026-10-30T13:30:20+08:00",
     "asof_note": "asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)"
+   },
+   "ev_to_ebitda": {
+    "value": 7.368112,
+    "source": "คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.info['marketCap'] และงบรายปี balance_sheet / income_stmt ของ 2912.TW: (marketCap + Total Debt + Minority Interest − Cash And Cash Equivalents) ÷ EBITDA งวดล่าสุดของงบรายปี",
+    "url": "https://finance.yahoo.com/quote/2912.TW/balance-sheet/",
+    "fetched_at": "2026-10-31T21:12:24+07:00",
+    "asof": "2025-12-31",
+    "asof_note": "asof = งวดของ EBITDA · marketCap เป็นค่าล่าสุด",
+    "components": {
+     "market_cap": 234434822144,
+     "total_debt": 141409381000.0,
+     "minority_interest": 10365126000.0,
+     "cash": 50182134000.0,
+     "ebitda": 45605605000.0,
+     "balance_sheet_period": "2025-12-31",
+     "currency": "TWD"
+    },
+    "note": null
    }
   },
   "3382.T": {
@@ -507,57 +543,57 @@
     "value": "Seven & i Holdings Co., Ltd.",
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['longName'] ของ 3382.T",
     "url": "https://finance.yahoo.com/quote/3382.T/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:25+07:00",
     "asof": null
    },
    "sector": {
     "value": "Consumer Defensive",
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['sector'] ของ 3382.T",
     "url": "https://finance.yahoo.com/quote/3382.T/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:25+07:00",
     "asof": null
    },
    "industry": {
     "value": "Grocery Stores",
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['industry'] ของ 3382.T",
     "url": "https://finance.yahoo.com/quote/3382.T/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:25+07:00",
     "asof": null
    },
    "country": {
     "value": "Japan",
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['country'] ของ 3382.T",
     "url": "https://finance.yahoo.com/quote/3382.T/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:25+07:00",
     "asof": null
    },
    "currency": {
     "value": "JPY",
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['currency'] ของ 3382.T",
     "url": "https://finance.yahoo.com/quote/3382.T/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:25+07:00",
     "asof": null
    },
    "market_cap": {
     "value": 4823220486144,
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['marketCap'] ของ 3382.T",
     "url": "https://finance.yahoo.com/quote/3382.T/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:25+07:00",
     "asof": null
    },
    "trailing_pe": {
     "value": 16.990097,
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['trailingPE'] ของ 3382.T",
     "url": "https://finance.yahoo.com/quote/3382.T/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:25+07:00",
     "asof": "2026-10-30T15:30:00+09:00",
     "asof_note": "asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)"
    },
-   "ev_to_ebitda": {
+   "ev_to_ebitda_yahoo": {
     "value": 8.78,
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['enterpriseToEbitda'] ของ 3382.T",
     "url": "https://finance.yahoo.com/quote/3382.T/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:25+07:00",
     "asof": "2026-10-30T15:30:00+09:00",
     "asof_note": "asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)"
    },
@@ -565,9 +601,27 @@
     "value": 1.30115,
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['priceToBook'] ของ 3382.T",
     "url": "https://finance.yahoo.com/quote/3382.T/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:25+07:00",
     "asof": "2026-10-30T15:30:00+09:00",
     "asof_note": "asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)"
+   },
+   "ev_to_ebitda": {
+    "value": 8.173862,
+    "source": "คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.info['marketCap'] และงบรายปี balance_sheet / income_stmt ของ 3382.T: (marketCap + Total Debt + Minority Interest − Cash And Cash Equivalents) ÷ EBITDA งวดล่าสุดของงบรายปี",
+    "url": "https://finance.yahoo.com/quote/3382.T/balance-sheet/",
+    "fetched_at": "2026-10-31T21:12:25+07:00",
+    "asof": "2026-02-28",
+    "asof_note": "asof = งวดของ EBITDA · marketCap เป็นค่าล่าสุด",
+    "components": {
+     "market_cap": 4823220486144,
+     "total_debt": 3793778000000.0,
+     "minority_interest": 27743000000.0,
+     "cash": 438634000000.0,
+     "ebitda": 1003945000000.0,
+     "balance_sheet_period": "2026-02-28",
+     "currency": "JPY"
+    },
+    "note": null
    }
   },
   "AMRT.JK": {
@@ -575,57 +629,57 @@
     "value": "PT Sumber Alfaria Trijaya Tbk",
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['longName'] ของ AMRT.JK",
     "url": "https://finance.yahoo.com/quote/AMRT.JK/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:25+07:00",
     "asof": null
    },
    "sector": {
     "value": "Consumer Defensive",
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['sector'] ของ AMRT.JK",
     "url": "https://finance.yahoo.com/quote/AMRT.JK/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:25+07:00",
     "asof": null
    },
    "industry": {
     "value": "Grocery Stores",
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['industry'] ของ AMRT.JK",
     "url": "https://finance.yahoo.com/quote/AMRT.JK/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:25+07:00",
     "asof": null
    },
    "country": {
     "value": "Indonesia",
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['country'] ของ AMRT.JK",
     "url": "https://finance.yahoo.com/quote/AMRT.JK/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:25+07:00",
     "asof": null
    },
    "currency": {
     "value": "IDR",
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['currency'] ของ AMRT.JK",
     "url": "https://finance.yahoo.com/quote/AMRT.JK/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:25+07:00",
     "asof": null
    },
    "market_cap": {
     "value": 37599028707328,
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['marketCap'] ของ AMRT.JK",
     "url": "https://finance.yahoo.com/quote/AMRT.JK/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:25+07:00",
     "asof": null
    },
    "trailing_pe": {
     "value": 10.644485,
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['trailingPE'] ของ AMRT.JK",
     "url": "https://finance.yahoo.com/quote/AMRT.JK/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:25+07:00",
     "asof": "2026-10-30T16:14:50+07:00",
     "asof_note": "asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)"
    },
-   "ev_to_ebitda": {
+   "ev_to_ebitda_yahoo": {
     "value": 5.445,
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['enterpriseToEbitda'] ของ AMRT.JK",
     "url": "https://finance.yahoo.com/quote/AMRT.JK/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:25+07:00",
     "asof": "2026-10-30T16:14:50+07:00",
     "asof_note": "asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)"
    },
@@ -633,9 +687,27 @@
     "value": 2.1122127,
     "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['priceToBook'] ของ AMRT.JK",
     "url": "https://finance.yahoo.com/quote/AMRT.JK/key-statistics/",
-    "fetched_at": "2026-10-31T20:58:13+07:00",
+    "fetched_at": "2026-10-31T21:12:25+07:00",
     "asof": "2026-10-30T16:14:50+07:00",
     "asof_note": "asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)"
+   },
+   "ev_to_ebitda": {
+    "value": 4.099254,
+    "source": "คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.info['marketCap'] และงบรายปี balance_sheet / income_stmt ของ AMRT.JK: (marketCap + Total Debt + Minority Interest − Cash And Cash Equivalents) ÷ EBITDA งวดล่าสุดของงบรายปี",
+    "url": "https://finance.yahoo.com/quote/AMRT.JK/balance-sheet/",
+    "fetched_at": "2026-10-31T21:12:26+07:00",
+    "asof": "2025-12-31",
+    "asof_note": "asof = งวดของ EBITDA · marketCap เป็นค่าล่าสุด",
+    "components": {
+     "market_cap": 37599028707328,
+     "total_debt": 2710429000000.0,
+     "minority_interest": 1361567000000.0,
+     "cash": 4679823000000.0,
+     "ebitda": 9023887000000.0,
+     "balance_sheet_period": "2025-12-31",
+     "currency": "IDR"
+    },
+    "note": null
    }
   }
  },
@@ -676,7 +748,7 @@
      "label": "Levered beta (bottom-up)",
      "formula": "βu × (1 + (1 − tax marginal) × D/E)",
      "value": 1.633391502051831,
-     "unit": "x"
+     "unit": "beta"
     },
     {
      "label": "Cost of equity (CAPM)",
@@ -880,9 +952,9 @@
   },
   {
    "key": "comps_pe",
-   "low": 42.8336021,
-   "base": 52.6693007,
-   "high": 57.937271749999994,
+   "low": 46.42609776,
+   "base": 57.08672591999999,
+   "high": 62.796526799999995,
    "skipped": null,
    "steps": [
     {
@@ -892,27 +964,27 @@
      "unit": ""
     },
     {
-     "label": "P25",
-     "formula": "trailing_pe",
+     "label": "P25 ของ peer",
+     "formula": "PERCENTILE.INC ของ P/E (TTM) ที่ 25%",
      "value": 13.817290999999999,
      "unit": "x"
     },
     {
-     "label": "P50",
-     "formula": "trailing_pe",
+     "label": "P50 ของ peer",
+     "formula": "PERCENTILE.INC ของ P/E (TTM) ที่ 50%",
      "value": 16.990097,
      "unit": "x"
     },
     {
-     "label": "P75",
-     "formula": "trailing_pe",
+     "label": "P75 ของ peer",
+     "formula": "PERCENTILE.INC ของ P/E (TTM) ที่ 75%",
      "value": 18.6894425,
      "unit": "x"
     },
     {
      "label": "มูลค่าต่อหุ้นที่ P50",
-     "formula": "P/E × EPS",
-     "value": 52.6693007,
+     "formula": "P/E × EPS (TTM)",
+     "value": 57.08672591999999,
      "unit": "per_share"
     }
    ],
@@ -924,6 +996,7 @@
      "AMRT.JK": 10.644485
     },
     "dropped": {},
+    "target": 13.020833333333334,
     "multiples": [
      13.817290999999999,
      16.990097,
@@ -934,9 +1007,9 @@
   },
   {
    "key": "comps_ev_ebitda",
-   "low": 18.856898360236908,
-   "base": 35.995659271810155,
-   "high": 61.03829253180907,
+   "low": -6.440438704741963,
+   "base": 10.358414583379023,
+   "high": 14.499211166437528,
    "skipped": null,
    "steps": [
     {
@@ -946,42 +1019,43 @@
      "unit": ""
     },
     {
-     "label": "P25",
-     "formula": "ev_to_ebitda",
-     "value": 7.1125,
+     "label": "P25 ของ peer",
+     "formula": "PERCENTILE.INC ของ EV/EBITDA ที่ 25%",
+     "value": 5.733683,
      "unit": "x"
     },
     {
-     "label": "P50",
-     "formula": "ev_to_ebitda",
-     "value": 8.78,
+     "label": "P50 ของ peer",
+     "formula": "PERCENTILE.INC ของ EV/EBITDA ที่ 50%",
+     "value": 7.368112,
      "unit": "x"
     },
     {
-     "label": "P75",
-     "formula": "ev_to_ebitda",
-     "value": 11.2165,
+     "label": "P75 ของ peer",
+     "formula": "PERCENTILE.INC ของ EV/EBITDA ที่ 75%",
+     "value": 7.770987,
      "unit": "x"
     },
     {
      "label": "มูลค่าต่อหุ้นที่ P50",
-     "formula": "(EV/EBITDA × EBITDA − หนี้ + เงินสด − minority) ÷ จำนวนหุ้น",
-     "value": 35.995659271810155,
+     "formula": "(EV/EBITDA × EBITDA − หนี้ + เงินสด − minority ตาม book) ÷ จำนวนหุ้น",
+     "value": 10.358414583379023,
      "unit": "per_share"
     }
    ],
    "detail": {
     "field": "ev_to_ebitda",
     "used": {
-     "2912.TW": 13.653,
-     "3382.T": 8.78,
-     "AMRT.JK": 5.445
+     "2912.TW": 7.368112,
+     "3382.T": 8.173862,
+     "AMRT.JK": 4.099254
     },
     "dropped": {},
+    "target": 10.616915631108261,
     "multiples": [
-     7.1125,
-     8.78,
-     11.2165
+     5.733683,
+     7.368112,
+     7.770987
     ]
    },
    "label": "Comps: EV/EBITDA"

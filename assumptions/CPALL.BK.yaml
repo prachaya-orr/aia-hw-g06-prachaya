@@ -10,6 +10,22 @@ methods:
 - comps_pe
 - comps_ev_ebitda
 - week52
+# เหตุผลต่อวิธี (แสดงใน HTML) รายละเอียดเต็มอยู่ใน research/CPALL.BK_method_choice.md
+method_reasons:
+  dcf_fcff: ค้าปลีกที่มีสัญญาเช่ามากควรใช้ FCFF ที่นับสัญญาเช่าเป็นหนี้ และ FCFF เหมาะเมื่อ leverage กำลังเปลี่ยน (playbook §1, §2, §10)
+  comps_pe: ตัวคูณที่ใช้กับบริษัทที่มีกำไร ตัวขับคือ growth, payout และ ROE (playbook §9)
+  comps_ev_ebitda: playbook แนะนำสำหรับค้าปลีกที่มีสัญญาเช่ามาก คิด EV/EBITDA ของ peer เองจากงบรายปีให้นิยามเดียวกัน (playbook §1, §9, §10)
+  week52: แท่งมาตรฐานของ football field (playbook §13)
+  ddm: ปันผลเทียบ FCFE ผันผวนมากช่วงลดหนี้ playbook ให้ใช้ FCFE แทนเมื่อปันผลไม่ใกล้ FCFE (playbook §1, §5)
+  comps_pb: ตัวขับหลักของ P/BV คือ ROE เหมาะกับธนาคาร และ book ของ CPALL มี goodwill มาก (playbook §9)
+limitations:
+- terminal value เป็นสัดส่วนใหญ่ของ EV ผล DCF จึงอ่อนไหวกับ WACC และ terminal growth มาก (notebook ไม่มีกฎสัดส่วน)
+- peer มีแค่ 3 ตัว น้อยกว่าตัวอย่างใน notebook (5–11 ตัว) ค่า P25 และ P75 จึงได้จากการ interpolate
+- ปลายแท่งใน football field (P25–P75 ของ peer และกล่อง ±0.5% ของ DCF) เป็นการเลือกของผู้เรียน notebook ไม่มีกฎ (playbook §13)
+- EV/EBITDA หลัง IFRS 16 คิดเองแบบ EV รวมหนี้สัญญาเช่าคู่กับ EBITDA ในงบรายปี เป็นการอนุมานจาก EY ไม่มี source ระบุตรง ๆ และไม่ได้ตรวจว่า peer ทุกตัวนำสัญญาเช่าเข้างบดุล
+- CPALL มีหนี้รวมสัญญาเช่าและ minority interest สูงกว่า peer มาก ตัวคูณ EV/EBITDA ที่ต่ำลงเล็กน้อยทำให้มูลค่าส่วนผู้ถือหุ้นลดลงแรง ถึงขั้นติดลบที่ P25
+- minority interest ใน DCF ใช้ P/BV ของ CPAXT.BK แต่ใน EV/EBITDA ใช้ book เพื่อให้ตรงกับนิยาม EV ของ peer
+- ไม่มี precedent transactions และ analyst target price เพราะไม่มีข้อมูลใน Trust sources
 # ร้านสะดวกซื้อ 3 ตัว ตรงเกณฑ์ peer ใน playbook §9 มากที่สุด (ตัด BJC.BK ที่เป็นหลายธุรกิจ และ CRC.BK ที่เป็นห้างสรรพสินค้า)
 peers:
 - 2912.TW
@@ -46,9 +62,7 @@ inputs:
       stmt: income_stmt
       item: EBITDA
   eps_ltm:
-    from:
-      stmt: income_stmt
-      item: Diluted EPS
+    from: info.trailing_eps
   equity_book:
     from:
       stmt: balance_sheet

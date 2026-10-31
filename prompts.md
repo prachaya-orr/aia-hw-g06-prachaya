@@ -93,3 +93,30 @@ Save first
     4. terminal growth 0.80% = Rf เพราะ playbook §4 บอกว่า g ไม่ควรเกิน Rf
   - ตัด DDM ออกจาก football field ของ CPALL เพราะปันผลเทียบ FCFE ผันผวนมากช่วงลดหนี้ (playbook §1, §5) และตัด P/BV เพราะเหมาะกับธนาคาร (§9)
 - **ขั้นต่อไป:** รอบ 5 สร้าง HTML อธิบาย valuation ทีละขั้นพร้อมสมมติฐานและ football field · ตรวจปัญหา EV/EBITDA ของ yfinance ไม่ตรงกับหน้าเว็บ
+
+---
+
+## รอบ 5 · 2026-10-31 21:13
+
+- **ทำอะไร:**
+  - สร้าง HTML ทีละขั้น `output/CPALL.BK/CPALL.BK_valuation.html` (`valuation/html.py` + `valuation/templates/report.html`) มี 9 ส่วน: football field, วิธีที่เลือกและเหตุผล, WACC, DCF, sensitivity, comps, สมมติฐานทั้งหมดพร้อมที่มา, คำเตือนและข้อจำกัด, แหล่งข้อมูล
+  - แก้ปัญหา EV/EBITDA ของ yfinance ที่ค้างจากรอบ 4: คิด EV/EBITDA ของ peer เองจากงบรายปี และเปลี่ยน P/E ให้ใช้ EPS ย้อนหลัง 12 เดือน
+  - ทำให้ pipeline ใช้กับ ticker อื่นได้จริง: นับ minority/lease ที่ไม่มีในงบเป็น 0, ดึงข้อมูลใหม่เองเมื่อโครง JSON เปลี่ยน, แจ้งชื่อ input ที่ขาดแทน error
+  - อัปเดต `research/CPALL.BK_method_choice.md` และ `output/README.md`
+- **เครื่องมือ / model:** Claude Desktop (แท็บ Code) · Claude Opus 5.5 · browser pane ตรวจ HTML ขนาด desktop และมือถือ · LibreOffice headless ตรวจ Excel
+- **Prompt ที่ใช้:**
+
+```text
+Start round 5
+```
+
+```text
+Save round 5
+```
+
+- **ผลที่ได้:** HTML ไฟล์เดียวเปิดได้แบบ offline รองรับมือถือ (กว้าง 375px ไม่มี scroll แนวนอน) และ dark mode · Excel ตรงกับ Python ทั้ง 15 ค่า · ผล CPALL (ราคา ฿43.75): DCF ฿28.78–44.13 (ราคาอยู่ในช่วง), P/E ฿46.43–62.80 (ราคาต่ำกว่าช่วง), EV/EBITDA −฿6.44–14.50 (ราคาสูงกว่าช่วง), 52 สัปดาห์ ฿40.50–54.50 · ทดสอบ AAPL รันจบและ Excel ตรงกับ Python ทั้ง 12 ค่า แต่ลบไฟล์ทิ้งเพราะสมมติฐานยังเป็นร่างที่ไม่ได้รีวิว · ยังขาด: ตรวจ dark mode ด้วยตาจริง (pane แสดงไฟล์ local เป็นโหมดสว่างเสมอ จึงตรวจจากสีที่คำนวณได้แทน)
+- **ตัดสินใจอะไร และเพราะอะไร:**
+  - AI เลิกใช้ `enterpriseToEbitda` ของ Yahoo แล้วคิดเองจากงบรายปี เพราะ Yahoo ใช้ EV ที่รวมหนี้สัญญาเช่าแต่หารด้วย EBITDA ย้อนหลัง 12 เดือนที่ยังหักค่าเช่า (2912.TW: Yahoo 13.65 เท่า คิดเอง 7.37 เท่า) นิยามที่คิดเองให้ CPALL 10.62 เท่า ใกล้กับ 10.67 ที่หน้าเว็บ Yahoo แสดง
+  - EV/EBITDA หัก minority ตาม book ขณะที่ DCF หักตามมูลค่าตลาด เพราะ EV ของ peer รวม minority ตาม book ต้องหักกลับด้วยนิยามเดียวกัน
+  - ทำ football field เป็นแท่ง HTML/CSS แทนรูป SVG เพราะย่อตามจอมือถือได้โดยตัวหนังสือไม่เล็กลง และไม่ต้องโหลดไลบรารีจากเน็ต
+- **ขั้นต่อไป:** เขียน `help.md` 3 ข้อ · ตรวจว่า repo เปิดได้จากหน้าต่าง incognito · ส่งลิงก์ repo

@@ -144,8 +144,10 @@ def sheet_wacc(wb: Workbook) -> None:
          'terminal_roc = "wacc" แปลว่า ROC = WACC (ไม่มี excess return)'),
         ("x_minority", "Minority interest ตามมูลค่าตลาด", "=in_minority_interest*in_minority_pb", "money",
          "minority (book) × P/BV"),
-        ("x_bridge", "EV → Equity (− หนี้ + เงินสด − minority)", "=-x_debt+in_cash-x_minority", "money",
-         "ใช้ทั้ง DCF และ EV/EBITDA"),
+        ("x_bridge", "EV → Equity สำหรับ DCF (− หนี้ + เงินสด − minority ตามมูลค่าตลาด)", "=-x_debt+in_cash-x_minority",
+         "money", "playbook §2: minority interest ตามมูลค่าตลาด"),
+        ("x_bridge_book", "EV → Equity สำหรับ EV/EBITDA (− หนี้ + เงินสด − minority ตาม book)",
+         "=-x_debt+in_cash-in_minority_interest", "money", "EV ของ peer รวม minority ตาม book จึงหักกลับด้วยนิยามเดียวกัน"),
     ]
     for r, (nm, label, formula, unit, note) in enumerate(rows, start=4):
         ws.cell(r, 1, label)
@@ -342,7 +344,7 @@ def sheet_comps(wb: Workbook, a: Assumptions, peers_data: dict) -> dict[str, boo
             ws.cell(r + 1 + i, c, f'=IF(COUNT({rng})>=2,_xlfn.PERCENTILE.INC({rng},{p / 100}),"")').number_format = "0.00"
     to_price = {
         "comps_pe": lambda m: f"{m}*in_eps_ltm",
-        "comps_ev_ebitda": lambda m: f"({m}*in_ebitda_ltm+x_bridge)/in_shares",
+        "comps_ev_ebitda": lambda m: f"({m}*in_ebitda_ltm+x_bridge_book)/in_shares",
         "comps_pb": lambda m: f"{m}*in_equity_book/in_shares",
     }
     pr = r + len(pct) + 2
