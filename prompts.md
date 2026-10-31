@@ -48,3 +48,17 @@
   - ให้ agent ตอบเฉพาะจาก notebook และยกข้อความไม่เกิน 15 คำ เพราะ repo เป็น Public และ source ติดลิขสิทธิ์
 - **ขั้นต่อไป:** ใช้ playbook เลือกวิธีและตั้งสมมติฐานของ CPALL (รอบ 4)
 
+---
+
+## รอบ 3 · 2026-10-31 21:02
+
+- **ทำอะไร:** เขียน package `valuation/` ส่วนดึงข้อมูล: `python -m valuation fetch <TICKER> [--peers ...]` ดึงราคา, งบรายปี, ปันผลจาก Yahoo Finance (yfinance) · Rf จาก ThaiBMA 10 ปี (ticker `.BK`) หรือ `^TNX` · ERP/CRP จากตาราง Damodaran · ค่าคงที่ทั้งหมดอยู่ใน `config.yaml` · ทุกค่าเก็บเป็น `{value, source, url, fetched_at, asof}` ถ้าหาไม่ได้เป็น null พร้อมเหตุผล
+- **เครื่องมือ / model:** Claude Desktop (แท็บ Code) · Claude Opus 5.5 effort high · แยกเป็น session ของตัวเอง · Python 3.12 ใน `.venv` (สร้างด้วย `uv`)
+- **Prompt ที่ใช้:** ไม่มี prompt ที่ผู้เรียนพิมพ์ในรอบนี้ งานเริ่มจากการ์ดที่ AI เสนอใน session หลักและผู้เรียนกดเริ่ม (brief: ดึงข้อมูลจาก yfinance/ThaiBMA/Damodaran ตามแหล่งที่เลือกในรอบ 1 ทุกค่าต้องมีที่มา ห้ามเดา)
+- **ผลที่ได้:** ดึง CPALL.BK และ AAPL ได้ครบ ไม่มีค่าไหนขาดที่มา · ราคา, จำนวนหุ้น และ FCF ปี 2025 ของ CPALL ตรงกับหน้า Yahoo Finance · เอารูปแบบโค้ดมาจาก `data/fetch.py` ของ workspace คอร์ส · ปัญหาข้อมูลที่เจอบันทึกใน `PROJECT_MEMORY.md`
+- **ตัดสินใจอะไร และเพราะอะไร:**
+  - ไม่ commit `data/raw/` เพราะดึงใหม่ได้ทุกเมื่อ และเป็นไฟล์ดิบขนาดใหญ่
+  - ใช้ Python 3.12 แทน 3.15 ของเครื่อง เพราะ yfinance/pandas อาจยังไม่รองรับเวอร์ชันใหม่
+  - ใช้แหล่ง Rf และ ERP ตามที่ผู้เรียนเลือกในรอบ 1
+- **หมายเหตุ:** `fetch.py`, `config.yaml` และ `__main__.py` ใน commit นี้มีส่วนที่รอบ 4 เพิ่มแล้วด้วย (beta อุตสาหกรรม, synthetic rating, minority proxy, คำสั่ง draft/run/verify) เพราะแก้ไฟล์เดียวกันก่อนได้ commit
+- **ขั้นต่อไป:** เขียนส่วนคำนวณและ Excel (รอบ 4)

@@ -1,0 +1,7 @@
+yfinance
+pandas
+openpyxl
+pyyaml
+requests
+jinja2
+python-calamine

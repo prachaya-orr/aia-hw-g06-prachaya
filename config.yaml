@@ -1,0 +1,157 @@
+# ค่าคงที่ทั้งหมดของ package valuation (ห้ามฝังค่าเหล่านี้ในโค้ด)
+# แก้ค่าที่นี่ที่เดียว แล้วรัน .venv/bin/python -m valuation fetch <TICKER> ใหม่
+
+timezone: Asia/Bangkok          # เวลาใน fetched_at ทุกค่าเป็นเวลาไทย
+
+paths:
+  raw_dir: data/raw             # ผลดิบของ fetch ไม่ commit (อยู่ใน .gitignore)
+
+fetch:
+  retries: 3                    # ลองซ้ำกี่ครั้งเมื่อดึงพลาด (รวมเป็น 4 ครั้ง)
+  backoff_seconds: [2, 5, 10]   # รอก่อนลองครั้งที่ 1, 2, 3
+  timeout_seconds: 30
+  user_agent: "Mozilla/5.0"     # ThaiBMA และ Damodaran ปฏิเสธ request ที่ไม่มี User-Agent
+
+# ---------- Yahoo Finance ผ่าน yfinance ----------
+yahoo:
+  source_label: "Yahoo Finance (yfinance {version})"
+  # หน้าเว็บที่แสดงค่าเดียวกัน ใช้เป็น url อ้างอิงให้คนเปิดตรวจได้
+  pages:
+    quote: https://finance.yahoo.com/quote/{symbol}/
+    key_statistics: https://finance.yahoo.com/quote/{symbol}/key-statistics/
+    profile: https://finance.yahoo.com/quote/{symbol}/profile/
+    income_stmt: https://finance.yahoo.com/quote/{symbol}/financials/
+    balance_sheet: https://finance.yahoo.com/quote/{symbol}/balance-sheet/
+    cash_flow: https://finance.yahoo.com/quote/{symbol}/cash-flow/
+    dividends: https://finance.yahoo.com/quote/{symbol}/history/?filter=div
+  # ฟิลด์จาก Ticker.info ที่เก็บ
+  #   keys  = ลองตามลำดับ ใช้ตัวแรกที่มีค่า
+  #   asof  = market_time (เวลาราคาล่าสุด regularMarketTime) · mrq (ไตรมาสล่าสุด mostRecentQuarter
+  #           เพราะหน้า Key Statistics แสดงค่านี้เป็น mrq) · none (Yahoo ไม่ระบุวันที่ของค่า)
+  info_fields:
+    price:              {keys: [currentPrice, regularMarketPrice], page: quote, asof: market_time}
+    currency:           {keys: [currency], page: quote, asof: none}
+    financial_currency: {keys: [financialCurrency], page: income_stmt, asof: none}
+    shares_outstanding: {keys: [sharesOutstanding], page: key_statistics, asof: none}
+    beta:               {keys: [beta], page: key_statistics, asof: none}
+    week52_high:        {keys: [fiftyTwoWeekHigh], page: key_statistics, asof: market_time}
+    week52_low:         {keys: [fiftyTwoWeekLow], page: key_statistics, asof: market_time}
+    market_cap:         {keys: [marketCap], page: key_statistics, asof: market_time}
+    total_debt:         {keys: [totalDebt], page: key_statistics, asof: mrq}
+    total_cash:         {keys: [totalCash], page: key_statistics, asof: mrq}
+    sector:             {keys: [sector], page: profile, asof: none}
+    industry:           {keys: [industry], page: profile, asof: none}
+    country:            {keys: [country], page: profile, asof: none}
+    long_name:          {keys: [longName, shortName], page: profile, asof: none}
+  min_statement_years: 4        # งบน้อยกว่านี้จะเตือนใน notes (ไม่เติมปีที่ขาด)
+  statements:                   # ชื่อใน JSON: attribute ของ yf.Ticker (งบรายปี)
+    income_stmt: income_stmt
+    balance_sheet: balance_sheet
+    cash_flow: cashflow
+  peer_fields:                  # multiple ของ peer สำหรับ comps
+    trailing_pe: trailingPE
+    ev_to_ebitda: enterpriseToEbitda
+    price_to_book: priceToBook
+  peer_context_fields:          # ใช้ตรวจว่า peer ทำธุรกิจเดียวกันจริงไหม (spec ข้อ 4)
+    long_name: longName
+    sector: sector
+    industry: industry
+    country: country
+    currency: currency
+    market_cap: marketCap
+
+# ---------- Risk-free rate ----------
+risk_free:
+  thai_suffix: ".BK"            # ticker ลงท้ายแบบนี้ใช้ ThaiBMA นอกนั้นใช้ US 10Y
+  thaibma:
+    source_label: "ThaiBMA Government Bond Yield Curve"
+    avail_url: https://www.thaibma.or.th/yieldcurve/avail
+    gov_url_template: https://www.thaibma.or.th/yieldcurve/gov/{date}
+    tenor_years: 10.0
+    percent_divisor: 100        # ThaiBMA ให้ Y เป็น % ต่อปี เก็บเป็นทศนิยม
+  us:
+    source_label: "Yahoo Finance ^TNX (CBOE 10-Year Treasury Yield)"
+    symbol: "^TNX"
+    url: https://finance.yahoo.com/quote/%5ETNX/
+    history_period: 10d         # ดึงย้อนหลังพอให้มีวันทำการล่าสุดเสมอ
+    percent_divisor: 100        # ^TNX ให้ราคาเป็น % ต่อปี (เช่น 4.25)
+    home_country: United States # ถ้าบริษัทไม่ได้อยู่ประเทศนี้ จะเตือนว่า Rf อาจไม่ตรงสกุลเงิน
+
+# ---------- Damodaran: ERP และ country risk premium ----------
+damodaran:
+  source_label: "Damodaran Online, Country Default Spreads and Risk Premiums"
+  ctryprem_url: https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ctryprem.html
+  percent_divisor: 100
+  # ชื่อหัวคอลัมน์ตามที่หน้าเว็บเขียน (สะกดตามต้นฉบับ)
+  columns:
+    country: Country
+    rating: Moody's rating
+    default_spread: Adj. Default Spread
+    crp: Country Risk Premium
+    erp_total: Equity Risk Premium
+    tax_rate: Corporate Tax Rate
+  # ชื่อประเทศใน yfinance -> ชื่อในตาราง Damodaran
+  country_aliases:
+    South Korea: Korea
+    Czechia: Czech Republic
+    Türkiye: Turkey
+    Eswatini: Swaziland
+    Cabo Verde: Cape Verde
+    Macau: Macao
+  # Synthetic rating จาก interest coverage (EBIT ÷ ดอกเบี้ยจ่าย) ใช้หา company default spread ของ cost of debt
+  ratings:
+    source_label: "Damodaran Online, Ratings, Interest Coverage Ratios and Default Spread"
+    url: https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ratings.html
+    table_label: For large non-financial service firms
+    date_pattern: "(January|February|March|April|May|June|July|August|September|October|November|December) 20\\d\\d"
+  # Unlevered beta รายอุตสาหกรรม (bottom-up beta) ไฟล์ .xls ชีต Industry Averages
+  industry_beta:
+    source_label: "Damodaran Online, Betas by Sector"
+    sheet: Industry Averages
+    header_first_cell: Industry Name
+    date_label: "Date updated:"
+    beta_column: Unlevered beta corrected for cash
+    firms_column: Number of firms
+    files:                      # ประเทศของบริษัท -> ไฟล์ (ไม่อยู่ในรายการใช้ default)
+      United States: https://pages.stern.nyu.edu/~adamodar/pc/datasets/betas.xls
+      default: https://pages.stern.nyu.edu/~adamodar/pc/datasets/betaemerg.xls
+    regions:
+      United States: US
+      default: Emerging Markets
+    # Yahoo industry -> ชื่ออุตสาหกรรมใน Damodaran (ไม่มีในรายการ = null ให้ผู้เรียนเลือกเอง)
+    industry_map:
+      Grocery Stores: Retail (Grocery and Food)
+      Discount Stores: Retail (General)
+      Department Stores: Retail (General)
+      Home Improvement Retail: Retail (Building Supply)
+      Consumer Electronics: Electronics (Consumer & Office)
+      Banks - Regional: Banks (Regional)
+      Banks - Diversified: Bank (Money Center)
+      Utilities - Independent Power Producers: Power
+      Utilities - Renewable: Power
+      Utilities - Regulated Electric: Utility (General)
+      Telecom Services: Telecom. Services
+      Real Estate - Development: Real Estate (Development)
+      REIT - Retail: Retail (REITs)
+
+# ---------- Valuation (methods.py / excel.py) ----------
+valuation:
+  assumptions_dir: assumptions  # assumptions/<TICKER>.yaml ผู้เรียนรีวิวก่อนคำนวณ
+  output_dir: output            # output/<TICKER>/...
+  currency_decimals: 2          # ปัดราคาต่อหุ้นตอนแสดงผล (คำนวณเต็มทศนิยม)
+  forecast_years: 5             # DCF ปีที่ประมาณการ
+  # ช่วง sensitivity ของ DCF/DDM: base ± step × k  (k = -grid..grid)
+  sensitivity:
+    wacc_step: 0.005            # 0.5%
+    growth_step: 0.005          # 0.5%
+    grid: 2                     # ตาราง 5×5 ในรายงาน
+    range_k: 1                  # football field ใช้กล่อง ±1 step (3×3)
+  comps_percentiles: [25, 50, 75]   # low / base / high ของ multiple peer
+  dividend_ttm_days: 365        # DPS ย้อนหลัง 12 เดือนจาก Ticker.dividends
+  min_history_years: 3          # ค่าเฉลี่ยในร่างสมมติฐานต้องมีอย่างน้อยกี่ปี
+  # ค่าตั้งต้นในร่างสมมติฐาน (ไม่ใช่ข้อเท็จจริง ต้องยืนยันจาก research/playbook.md ก่อนใช้จริง)
+  draft_defaults:
+    terminal_growth: 0.02
+    ddm_growth: 0.02
+    include_leases_in_debt: true
+    beta_method: bottom_up      # bottom_up = unlevered beta อุตสาหกรรม × (1 + (1 − tax marginal) × D/E)

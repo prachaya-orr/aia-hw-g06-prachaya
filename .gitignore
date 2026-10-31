@@ -23,3 +23,9 @@ __pycache__/
 venv/
 node_modules/
 .claude/settings.local.json
+
+# Valuation raw cache: re-fetchable, keep out of git
+data/raw/
+
+# Office lock files (contain the local user name)
+~$*
