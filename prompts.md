@@ -194,3 +194,30 @@ Save
     4. minority interest แปลงเป็นมูลค่าตลาดด้วยมัธยฐาน P/BV ของ peer 2.27 เท่า เพราะ BDMS ไม่มีบริษัทลูกที่จดทะเบียน playbook §2 ให้ใช้ P/B ของ sector
   - AI ทดลองเปลี่ยนสมมติฐานทีละข้อ (material question ข้อ 3) พบว่า beta เปลี่ยนผลมากที่สุด ส่วน terminal growth แทบไม่เปลี่ยนผล เพราะ ROC = WACC ทำให้การโตช่วง terminal ไม่สร้างมูลค่า
 - **ขั้นต่อไป:** เพิ่มคำถามเรื่อง beta ช่วง terminal และ WACC ต่ำของหุ้น beta ต่ำใน `help.md` · พิจารณาแยก WACC ช่วง terminal ในโมเดล · เปลี่ยนสถานะใน `spec.md` และ `README.md` เป็นพร้อมตรวจ แล้วส่งลิงก์ repo
+
+---
+
+## รอบ 9 · 2026-10-31 22:50
+
+- **ทำอะไร:**
+  - valuation หุ้นตัวที่สาม STPI.BK (STP&I) ได้ `output/STPI.BK/` (Excel, HTML, results.json) · `assumptions/STPI.BK.yaml` (status: reviewed) · `research/STPI.BK_method_choice.md`
+  - เพิ่ม input `non_operating_assets` ใน bridge จาก EV เป็น equity ของ DCF (playbook §2) ค่าเริ่มต้น 0 ผล CPALL และ BDMS เท่าเดิม (ตรวจแล้วทุกวิธี) · ให้ P/E ข้ามเองเมื่อ EPS ไม่เป็นบวก · เพิ่ม `Engineering/Construction` ใน industry_map
+- **เครื่องมือ / model:** Claude Desktop (แท็บ Code) · Claude Opus 5.5 · LibreOffice headless · browser pane
+- **Prompt ที่ใช้:**
+
+```text
+ทำ STPI
+```
+
+```text
+ยืนยันตามร่าง
+```
+
+- **ผลที่ได้:** Excel ตรงกับ Python ทั้ง 15 ค่า · ผล STPI (ราคา ฿5.60, WACC 4.99%): DCF normalize ฿2.24–2.59 (base 2.40), EV/EBITDA normalize ฿0.25–1.29 (base 0.77), P/BV ฿4.64–9.42 (base 5.94), 52 สัปดาห์ ฿3.54–7.10 · สรุป: ราคาแพงเมื่อเทียบกำไรในอดีต แต่ใกล้มูลค่าตาม book · ยังขาด: มูลค่าตลาดของอสังหาฯ เพื่อการลงทุนและเงินลงทุนในบริษัทร่วม/JV, ประวัติงบยาวกว่า 4 ปี, DCF หลาย scenario
+- **ตัดสินใจอะไร และเพราะอะไร:**
+  - AI จัด STPI เป็นธุรกิจ cyclical (margin −3.2% ถึง 12.5%) จึง normalize ด้วยค่าเฉลี่ย 4 ปีตาม playbook §8 ตัด P/E (EPS TTM ติดลบ) และ DDM (ไม่จ่ายปันผลตั้งแต่ 2020)
+  - AI ใช้ Operating Income แทน EBIT ของ Yahoo และบวกสินทรัพย์ที่ไม่ใช่การดำเนินงาน ฿5,170 ล้านตามบัญชี เพราะ EBIT ของ Yahoo รวมส่วนแบ่งกำไรบริษัทร่วม จะนับซ้ำ (playbook §2, §12 ข้อ 5) ถ้าไม่บวก DCF ติดลบ
+  - ผลห่างจากราคามาก AI จึงไล่หาสาเหตุก่อนเชื่อผลตามกฎใน PROJECT_MEMORY: สูตรไม่ผิด สาเหตุคือ ROC ในอดีต 1.99% ต่ำกว่า WACC แม้ใช้ margin ปี 2025 DCF ยังได้ ฿4.65
+  - ผู้เรียนยืนยันข้อเสนอ 5 ข้อตามร่าง ("ยืนยันตามร่าง"): วิธีที่ใช้, normalize 4 ปี, บวกสินทรัพย์ที่ไม่ใช่การดำเนินงาน, peer 5 ตัว (BJCHI, SRICHA, PSGC, CK, STECON), ใส่ P/BV ใน football field
+  - ไม่ commit โฟลเดอร์ `.codex/` ที่โผล่ขึ้นมา เพราะ AI ไม่ได้สร้างและยังไม่รู้เหตุผลจากผู้เรียน (ตรวจแล้วไม่มี key)
+- **ขั้นต่อไป:** ถามผู้เรียนเรื่อง `.codex/` · เพิ่มคำถามเรื่อง beta ช่วง terminal และการ normalize ที่ประวัติสั้นใน `help.md` · พิจารณา DCF หลาย scenario

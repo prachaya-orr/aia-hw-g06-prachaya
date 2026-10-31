@@ -121,8 +121,9 @@ def minority_market(a: Assumptions) -> float:
 
 
 def equity_bridge(a: Assumptions) -> float:
-    """EV -> มูลค่าส่วนของผู้ถือหุ้นบริษัทใหญ่: หักหนี้ บวกเงินสด หัก minority interest ตามมูลค่าตลาด (playbook §2)"""
-    return -debt_used(a) + a["cash"] - minority_market(a)
+    """EV -> มูลค่าส่วนของผู้ถือหุ้นบริษัทใหญ่: หักหนี้ บวกเงินสดและสินทรัพย์ที่ไม่ใช่การดำเนินงาน
+    หัก minority interest ตามมูลค่าตลาด (playbook §2)"""
+    return -debt_used(a) + a["cash"] + a["non_operating_assets"] - minority_market(a)
 
 
 def terminal_roc(a: Assumptions, w: float) -> float:
@@ -190,8 +191,10 @@ def dcf(a: Assumptions, w: dict) -> Result:
         Step("PV ของ terminal value", f"TV ÷ (1 + WACC)^{n}", pv_tv, "money"),
         Step("Enterprise value", "PV FCFF + PV TV", ev, "money"),
         Step("Minority interest ตามมูลค่าตลาด", "minority (book) × P/BV", minority_market(a), "money"),
-        Step("หักหนี้ บวกเงินสด หัก minority", "− หนี้ + เงินสด − minority (market)", equity_bridge(a), "money"),
-        Step("มูลค่าต่อหุ้น", "(EV − หนี้ + เงินสด − minority) ÷ จำนวนหุ้น", base, "per_share"),
+        Step("หักหนี้ บวกเงินสด บวกสินทรัพย์ที่ไม่ใช่การดำเนินงาน หัก minority",
+             "− หนี้ + เงินสด + สินทรัพย์ที่ไม่ใช่การดำเนินงาน − minority (market)", equity_bridge(a), "money"),
+        Step("มูลค่าต่อหุ้น", "(EV − หนี้ + เงินสด + สินทรัพย์ที่ไม่ใช่การดำเนินงาน − minority) ÷ จำนวนหุ้น", base,
+             "per_share"),
     ]
     return r
 
@@ -259,6 +262,9 @@ def comps(a: Assumptions, key: str, peers_data: dict) -> Result:
     dropped = {s: (d[fld].get("reason") or "ค่าติดลบหรือเป็นศูนย์") for s, d in peers_data.items()
                if s in a.peers and s not in used}
     r.detail = {"field": fld, "used": used, "dropped": dropped, "target": target_multiples(a)[fld]}
+    if key == "comps_pe" and a["eps_ltm"] <= 0:
+        r.skipped = f"EPS (TTM) {a['eps_ltm']:g} ไม่เป็นบวก P/E ใช้กับบริษัทขาดทุนไม่ได้ (playbook §9)"
+        return r
     if len(used) < 2:
         r.skipped = f"peer ที่มีค่า {fld} ใช้ได้มีแค่ {len(used)} ตัว (ต้องมีอย่างน้อย 2)" if a.peers else "ยังไม่ได้ยืนยันรายชื่อ peer"
         return r

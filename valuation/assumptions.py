@@ -45,6 +45,8 @@ SPEC = {
     "cash":             ("เงินสดและรายการเทียบเท่า", "สกุลงบ"),
     "minority_interest": ("ส่วนได้เสียที่ไม่มีอำนาจควบคุม (book)", "สกุลงบ"),
     "minority_pb":      ("P/BV ที่ใช้แปลง minority interest เป็นมูลค่าตลาด", "เท่า"),
+    "non_operating_assets": ("สินทรัพย์ที่ไม่ใช่การดำเนินงาน (เงินลงทุนในบริษัทร่วม/JV, อสังหาฯ เพื่อการลงทุน) ที่ไม่ได้อยู่ใน EBIT",
+                             "สกุลงบ"),
     "dps_ttm":          ("เงินปันผลต่อหุ้นย้อนหลัง 12 เดือน", "ต่อหุ้น"),
     # สมมติฐาน
     "beta_method":      ("Beta ที่ใช้: bottom_up (relever จากอุตสาหกรรม) หรือ regression", "วิธี"),
@@ -65,6 +67,12 @@ SPEC = {
 
 # รายการในงบที่บางบริษัทไม่มี (เช่น ไม่มีบริษัทลูกที่มีผู้ถือหุ้นอื่น) ถ้าไม่มีในงบให้นับเป็น 0
 ZERO_IF_MISSING = ("minority_interest", "lease_liabilities")
+
+# input ที่ไฟล์สมมติฐานรุ่นก่อนไม่มี ถ้าไม่ระบุให้ใช้ค่านี้ (ไฟล์เดิมคำนวณได้ผลเท่าเดิม)
+OPTIONAL = {
+    "non_operating_assets": (0, "ไม่ได้ระบุในไฟล์สมมติฐาน จึงนับเป็น 0 (playbook §2: บวกเงินลงทุนในบริษัทอื่นและสินทรัพย์ที่ไม่ใช่การดำเนินงาน "
+                                "เฉพาะเมื่อรายได้ของสินทรัพย์นั้นไม่อยู่ใน EBIT)"),
+}
 
 # ค่าที่ draft ดึงตรงจากข้อมูลดิบ
 DIRECT = {
@@ -265,6 +273,9 @@ def draft_inputs(raw: dict) -> dict:
     else:
         out["minority_pb"] = assumption(1.0, "ใช้ book value เพราะไม่ได้ระบุบริษัทลูกที่จดทะเบียน (minority_proxy)")
 
+    for key, (value, source) in OPTIONAL.items():
+        out[key] = assumption(value, source)
+
     dflt = V["draft_defaults"]
     for key in ("include_leases_in_debt", "beta_method"):
         out[key] = assumption(dflt[key], "ค่าตั้งต้นใน config.yaml ตาม research/playbook.md")
@@ -342,6 +353,8 @@ def load(ticker: str, raw: dict) -> Assumptions:
         raise ValueError(f"ไม่รู้จัก input: {sorted(unknown)}")
     for key in SPEC:
         entry = doc["inputs"].get(key)
+        if entry is None and key in OPTIONAL:
+            entry = assumption(*OPTIONAL[key])
         if entry is None:
             raise ValueError(f"{ticker}: ขาด input '{key}'")
         if "from" in entry:

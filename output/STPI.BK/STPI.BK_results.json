@@ -1,0 +1,1270 @@
+{
+ "ticker": "STPI.BK",
+ "status": "reviewed",
+ "method_choice": "research/STPI.BK_method_choice.md",
+ "method_reasons": {
+  "dcf_fcff": "ธุรกิจรับเหมาตามโครงการที่กำไรขึ้นลงตามรอบ ใช้ DCF บน operating margin เฉลี่ยตลอดรอบ ไม่ใช้ปีที่กำไรสูงหรือต่ำสุดเป็นฐาน และบวกเงินลงทุนกับอสังหาฯ เพื่อการลงทุนที่ไม่อยู่ใน EBIT (playbook §1, §2, §8)",
+  "comps_ev_ebitda": "playbook แนะนำ EV/EBITDA บนตัวเลขที่ normalize แล้วสำหรับธุรกิจ cyclical จึงใช้ EBITDA margin เฉลี่ย 2022–2025 × รายได้ปีล่าสุด (playbook §1, §8, §9)",
+  "comps_pb": "ใช้เป็นแท่งอ้างอิงฝั่งสินทรัพย์ เพราะ P/E ใช้ไม่ได้ (ขาดทุน TTM) และ book ครึ่งหนึ่งเป็นเงินลงทุนกับอสังหาฯ ตัวขับของ P/BV คือ ROE notebook ไม่ได้แนะนำ P/BV สำหรับ cyclical โดยตรง (playbook §9)",
+  "week52": "แท่งมาตรฐานของ football field (playbook §13)",
+  "comps_pe": "EPS ย้อนหลัง 12 เดือนติดลบ (−฿0.01) P/E ใช้กับบริษัทขาดทุนไม่ได้ และ P/E ของ cyclical หลอกตาตามรอบกำไร (playbook §8, §9)",
+  "ddm": "ไม่จ่ายปันผลตั้งแต่ปี 2020 (playbook §5)"
+ },
+ "limitations": [
+  "ประวัติงบใน Yahoo มีแค่ 4 ปี (2022–2025) สั้นกว่าช่วง 5–10 ปีที่ playbook §8 แนะนำ และอาจไม่ครอบคลุมทั้งรอบ",
+  "STPI ซื้อกิจการทุกปี 2023–2025 (Purchase Of Business ฿1,744 / 559 / 168 ล้าน) สินทรัพย์ถาวร หนี้ ค่าเสื่อม และ minority เพิ่มมากในปี 2024 ค่าเฉลี่ย 4 ปีจึงปนธุรกิจก่อนและหลังซื้อกิจการ Yahoo ไม่บอกว่าซื้ออะไร",
+  "DCF ใช้ operating margin เฉลี่ยตลอดรอบ (5.35%) ถ้าธุรกิจหลังซื้อกิจการทำ margin ได้แบบปี 2025 (12.53%) ต่อเนื่อง มูลค่าจะสูงขึ้นมาก (ดู scenario ใน research/STPI.BK_method_choice.md)",
+  "สินทรัพย์ที่ไม่ใช่การดำเนินงาน (฿5.17 พันล้าน) ใช้มูลค่าตามบัญชี playbook §2 ให้ใช้มูลค่าตลาดแต่ Trust sources ไม่มีมูลค่ายุติธรรมของอสังหาฯ และเงินลงทุนในบริษัทร่วม/JV",
+  "peer มีธุรกิจไม่ตรงกัน: BJCHI ใกล้ที่สุดแต่ EBITDA ติดลบ, SRICHA P/E 3.19 เท่าน่าจะมีกำไรพิเศษ, CK และ STECON เป็นผู้รับเหมางานโยธาที่มีเงินลงทุนมาก",
+  "EBITDA ของ peer เป็นงวดล่าสุดไม่ได้ normalize ขณะที่ของ STPI normalize แล้ว และ EV ของ peer ไม่ได้หักเงินลงทุนของ peer เอง",
+  "ปลายแท่งใน football field (P25–P75 ของ peer และกล่อง ±0.5% ของ DCF) เป็นการเลือกของผู้เรียน notebook ไม่มีกฎ (playbook §13)",
+  "ไม่มี precedent transactions และ analyst target price เพราะไม่มีข้อมูลใน Trust sources"
+ ],
+ "price": 5.6,
+ "fetched_at": "2026-10-31T22:24:52+07:00",
+ "company": {
+  "long_name": "STP&I Public Company Limited",
+  "sector": "Industrials",
+  "industry": "Metal Fabrication",
+  "country": "Thailand",
+  "currency": "THB",
+  "financial_currency": "THB"
+ },
+ "inputs": {
+  "price": {
+   "key": "price",
+   "value": 5.6,
+   "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['currentPrice']",
+   "url": "https://finance.yahoo.com/quote/STPI.BK/",
+   "asof": "2026-10-30T16:37:22+07:00",
+   "note": "asof = regularMarketTime (เวลาราคาล่าสุดตามเขตเวลาตลาด)",
+   "kind": "fact",
+   "fetched_at": "2026-10-31T22:24:51+07:00",
+   "label": "ราคาหุ้นล่าสุด",
+   "unit": "ต่อหุ้น"
+  },
+  "shares": {
+   "key": "shares",
+   "value": 1813621808,
+   "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['sharesOutstanding']",
+   "url": "https://finance.yahoo.com/quote/STPI.BK/key-statistics/",
+   "asof": null,
+   "note": "Yahoo ไม่ระบุวันที่ของค่านี้ เป็นค่าสด ณ fetched_at",
+   "kind": "fact",
+   "fetched_at": "2026-10-31T22:24:51+07:00",
+   "label": "จำนวนหุ้นที่ออกจำหน่าย",
+   "unit": "หุ้น"
+  },
+  "week52_low": {
+   "key": "week52_low",
+   "value": 3.54,
+   "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['fiftyTwoWeekLow']",
+   "url": "https://finance.yahoo.com/quote/STPI.BK/key-statistics/",
+   "asof": "2026-10-30T16:37:22+07:00",
+   "note": "asof = regularMarketTime (เวลาราคาล่าสุดตามเขตเวลาตลาด)",
+   "kind": "fact",
+   "fetched_at": "2026-10-31T22:24:51+07:00",
+   "label": "ราคาต่ำสุด 52 สัปดาห์",
+   "unit": "ต่อหุ้น"
+  },
+  "week52_high": {
+   "key": "week52_high",
+   "value": 7.1,
+   "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['fiftyTwoWeekHigh']",
+   "url": "https://finance.yahoo.com/quote/STPI.BK/key-statistics/",
+   "asof": "2026-10-30T16:37:22+07:00",
+   "note": "asof = regularMarketTime (เวลาราคาล่าสุดตามเขตเวลาตลาด)",
+   "kind": "fact",
+   "fetched_at": "2026-10-31T22:24:51+07:00",
+   "label": "ราคาสูงสุด 52 สัปดาห์",
+   "unit": "ต่อหุ้น"
+  },
+  "beta": {
+   "key": "beta",
+   "value": 0.849,
+   "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['beta']",
+   "url": "https://finance.yahoo.com/quote/STPI.BK/key-statistics/",
+   "asof": null,
+   "note": "Yahoo ไม่ระบุวันที่ของค่านี้ เป็นค่าสด ณ fetched_at",
+   "kind": "fact",
+   "fetched_at": "2026-10-31T22:24:51+07:00",
+   "label": "Beta จาก regression ของ Yahoo",
+   "unit": "เท่า"
+  },
+  "beta_unlevered": {
+   "key": "beta_unlevered",
+   "value": 0.6129492893412035,
+   "source": "Damodaran Online, Betas by Sector (Emerging Markets) คอลัมน์ 'Unlevered beta corrected for cash', แถว 'Engineering/Construction'",
+   "url": "https://pages.stern.nyu.edu/~adamodar/pc/datasets/betaemerg.xls",
+   "asof": "2026-01-05",
+   "note": null,
+   "kind": "fact",
+   "fetched_at": "2026-10-31T22:24:58+07:00",
+   "label": "Unlevered beta ของอุตสาหกรรม (corrected for cash)",
+   "unit": "เท่า"
+  },
+  "rf": {
+   "key": "rf",
+   "value": 0.0215848,
+   "source": "ThaiBMA Government Bond Yield Curve อายุ 10 ปี",
+   "url": "https://www.thaibma.or.th/yieldcurve/gov/2026-10-30",
+   "asof": "2026-10-30",
+   "note": null,
+   "kind": "fact",
+   "fetched_at": "2026-10-31T22:24:52+07:00",
+   "label": "อัตราผลตอบแทนพันธบัตรรัฐบาล 10 ปี (ก่อนหัก default spread)",
+   "unit": "%"
+  },
+  "country_default_spread": {
+   "key": "country_default_spread",
+   "value": 0.0136,
+   "source": "Damodaran Online, Country Default Spreads and Risk Premiums, แถว 'Thailand' คอลัมน์ 'Adj. Default Spread'",
+   "url": "https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ctryprem.html",
+   "asof": "2026-01-05",
+   "note": null,
+   "kind": "fact",
+   "fetched_at": "2026-10-31T22:24:56+07:00",
+   "label": "Default spread ของประเทศ (จาก rating ของรัฐบาล)",
+   "unit": "%"
+  },
+  "erp": {
+   "key": "erp",
+   "value": 0.063,
+   "source": "Damodaran Online, Country Default Spreads and Risk Premiums, แถว 'Thailand' คอลัมน์ 'Equity Risk Premium'",
+   "url": "https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ctryprem.html",
+   "asof": "2026-01-05",
+   "note": null,
+   "kind": "fact",
+   "fetched_at": "2026-10-31T22:24:56+07:00",
+   "label": "Equity risk premium รวม country risk",
+   "unit": "%"
+  },
+  "tax_rate_marginal": {
+   "key": "tax_rate_marginal",
+   "value": 0.2,
+   "source": "Damodaran Online, Country Default Spreads and Risk Premiums, แถว 'Thailand' คอลัมน์ 'Corporate Tax Rate'",
+   "url": "https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ctryprem.html",
+   "asof": "2026-01-05",
+   "note": null,
+   "kind": "fact",
+   "fetched_at": "2026-10-31T22:24:56+07:00",
+   "label": "อัตราภาษีนิติบุคคลตามกฎหมาย",
+   "unit": "%"
+  },
+  "revenue_base": {
+   "key": "revenue_base",
+   "value": 3408889323.0,
+   "source": "Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) รายการ 'Total Revenue'",
+   "url": "https://finance.yahoo.com/quote/STPI.BK/financials/",
+   "asof": "2025-12-31",
+   "note": null,
+   "kind": "fact",
+   "fetched_at": "2026-10-31T22:24:51+07:00",
+   "label": "รายได้งวดล่าสุด (ปีฐานของ DCF)",
+   "unit": "สกุลงบ"
+  },
+  "ebitda_ltm": {
+   "key": "ebitda_ltm",
+   "value": 509520453.27,
+   "source": "คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) งวด 2022–2025: เฉลี่ย EBITDA ÷ Total Revenue (1.09%, 8.94%, 20.55%, 29.21% เฉลี่ย 14.95%) × Total Revenue ปี 2025 ฿3,408.9 ล้าน",
+   "url": "https://finance.yahoo.com/quote/STPI.BK/financials/",
+   "asof": "2025-12-31",
+   "note": "EBITDA ที่ normalize แล้วตาม playbook §8 (ไม่ใช่งวดล่าสุด) · EBITDA ปี 2025 จริง ฿995.6 ล้าน · ใช้รายการ EBITDA ของ Yahoo ให้นิยามเดียวกับ peer",
+   "kind": "derived",
+   "fetched_at": null,
+   "label": "EBITDA งวดล่าสุด",
+   "unit": "สกุลงบ"
+  },
+  "eps_ltm": {
+   "key": "eps_ltm",
+   "value": -0.01,
+   "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['trailingEps']",
+   "url": "https://finance.yahoo.com/quote/STPI.BK/key-statistics/",
+   "asof": "2026-06-30",
+   "note": "asof = mostRecentQuarter เพราะหน้า Key Statistics แสดงค่านี้เป็น (mrq)",
+   "kind": "fact",
+   "fetched_at": "2026-10-31T22:24:51+07:00",
+   "label": "EPS ย้อนหลัง 12 เดือน (TTM) ให้ตรงกับ trailing P/E ของ peer",
+   "unit": "ต่อหุ้น"
+  },
+  "equity_book": {
+   "key": "equity_book",
+   "value": 8747662907.0,
+   "source": "Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) รายการ 'Stockholders Equity'",
+   "url": "https://finance.yahoo.com/quote/STPI.BK/balance-sheet/",
+   "asof": "2025-12-31",
+   "note": null,
+   "kind": "fact",
+   "fetched_at": "2026-10-31T22:24:51+07:00",
+   "label": "ส่วนของผู้ถือหุ้นบริษัทใหญ่",
+   "unit": "สกุลงบ"
+  },
+  "total_debt": {
+   "key": "total_debt",
+   "value": 3662833712.0,
+   "source": "Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) รายการ 'Total Debt'",
+   "url": "https://finance.yahoo.com/quote/STPI.BK/balance-sheet/",
+   "asof": "2025-12-31",
+   "note": null,
+   "kind": "fact",
+   "fetched_at": "2026-10-31T22:24:51+07:00",
+   "label": "หนี้สินที่มีภาระดอกเบี้ยรวม (รวม lease)",
+   "unit": "สกุลงบ"
+  },
+  "lease_liabilities": {
+   "key": "lease_liabilities",
+   "value": 859781182.0,
+   "source": "Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) รายการ 'Capital Lease Obligations'",
+   "url": "https://finance.yahoo.com/quote/STPI.BK/balance-sheet/",
+   "asof": "2025-12-31",
+   "note": null,
+   "kind": "fact",
+   "fetched_at": "2026-10-31T22:24:51+07:00",
+   "label": "หนี้สินตามสัญญาเช่า",
+   "unit": "สกุลงบ"
+  },
+  "cash": {
+   "key": "cash",
+   "value": 387614519.0,
+   "source": "Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) รายการ 'Cash And Cash Equivalents'",
+   "url": "https://finance.yahoo.com/quote/STPI.BK/balance-sheet/",
+   "asof": "2025-12-31",
+   "note": null,
+   "kind": "fact",
+   "fetched_at": "2026-10-31T22:24:51+07:00",
+   "label": "เงินสดและรายการเทียบเท่า",
+   "unit": "สกุลงบ"
+  },
+  "minority_interest": {
+   "key": "minority_interest",
+   "value": 445408078.0,
+   "source": "Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) รายการ 'Minority Interest'",
+   "url": "https://finance.yahoo.com/quote/STPI.BK/balance-sheet/",
+   "asof": "2025-12-31",
+   "note": null,
+   "kind": "fact",
+   "fetched_at": "2026-10-31T22:24:51+07:00",
+   "label": "ส่วนได้เสียที่ไม่มีอำนาจควบคุม (book)",
+   "unit": "สกุลงบ"
+  },
+  "minority_pb": {
+   "key": "minority_pb",
+   "value": 1.2308137,
+   "source": "มัธยฐาน priceToBook ของ peer 5 ตัวจาก Yahoo Finance (yfinance 1.7.0) Ticker.info: BJCHI.BK 0.38, CK.BK 0.96, STECON.BK 1.23, PSGC.BK 1.95, SRICHA.BK 2.61 (playbook §2: แปลง minority interest จาก book เป็น market ด้วย P/B ของ sector)",
+   "url": "https://finance.yahoo.com/quote/STECON.BK/key-statistics/",
+   "asof": "2026-10-31",
+   "note": "ไม่มีบริษัทลูกที่จดทะเบียนให้ใช้เป็น minority proxy หน้า key-statistics ของ peer ตัวอื่นใช้ URL รูปแบบเดียวกัน",
+   "kind": "derived",
+   "fetched_at": null,
+   "label": "P/BV ที่ใช้แปลง minority interest เป็นมูลค่าตลาด",
+   "unit": "เท่า"
+  },
+  "non_operating_assets": {
+   "key": "non_operating_assets",
+   "value": 5169851491.0,
+   "source": "Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) งวด 2025: Investment Properties 2,659.2 + Long Term Equity Investment (บริษัทร่วม 674.8 + JV 1,621.3) 2,296.1 + Available For Sale Securities 81.7 + Other Short Term Investments 132.8 ล้านบาท",
+   "url": "https://finance.yahoo.com/quote/STPI.BK/balance-sheet/",
+   "asof": "2025-12-31",
+   "note": "มูลค่าตามบัญชี (playbook §2 ให้ใช้มูลค่าตลาดแต่ไม่มีใน Trust sources) · รายได้จากสินทรัพย์เหล่านี้ไม่อยู่ใน Operating Income จึงไม่นับซ้ำ",
+   "kind": "derived",
+   "fetched_at": null,
+   "label": "สินทรัพย์ที่ไม่ใช่การดำเนินงาน (เงินลงทุนในบริษัทร่วม/JV, อสังหาฯ เพื่อการลงทุน) ที่ไม่ได้อยู่ใน EBIT",
+   "unit": "สกุลงบ"
+  },
+  "dps_ttm": {
+   "key": "dps_ttm",
+   "value": 0,
+   "source": "Yahoo Finance (yfinance 1.7.0) Ticker.dividends",
+   "url": "https://finance.yahoo.com/quote/STPI.BK/history/?filter=div",
+   "asof": null,
+   "note": "ไม่มีปันผลใน 12 เดือนล่าสุด",
+   "kind": "fact",
+   "fetched_at": "2026-10-31T22:24:52+07:00",
+   "label": "เงินปันผลต่อหุ้นย้อนหลัง 12 เดือน",
+   "unit": "ต่อหุ้น"
+  },
+  "beta_method": {
+   "key": "beta_method",
+   "value": "bottom_up",
+   "source": "ค่าตั้งต้นใน config.yaml ตาม research/playbook.md",
+   "url": null,
+   "asof": null,
+   "note": null,
+   "kind": "assumption",
+   "fetched_at": null,
+   "label": "Beta ที่ใช้: bottom_up (relever จากอุตสาหกรรม) หรือ regression",
+   "unit": "วิธี"
+  },
+  "include_leases_in_debt": {
+   "key": "include_leases_in_debt",
+   "value": true,
+   "source": "ค่าตั้งต้นใน config.yaml ตาม research/playbook.md",
+   "url": null,
+   "asof": null,
+   "note": null,
+   "kind": "assumption",
+   "fetched_at": null,
+   "label": "นับหนี้ lease เป็นหนี้ใน WACC และ net debt",
+   "unit": "ใช่/ไม่"
+  },
+  "rf_adjust_default": {
+   "key": "rf_adjust_default",
+   "value": true,
+   "source": "research/playbook.md §3: ถ้าพันธบัตรรัฐบาลมี default risk ให้หัก country default spread ก่อนใช้เป็น Rf",
+   "url": null,
+   "asof": null,
+   "note": null,
+   "kind": "assumption",
+   "fetched_at": null,
+   "label": "หัก default spread ของประเทศออกจากพันธบัตรรัฐบาลเพื่อได้ Rf",
+   "unit": "ใช่/ไม่"
+  },
+  "tax_rate": {
+   "key": "tax_rate",
+   "value": 0.2,
+   "source": "อัตราภาษีนิติบุคคลของไทยจาก Damodaran Online, Country Default Spreads and Risk Premiums (คอลัมน์ Corporate Tax Rate)",
+   "url": "https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ctryprem.html",
+   "asof": "2026-01-05",
+   "note": "ภาษีจริงในอดีตบิดเบือนจากปีขาดทุนและรายการพิเศษ (2023: −4.2%, 2024: 38.0%, 2025: 15.7%) playbook §8 ให้ normalize ทุกตัวไปพร้อมกัน",
+   "kind": "assumption",
+   "fetched_at": null,
+   "label": "อัตราภาษีจริงที่ใช้คิด NOPAT",
+   "unit": "%"
+  },
+  "interest_coverage": {
+   "key": "interest_coverage",
+   "value": 2.471146,
+   "source": "คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) งวด 2025–2025: EBIT ÷ Interest Expense งวดล่าสุด",
+   "url": "https://finance.yahoo.com/quote/STPI.BK/financials/",
+   "asof": "2025-12-31",
+   "note": null,
+   "kind": "derived",
+   "fetched_at": null,
+   "label": "Interest coverage (EBIT ÷ ดอกเบี้ยจ่าย) งวดล่าสุด",
+   "unit": "เท่า"
+  },
+  "company_default_spread": {
+   "key": "company_default_spread",
+   "value": 0.0138,
+   "source": "Damodaran Online, Ratings, Interest Coverage Ratios and Default Spread (ตารางซ้าย: For large non-financial service firms)",
+   "url": "https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ratings.html",
+   "asof": "2026-01-01",
+   "note": "coverage 2.47 อยู่ในช่วง > 2.25 ถึง ≤ 2.49999 → rating Ba1/BB+",
+   "kind": "derived",
+   "fetched_at": null,
+   "label": "Default spread ของบริษัท (synthetic rating)",
+   "unit": "%"
+  },
+  "revenue_growth": {
+   "key": "revenue_growth",
+   "value": [
+    0.007985,
+    0.007985,
+    0.007985,
+    0.007985,
+    0.007985
+   ],
+   "source": "research/playbook.md §8: ห้ามใส่ high growth ซ้อนบนฐานที่ normalize แล้ว จึงให้รายได้โตเท่า terminal growth ทุกปี รายได้ปี 2025 (฿3,408.9 ล้าน) ใกล้ค่าเฉลี่ย 4 ปี (฿3,390 ล้าน) จึงใช้เป็นฐานได้",
+   "url": null,
+   "asof": null,
+   "note": "CAGR 2022–2025 คือ −3.18% และรายได้แต่ละปีขึ้นลง (3,756 / 3,888 / 2,507 / 3,409 ล้าน)",
+   "kind": "assumption",
+   "fetched_at": null,
+   "label": "อัตราเติบโตของรายได้ต่อปี",
+   "unit": "%"
+  },
+  "ebit_margin": {
+   "key": "ebit_margin",
+   "value": [
+    0.053528,
+    0.053528,
+    0.053528,
+    0.053528,
+    0.053528
+   ],
+   "source": "คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) งวด 2022–2025: เฉลี่ย Operating Income ÷ Total Revenue (−3.19%, 6.61%, 5.46%, 12.53%) ใช้ค่าเดียวกันทุกปี",
+   "url": "https://finance.yahoo.com/quote/STPI.BK/financials/",
+   "asof": "2025-12-31",
+   "note": "ใช้ Operating Income (กำไรขั้นต้น − SG&A) ไม่ใช้ EBIT ของ Yahoo เพราะ EBIT รวมส่วนแบ่งกำไรบริษัทร่วม กำไรขายเงินลงทุน และรายการพิเศษ ซึ่งจะนับซ้ำกับ non_operating_assets (playbook §12 ข้อ 5)",
+   "kind": "derived",
+   "fetched_at": null,
+   "label": "EBIT margin",
+   "unit": "%"
+  },
+  "da_pct_revenue": {
+   "key": "da_pct_revenue",
+   "value": 0.093773,
+   "source": "คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.cashflow (งบรายปี) งวด 2022–2025: เฉลี่ย Depreciation And Amortization ÷ Total Revenue",
+   "url": "https://finance.yahoo.com/quote/STPI.BK/cash-flow/",
+   "asof": "2025-12-31",
+   "note": "ค่าเสื่อมเพิ่มจาก 4.7–5.0% เป็น 12.0–15.8% หลังซื้อกิจการปี 2024",
+   "kind": "derived",
+   "fetched_at": null,
+   "label": "ค่าเสื่อมราคาต่อรายได้",
+   "unit": "%"
+  },
+  "capex_pct_revenue": {
+   "key": "capex_pct_revenue",
+   "value": 0.093773,
+   "source": "ตั้งเท่ากับ da_pct_revenue เพราะ capex ในอดีต (2.44%) ต่ำกว่า D&A (9.38%) มาก reinvestment จะติดลบ ขัดกับ playbook §12 ข้อ 4 (กฎเดียวกับ CPALL.BK)",
+   "url": null,
+   "asof": null,
+   "note": "Capex ÷ รายได้เฉลี่ยในอดีต 2022–2025 คือ 2.44% (−Capital Expenditure ÷ Total Revenue จาก Yahoo) การลงทุนส่วนใหญ่มาในรูปซื้อกิจการ",
+   "kind": "assumption",
+   "fetched_at": null,
+   "label": "Capex ต่อรายได้",
+   "unit": "%"
+  },
+  "nwc_pct_delta_revenue": {
+   "key": "nwc_pct_delta_revenue",
+   "value": 0.437239,
+   "source": "คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) งวด 2025: non-cash working capital ÷ Total Revenue = (Current Assets − Cash − Other Short Term Investments) − (Current Liabilities − Current Debt And Capital Lease Obligation) = (2,729.9 − 387.6 − 132.8) − (1,480.0 − 761.0) = ฿1,490.5 ล้าน ÷ ฿3,408.9 ล้าน",
+   "url": "https://finance.yahoo.com/quote/STPI.BK/balance-sheet/",
+   "asof": "2025-12-31",
+   "note": "ค่าในร่างแรก −Change In Working Capital ÷ Δรายได้ ได้ −83% เพราะรายได้ขึ้นลง ใช้ไม่ได้",
+   "kind": "derived",
+   "fetched_at": null,
+   "label": "เงินทุนหมุนเวียนที่เพิ่มต่อรายได้ที่เพิ่ม",
+   "unit": "%"
+  },
+  "terminal_growth": {
+   "key": "terminal_growth",
+   "value": 0.007985,
+   "source": "research/playbook.md §4: g ต้องไม่เกิน Rf จึงใช้ค่าต่ำกว่าระหว่าง 2.00% (config.yaml) กับ Rf หลังหัก default spread 0.80%",
+   "url": null,
+   "asof": null,
+   "note": null,
+   "kind": "assumption",
+   "fetched_at": null,
+   "label": "Terminal growth (DCF)",
+   "unit": "%"
+  },
+  "terminal_roc": {
+   "key": "terminal_roc",
+   "value": "wacc",
+   "source": "research/playbook.md §4: ช่วง terminal ให้ excess return เข้าหา 0 จึงตั้ง ROC = WACC (กฎเดียวกับ CPALL.BK และ BDMS.BK)",
+   "url": null,
+   "asof": null,
+   "note": "ROC เฉลี่ยในอดีต 2022–2025 คือ 1.99% (EBIT × (1 − tax) ÷ (Equity + Minority + Debt − Cash) จาก Yahoo)",
+   "kind": "assumption",
+   "fetched_at": null,
+   "label": "ROC ช่วง terminal (ใช้คิด reinvestment = g ÷ ROC)",
+   "unit": "%"
+  },
+  "ddm_growth": {
+   "key": "ddm_growth",
+   "value": 0.007985,
+   "source": "research/playbook.md §4: g ต้องไม่เกิน Rf จึงใช้ค่าต่ำกว่าระหว่าง 2.00% (config.yaml) กับ Rf หลังหัก default spread 0.80%",
+   "url": null,
+   "asof": null,
+   "note": null,
+   "kind": "assumption",
+   "fetched_at": null,
+   "label": "อัตราเติบโตปันผลระยะยาว (DDM)",
+   "unit": "%"
+  }
+ },
+ "peers": {
+  "BJCHI.BK": {
+   "long_name": {
+    "value": "BJC Heavy Industries Public Company Limited",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['longName'] ของ BJCHI.BK",
+    "url": "https://finance.yahoo.com/quote/BJCHI.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:24:59+07:00",
+    "asof": null
+   },
+   "sector": {
+    "value": "Industrials",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['sector'] ของ BJCHI.BK",
+    "url": "https://finance.yahoo.com/quote/BJCHI.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:24:59+07:00",
+    "asof": null
+   },
+   "industry": {
+    "value": "Metal Fabrication",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['industry'] ของ BJCHI.BK",
+    "url": "https://finance.yahoo.com/quote/BJCHI.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:24:59+07:00",
+    "asof": null
+   },
+   "country": {
+    "value": "Thailand",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['country'] ของ BJCHI.BK",
+    "url": "https://finance.yahoo.com/quote/BJCHI.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:24:59+07:00",
+    "asof": null
+   },
+   "currency": {
+    "value": "THB",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['currency'] ของ BJCHI.BK",
+    "url": "https://finance.yahoo.com/quote/BJCHI.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:24:59+07:00",
+    "asof": null
+   },
+   "market_cap": {
+    "value": 1164856192,
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['marketCap'] ของ BJCHI.BK",
+    "url": "https://finance.yahoo.com/quote/BJCHI.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:24:59+07:00",
+    "asof": null
+   },
+   "trailing_pe": {
+    "value": 98.66667,
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['trailingPE'] ของ BJCHI.BK",
+    "url": "https://finance.yahoo.com/quote/BJCHI.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:24:59+07:00",
+    "asof": "2026-10-30T16:37:22+07:00",
+    "asof_note": "asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)"
+   },
+   "ev_to_ebitda_yahoo": {
+    "value": 16.448,
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['enterpriseToEbitda'] ของ BJCHI.BK",
+    "url": "https://finance.yahoo.com/quote/BJCHI.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:24:59+07:00",
+    "asof": "2026-10-30T16:37:22+07:00",
+    "asof_note": "asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)"
+   },
+   "price_to_book": {
+    "value": 0.37812978,
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['priceToBook'] ของ BJCHI.BK",
+    "url": "https://finance.yahoo.com/quote/BJCHI.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:24:59+07:00",
+    "asof": "2026-10-30T16:37:22+07:00",
+    "asof_note": "asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)"
+   },
+   "ev_to_ebitda": {
+    "value": null,
+    "source": "คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.info['marketCap'] และงบรายปี balance_sheet / income_stmt ของ BJCHI.BK: (marketCap + Total Debt + Minority Interest − Cash And Cash Equivalents) ÷ EBITDA งวดล่าสุดของงบรายปี",
+    "url": "https://finance.yahoo.com/quote/BJCHI.BK/balance-sheet/",
+    "fetched_at": "2026-10-31T22:25:00+07:00",
+    "asof": "2025-12-31",
+    "reason": "EBITDA ของ BJCHI.BK ไม่เป็นบวก (-52,363,636)"
+   }
+  },
+  "SRICHA.BK": {
+   "long_name": {
+    "value": "Sriracha Construction Public Company Limited",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['longName'] ของ SRICHA.BK",
+    "url": "https://finance.yahoo.com/quote/SRICHA.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:00+07:00",
+    "asof": null
+   },
+   "sector": {
+    "value": "Industrials",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['sector'] ของ SRICHA.BK",
+    "url": "https://finance.yahoo.com/quote/SRICHA.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:00+07:00",
+    "asof": null
+   },
+   "industry": {
+    "value": "Engineering & Construction",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['industry'] ของ SRICHA.BK",
+    "url": "https://finance.yahoo.com/quote/SRICHA.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:00+07:00",
+    "asof": null
+   },
+   "country": {
+    "value": "Thailand",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['country'] ของ SRICHA.BK",
+    "url": "https://finance.yahoo.com/quote/SRICHA.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:00+07:00",
+    "asof": null
+   },
+   "currency": {
+    "value": "THB",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['currency'] ของ SRICHA.BK",
+    "url": "https://finance.yahoo.com/quote/SRICHA.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:00+07:00",
+    "asof": null
+   },
+   "market_cap": {
+    "value": 5453870592,
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['marketCap'] ของ SRICHA.BK",
+    "url": "https://finance.yahoo.com/quote/SRICHA.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:00+07:00",
+    "asof": null
+   },
+   "trailing_pe": {
+    "value": 3.188406,
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['trailingPE'] ของ SRICHA.BK",
+    "url": "https://finance.yahoo.com/quote/SRICHA.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:00+07:00",
+    "asof": "2026-10-30T16:37:22+07:00",
+    "asof_note": "asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)"
+   },
+   "ev_to_ebitda_yahoo": {
+    "value": 2.013,
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['enterpriseToEbitda'] ของ SRICHA.BK",
+    "url": "https://finance.yahoo.com/quote/SRICHA.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:00+07:00",
+    "asof": "2026-10-30T16:37:22+07:00",
+    "asof_note": "asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)"
+   },
+   "price_to_book": {
+    "value": 2.6143792,
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['priceToBook'] ของ SRICHA.BK",
+    "url": "https://finance.yahoo.com/quote/SRICHA.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:00+07:00",
+    "asof": "2026-10-30T16:37:22+07:00",
+    "asof_note": "asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)"
+   },
+   "ev_to_ebitda": {
+    "value": 3.50566,
+    "source": "คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.info['marketCap'] และงบรายปี balance_sheet / income_stmt ของ SRICHA.BK: (marketCap + Total Debt + Minority Interest − Cash And Cash Equivalents) ÷ EBITDA งวดล่าสุดของงบรายปี",
+    "url": "https://finance.yahoo.com/quote/SRICHA.BK/balance-sheet/",
+    "fetched_at": "2026-10-31T22:25:00+07:00",
+    "asof": "2025-12-31",
+    "asof_note": "asof = งวดของ EBITDA · marketCap เป็นค่าล่าสุด",
+    "components": {
+     "market_cap": 5453870592,
+     "total_debt": 367014534.0,
+     "minority_interest": 35566652.0,
+     "cash": 1170326772.0,
+     "ebitda": 1336731310.0,
+     "balance_sheet_period": "2025-12-31",
+     "currency": "THB"
+    },
+    "note": null
+   }
+  },
+  "PSGC.BK": {
+   "long_name": {
+    "value": "PSG Corporation Public Company Limited",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['longName'] ของ PSGC.BK",
+    "url": "https://finance.yahoo.com/quote/PSGC.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:00+07:00",
+    "asof": null
+   },
+   "sector": {
+    "value": "Industrials",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['sector'] ของ PSGC.BK",
+    "url": "https://finance.yahoo.com/quote/PSGC.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:00+07:00",
+    "asof": null
+   },
+   "industry": {
+    "value": "Engineering & Construction",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['industry'] ของ PSGC.BK",
+    "url": "https://finance.yahoo.com/quote/PSGC.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:00+07:00",
+    "asof": null
+   },
+   "country": {
+    "value": "Thailand",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['country'] ของ PSGC.BK",
+    "url": "https://finance.yahoo.com/quote/PSGC.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:00+07:00",
+    "asof": null
+   },
+   "currency": {
+    "value": "THB",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['currency'] ของ PSGC.BK",
+    "url": "https://finance.yahoo.com/quote/PSGC.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:00+07:00",
+    "asof": null
+   },
+   "market_cap": {
+    "value": 10505626624,
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['marketCap'] ของ PSGC.BK",
+    "url": "https://finance.yahoo.com/quote/PSGC.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:00+07:00",
+    "asof": null
+   },
+   "trailing_pe": {
+    "value": 13.882352,
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['trailingPE'] ของ PSGC.BK",
+    "url": "https://finance.yahoo.com/quote/PSGC.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:00+07:00",
+    "asof": "2026-10-30T16:37:22+07:00",
+    "asof_note": "asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)"
+   },
+   "ev_to_ebitda_yahoo": {
+    "value": 9.98,
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['enterpriseToEbitda'] ของ PSGC.BK",
+    "url": "https://finance.yahoo.com/quote/PSGC.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:00+07:00",
+    "asof": "2026-10-30T16:37:22+07:00",
+    "asof_note": "asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)"
+   },
+   "price_to_book": {
+    "value": 1.9536424,
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['priceToBook'] ของ PSGC.BK",
+    "url": "https://finance.yahoo.com/quote/PSGC.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:00+07:00",
+    "asof": "2026-10-30T16:37:22+07:00",
+    "asof_note": "asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)"
+   },
+   "ev_to_ebitda": {
+    "value": 16.658463,
+    "source": "คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.info['marketCap'] และงบรายปี balance_sheet / income_stmt ของ PSGC.BK: (marketCap + Total Debt + Minority Interest − Cash And Cash Equivalents) ÷ EBITDA งวดล่าสุดของงบรายปี",
+    "url": "https://finance.yahoo.com/quote/PSGC.BK/balance-sheet/",
+    "fetched_at": "2026-10-31T22:25:01+07:00",
+    "asof": "2025-12-31",
+    "asof_note": "asof = งวดของ EBITDA · marketCap เป็นค่าล่าสุด",
+    "components": {
+     "market_cap": 10505626624,
+     "total_debt": 45913184.0,
+     "minority_interest": null,
+     "cash": 1962713479.0,
+     "ebitda": 515583364.0,
+     "balance_sheet_period": "2025-12-31",
+     "currency": "THB"
+    },
+    "note": "ไม่มีรายการ Minority Interest ในงบ นับเป็น 0"
+   }
+  },
+  "CK.BK": {
+   "long_name": {
+    "value": "CH. Karnchang Public Company Limited",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['longName'] ของ CK.BK",
+    "url": "https://finance.yahoo.com/quote/CK.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:01+07:00",
+    "asof": null
+   },
+   "sector": {
+    "value": "Industrials",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['sector'] ของ CK.BK",
+    "url": "https://finance.yahoo.com/quote/CK.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:01+07:00",
+    "asof": null
+   },
+   "industry": {
+    "value": "Engineering & Construction",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['industry'] ของ CK.BK",
+    "url": "https://finance.yahoo.com/quote/CK.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:01+07:00",
+    "asof": null
+   },
+   "country": {
+    "value": "Thailand",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['country'] ของ CK.BK",
+    "url": "https://finance.yahoo.com/quote/CK.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:01+07:00",
+    "asof": null
+   },
+   "currency": {
+    "value": "THB",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['currency'] ของ CK.BK",
+    "url": "https://finance.yahoo.com/quote/CK.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:01+07:00",
+    "asof": null
+   },
+   "market_cap": {
+    "value": 28734083072,
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['marketCap'] ของ CK.BK",
+    "url": "https://finance.yahoo.com/quote/CK.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:01+07:00",
+    "asof": null
+   },
+   "trailing_pe": {
+    "value": 8.72449,
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['trailingPE'] ของ CK.BK",
+    "url": "https://finance.yahoo.com/quote/CK.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:01+07:00",
+    "asof": "2026-10-30T16:37:22+07:00",
+    "asof_note": "asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)"
+   },
+   "ev_to_ebitda_yahoo": {
+    "value": 26.126,
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['enterpriseToEbitda'] ของ CK.BK",
+    "url": "https://finance.yahoo.com/quote/CK.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:01+07:00",
+    "asof": "2026-10-30T16:37:22+07:00",
+    "asof_note": "asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)"
+   },
+   "price_to_book": {
+    "value": 0.9625669,
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['priceToBook'] ของ CK.BK",
+    "url": "https://finance.yahoo.com/quote/CK.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:01+07:00",
+    "asof": "2026-10-30T16:37:22+07:00",
+    "asof_note": "asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)"
+   },
+   "ev_to_ebitda": {
+    "value": 10.328763,
+    "source": "คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.info['marketCap'] และงบรายปี balance_sheet / income_stmt ของ CK.BK: (marketCap + Total Debt + Minority Interest − Cash And Cash Equivalents) ÷ EBITDA งวดล่าสุดของงบรายปี",
+    "url": "https://finance.yahoo.com/quote/CK.BK/balance-sheet/",
+    "fetched_at": "2026-10-31T22:25:01+07:00",
+    "asof": "2025-12-31",
+    "asof_note": "asof = งวดของ EBITDA · marketCap เป็นค่าล่าสุด",
+    "components": {
+     "market_cap": 28734083072,
+     "total_debt": 47781573032.0,
+     "minority_interest": 543523879.0,
+     "cash": 9769740713.0,
+     "ebitda": 6514762384.0,
+     "balance_sheet_period": "2025-12-31",
+     "currency": "THB"
+    },
+    "note": null
+   }
+  },
+  "STECON.BK": {
+   "long_name": {
+    "value": "Stecon Group Public Company Limited",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['longName'] ของ STECON.BK",
+    "url": "https://finance.yahoo.com/quote/STECON.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:01+07:00",
+    "asof": null
+   },
+   "sector": {
+    "value": "Industrials",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['sector'] ของ STECON.BK",
+    "url": "https://finance.yahoo.com/quote/STECON.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:01+07:00",
+    "asof": null
+   },
+   "industry": {
+    "value": "Engineering & Construction",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['industry'] ของ STECON.BK",
+    "url": "https://finance.yahoo.com/quote/STECON.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:01+07:00",
+    "asof": null
+   },
+   "country": {
+    "value": "Thailand",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['country'] ของ STECON.BK",
+    "url": "https://finance.yahoo.com/quote/STECON.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:01+07:00",
+    "asof": null
+   },
+   "currency": {
+    "value": "THB",
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['currency'] ของ STECON.BK",
+    "url": "https://finance.yahoo.com/quote/STECON.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:01+07:00",
+    "asof": null
+   },
+   "market_cap": {
+    "value": 25824362496,
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['marketCap'] ของ STECON.BK",
+    "url": "https://finance.yahoo.com/quote/STECON.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:01+07:00",
+    "asof": null
+   },
+   "trailing_pe": {
+    "value": 10.897436,
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['trailingPE'] ของ STECON.BK",
+    "url": "https://finance.yahoo.com/quote/STECON.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:01+07:00",
+    "asof": "2026-10-30T16:37:22+07:00",
+    "asof_note": "asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)"
+   },
+   "ev_to_ebitda_yahoo": {
+    "value": 10.812,
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['enterpriseToEbitda'] ของ STECON.BK",
+    "url": "https://finance.yahoo.com/quote/STECON.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:01+07:00",
+    "asof": "2026-10-30T16:37:22+07:00",
+    "asof_note": "asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)"
+   },
+   "price_to_book": {
+    "value": 1.2308137,
+    "source": "Yahoo Finance (yfinance 1.7.0) Ticker.info['priceToBook'] ของ STECON.BK",
+    "url": "https://finance.yahoo.com/quote/STECON.BK/key-statistics/",
+    "fetched_at": "2026-10-31T22:25:01+07:00",
+    "asof": "2026-10-30T16:37:22+07:00",
+    "asof_note": "asof = regularMarketTime ของ peer (multiple คิดจากราคาล่าสุด)"
+   },
+   "ev_to_ebitda": {
+    "value": 9.777339,
+    "source": "คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.info['marketCap'] และงบรายปี balance_sheet / income_stmt ของ STECON.BK: (marketCap + Total Debt + Minority Interest − Cash And Cash Equivalents) ÷ EBITDA งวดล่าสุดของงบรายปี",
+    "url": "https://finance.yahoo.com/quote/STECON.BK/balance-sheet/",
+    "fetched_at": "2026-10-31T22:25:01+07:00",
+    "asof": "2025-12-31",
+    "asof_note": "asof = งวดของ EBITDA · marketCap เป็นค่าล่าสุด",
+    "components": {
+     "market_cap": 25824362496,
+     "total_debt": 9383614387.0,
+     "minority_interest": 416649424.0,
+     "cash": 3949112839.0,
+     "ebitda": 3239686523.0,
+     "balance_sheet_period": "2025-12-31",
+     "currency": "THB"
+    },
+    "note": null
+   }
+  }
+ },
+ "wacc": {
+  "rf": 0.007984800000000002,
+  "beta": 0.7897959970759685,
+  "de": 0.36064710166488506,
+  "ke": 0.05774194781578602,
+  "kd": 0.0353848,
+  "kd_after_tax": 0.02830784,
+  "equity_value_mkt": 10156282124.8,
+  "debt": 3662833712.0,
+  "we": 0.7349444237057515,
+  "wd": 0.26505557629424853,
+  "wacc": 0.04994027340596582
+ },
+ "results": [
+  {
+   "key": "dcf_fcff",
+   "low": 2.235960333602846,
+   "base": 2.395149924246762,
+   "high": 2.5902086213591957,
+   "skipped": null,
+   "steps": [
+    {
+     "label": "Risk-free rate",
+     "formula": "พันธบัตรรัฐบาล − country default spread",
+     "value": 0.007984800000000002,
+     "unit": "%"
+    },
+    {
+     "label": "D/E ตามมูลค่าตลาด",
+     "formula": "หนี้ ÷ (ราคา × จำนวนหุ้น)",
+     "value": 0.36064710166488506,
+     "unit": "x"
+    },
+    {
+     "label": "Levered beta (bottom-up)",
+     "formula": "βu × (1 + (1 − tax marginal) × D/E)",
+     "value": 0.7897959970759685,
+     "unit": "beta"
+    },
+    {
+     "label": "Cost of equity (CAPM)",
+     "formula": "Rf + Beta × ERP",
+     "value": 0.05774194781578602,
+     "unit": "%"
+    },
+    {
+     "label": "Cost of debt ก่อนภาษี",
+     "formula": "Rf + country default spread + company default spread",
+     "value": 0.0353848,
+     "unit": "%"
+    },
+    {
+     "label": "Cost of debt หลังภาษี",
+     "formula": "Kd × (1 − tax marginal)",
+     "value": 0.02830784,
+     "unit": "%"
+    },
+    {
+     "label": "สัดส่วนทุน E/(D+E)",
+     "formula": "ราคา × จำนวนหุ้น ÷ (มูลค่าตลาดทุน + หนี้)",
+     "value": 0.7349444237057515,
+     "unit": "%"
+    },
+    {
+     "label": "WACC",
+     "formula": "We × Ke + Wd × Kd หลังภาษี",
+     "value": 0.04994027340596582,
+     "unit": "%"
+    },
+    {
+     "label": "FCFF ปีที่ 5",
+     "formula": "NOPAT + D&A − Capex − ΔNWC",
+     "value": 139612415.02703512,
+     "unit": "money"
+    },
+    {
+     "label": "PV ของ FCFF ปี 1–5",
+     "formula": "Σ FCFFₜ ÷ (1 + WACC)ᵗ",
+     "value": 594585202.1224768,
+     "unit": "money"
+    },
+    {
+     "label": "FCFF ปีที่ 6",
+     "formula": "NOPAT5 × (1 + g) × (1 − g ÷ ROC)",
+     "value": 128630500.95371935,
+     "unit": "money"
+    },
+    {
+     "label": "Terminal value",
+     "formula": "FCFF6 ÷ (WACC − g)",
+     "value": 3065895905.600958,
+     "unit": "money"
+    },
+    {
+     "label": "PV ของ terminal value",
+     "formula": "TV ÷ (1 + WACC)^5",
+     "value": 2402893000.4140677,
+     "unit": "money"
+    },
+    {
+     "label": "Enterprise value",
+     "formula": "PV FCFF + PV TV",
+     "value": 2997478202.536545,
+     "unit": "money"
+    },
+    {
+     "label": "Minority interest ตามมูลค่าตลาด",
+     "formula": "minority (book) × P/BV",
+     "value": 548214364.4930686,
+     "unit": "money"
+    },
+    {
+     "label": "หักหนี้ บวกเงินสด บวกสินทรัพย์ที่ไม่ใช่การดำเนินงาน หัก minority",
+     "formula": "− หนี้ + เงินสด + สินทรัพย์ที่ไม่ใช่การดำเนินงาน − minority (market)",
+     "value": 1346417933.5069313,
+     "unit": "money"
+    },
+    {
+     "label": "มูลค่าต่อหุ้น",
+     "formula": "(EV − หนี้ + เงินสด + สินทรัพย์ที่ไม่ใช่การดำเนินงาน − minority) ÷ จำนวนหุ้น",
+     "value": 2.395149924246762,
+     "unit": "per_share"
+    }
+   ],
+   "detail": {
+    "forecast": [
+     {
+      "t": 1,
+      "revenue": 3436109304.2441545,
+      "ebit": 183928058.8375811,
+      "nopat": 147142447.07006487,
+      "da": 322214277.78688705,
+      "capex": 322214277.78688705,
+      "dnwc": 11901637.379212849,
+      "fcff": 135240809.69085205
+     },
+     {
+      "t": 2,
+      "revenue": 3463546637.0385437,
+      "ebit": 185396724.38739917,
+      "nopat": 148317379.50991935,
+      "da": 324787158.79501534,
+      "capex": 324787158.79501534,
+      "dnwc": 11996671.95368596,
+      "fcff": 136320707.55623338
+     },
+     {
+      "t": 3,
+      "revenue": 3491203056.935296,
+      "ebit": 186877117.23163253,
+      "nopat": 149501693.78530604,
+      "da": 327380584.2579935,
+      "capex": 327380584.2579935,
+      "dnwc": 12092465.379236104,
+      "fcff": 137409228.40606993
+     },
+     {
+      "t": 4,
+      "revenue": 3519080313.344924,
+      "ebit": 188369331.01272708,
+      "nopat": 150695464.81018168,
+      "da": 329994718.22329354,
+      "capex": 329994718.22329354,
+      "dnwc": 12189023.715289298,
+      "fcff": 138506441.09489238
+     },
+     {
+      "t": 5,
+      "revenue": 3547180169.6469827,
+      "ebit": 189873460.12086368,
+      "nopat": 151898768.09669095,
+      "da": 332629726.04830647,
+      "capex": 332629726.04830647,
+      "dnwc": 12286353.069655843,
+      "fcff": 139612415.02703512
+     }
+    ],
+    "pv_fcff": 594585202.1224768,
+    "fcff_terminal": 128630500.95371935,
+    "terminal_roc": 0.04994027340596582,
+    "tv": 3065895905.600958,
+    "pv_tv": 2402893000.4140677,
+    "ev": 2997478202.536545,
+    "minority_market": 548214364.4930686,
+    "tv_share": 0.8016381898559518,
+    "table": [
+     [
+      2.800146913450081,
+      2.8087672556597387,
+      2.817387597869394,
+      2.826007940079051,
+      2.8346282822887074
+     ],
+     [
+      2.567769505950467,
+      2.5752492110867107,
+      2.582728916222953,
+      2.5902086213591957,
+      2.597688326495439
+     ],
+     [
+      2.3820057401362376,
+      2.3885778321915,
+      2.395149924246762,
+      2.401722016302025,
+      2.408294108357287
+     ],
+     [
+      2.2301265898471976,
+      2.235960333602846,
+      2.2417940773584943,
+      2.2476278211141434,
+      2.253461564869792
+     ],
+     [
+      2.103650346091003,
+      2.1088725260977585,
+      2.114094706104514,
+      2.1193168861112697,
+      2.1245390661180257
+     ]
+    ],
+    "x_axis": [
+     0.039940273405965815,
+     0.04494027340596582,
+     0.04994027340596582,
+     0.054940273405965814,
+     0.05994027340596582
+    ],
+    "y_axis": [
+     -0.0020149999999999994,
+     0.0029850000000000007,
+     0.007985,
+     0.012985,
+     0.017985
+    ]
+   },
+   "label": "DCF (FCFF)"
+  },
+  {
+   "key": "comps_ev_ebitda",
+   "low": 0.25487107858126473,
+   "base": 0.7728225504809468,
+   "high": 1.2948491396527062,
+   "skipped": null,
+   "steps": [
+    {
+     "label": "Multiple ของ peer P25 / P50 / P75",
+     "formula": "PERCENTILE ของ peer ที่ใช้ได้",
+     "value": null,
+     "unit": ""
+    },
+    {
+     "label": "P25 ของ peer",
+     "formula": "PERCENTILE.INC ของ EV/EBITDA ที่ 25%",
+     "value": 8.20941925,
+     "unit": "x"
+    },
+    {
+     "label": "P50 ของ peer",
+     "formula": "PERCENTILE.INC ของ EV/EBITDA ที่ 50%",
+     "value": 10.053051,
+     "unit": "x"
+    },
+    {
+     "label": "P75 ของ peer",
+     "formula": "PERCENTILE.INC ของ EV/EBITDA ที่ 75%",
+     "value": 11.911188000000001,
+     "unit": "x"
+    },
+    {
+     "label": "มูลค่าต่อหุ้นที่ P50",
+     "formula": "(EV/EBITDA × EBITDA − หนี้ + เงินสด − minority ตาม book) ÷ จำนวนหุ้น",
+     "value": 0.7728225504809468,
+     "unit": "per_share"
+    }
+   ],
+   "detail": {
+    "field": "ev_to_ebitda",
+    "used": {
+     "SRICHA.BK": 3.50566,
+     "PSGC.BK": 16.658463,
+     "CK.BK": 10.328763,
+     "STECON.BK": 9.777339
+    },
+    "dropped": {
+     "BJCHI.BK": "EBITDA ของ BJCHI.BK ไม่เป็นบวก (-52,363,636)"
+    },
+    "target": 27.235235223121624,
+    "multiples": [
+     8.20941925,
+     10.053051,
+     11.911188000000001
+    ]
+   },
+   "label": "Comps: EV/EBITDA"
+  },
+  {
+   "key": "comps_pb",
+   "low": 4.64275998970342,
+   "base": 5.936597862588905,
+   "high": 9.423025837381449,
+   "skipped": null,
+   "steps": [
+    {
+     "label": "Multiple ของ peer P25 / P50 / P75",
+     "formula": "PERCENTILE ของ peer ที่ใช้ได้",
+     "value": null,
+     "unit": ""
+    },
+    {
+     "label": "P25 ของ peer",
+     "formula": "PERCENTILE.INC ของ P/BV ที่ 25%",
+     "value": 0.9625669,
+     "unit": "x"
+    },
+    {
+     "label": "P50 ของ peer",
+     "formula": "PERCENTILE.INC ของ P/BV ที่ 50%",
+     "value": 1.2308137,
+     "unit": "x"
+    },
+    {
+     "label": "P75 ของ peer",
+     "formula": "PERCENTILE.INC ของ P/BV ที่ 75%",
+     "value": 1.9536424,
+     "unit": "x"
+    },
+    {
+     "label": "มูลค่าต่อหุ้นที่ P50",
+     "formula": "P/BV × (ส่วนผู้ถือหุ้น ÷ จำนวนหุ้น)",
+     "value": 5.936597862588905,
+     "unit": "per_share"
+    }
+   ],
+   "detail": {
+    "field": "price_to_book",
+    "used": {
+     "BJCHI.BK": 0.37812978,
+     "SRICHA.BK": 2.6143792,
+     "PSGC.BK": 1.9536424,
+     "CK.BK": 0.9625669,
+     "STECON.BK": 1.2308137
+    },
+    "dropped": {},
+    "target": 1.1610280634697072,
+    "multiples": [
+     0.9625669,
+     1.2308137,
+     1.9536424
+    ]
+   },
+   "label": "Comps: P/BV"
+  },
+  {
+   "key": "week52",
+   "low": 3.54,
+   "base": null,
+   "high": 7.1,
+   "skipped": null,
+   "steps": [
+    {
+     "label": "ต่ำสุด",
+     "formula": "Yahoo fiftyTwoWeekLow",
+     "value": 3.54,
+     "unit": "per_share"
+    },
+    {
+     "label": "สูงสุด",
+     "formula": "Yahoo fiftyTwoWeekHigh",
+     "value": 7.1,
+     "unit": "per_share"
+    }
+   ],
+   "detail": {},
+   "label": "ช่วงราคา 52 สัปดาห์"
+  }
+ ],
+ "warnings": [
+  "Terminal value เป็น 80% ของ EV ผลอ่อนไหวกับ WACC และ g มาก (playbook §4: ไม่พบกฎสัดส่วนใน notebook มีแค่ตัวอย่าง 46–70%)"
+ ]
+}

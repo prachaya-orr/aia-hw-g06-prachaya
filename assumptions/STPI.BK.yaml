@@ -1,0 +1,235 @@
+# สมมติฐานของ STPI.BK ร่างจากข้อมูลดิบเมื่อ 2026-10-31T22:24:52+07:00
+# status: draft = ยังไม่ผ่านการรีวิว · reviewed = ผู้เรียนยืนยันแล้ว
+# ค่า kind: derived คำนวณจากอดีต · assumption ต้องอ้างเหตุผลจาก research/playbook.md ก่อนเปลี่ยน status
+ticker: STPI.BK
+status: reviewed   # ผู้เรียนยืนยันข้อเสนอ 5 ข้อใน research/STPI.BK_method_choice.md เมื่อ 2026-10-31
+method_choice: research/STPI.BK_method_choice.md
+methods:
+- dcf_fcff
+- comps_ev_ebitda
+- comps_pb
+- week52
+method_reasons:
+  dcf_fcff: ธุรกิจรับเหมาตามโครงการที่กำไรขึ้นลงตามรอบ ใช้ DCF บน operating margin เฉลี่ยตลอดรอบ ไม่ใช้ปีที่กำไรสูงหรือต่ำสุดเป็นฐาน
+    และบวกเงินลงทุนกับอสังหาฯ เพื่อการลงทุนที่ไม่อยู่ใน EBIT (playbook §1, §2, §8)
+  comps_ev_ebitda: playbook แนะนำ EV/EBITDA บนตัวเลขที่ normalize แล้วสำหรับธุรกิจ cyclical จึงใช้ EBITDA margin เฉลี่ย 2022–2025
+    × รายได้ปีล่าสุด (playbook §1, §8, §9)
+  comps_pb: ใช้เป็นแท่งอ้างอิงฝั่งสินทรัพย์ เพราะ P/E ใช้ไม่ได้ (ขาดทุน TTM) และ book ครึ่งหนึ่งเป็นเงินลงทุนกับอสังหาฯ ตัวขับของ
+    P/BV คือ ROE notebook ไม่ได้แนะนำ P/BV สำหรับ cyclical โดยตรง (playbook §9)
+  week52: แท่งมาตรฐานของ football field (playbook §13)
+  comps_pe: EPS ย้อนหลัง 12 เดือนติดลบ (−฿0.01) P/E ใช้กับบริษัทขาดทุนไม่ได้ และ P/E ของ cyclical หลอกตาตามรอบกำไร (playbook
+    §8, §9)
+  ddm: ไม่จ่ายปันผลตั้งแต่ปี 2020 (playbook §5)
+limitations:
+- ประวัติงบใน Yahoo มีแค่ 4 ปี (2022–2025) สั้นกว่าช่วง 5–10 ปีที่ playbook §8 แนะนำ และอาจไม่ครอบคลุมทั้งรอบ
+- STPI ซื้อกิจการทุกปี 2023–2025 (Purchase Of Business ฿1,744 / 559 / 168 ล้าน) สินทรัพย์ถาวร หนี้ ค่าเสื่อม และ minority
+  เพิ่มมากในปี 2024 ค่าเฉลี่ย 4 ปีจึงปนธุรกิจก่อนและหลังซื้อกิจการ Yahoo ไม่บอกว่าซื้ออะไร
+- DCF ใช้ operating margin เฉลี่ยตลอดรอบ (5.35%) ถ้าธุรกิจหลังซื้อกิจการทำ margin ได้แบบปี 2025 (12.53%) ต่อเนื่อง มูลค่าจะสูงขึ้นมาก
+  (ดู scenario ใน research/STPI.BK_method_choice.md)
+- สินทรัพย์ที่ไม่ใช่การดำเนินงาน (฿5.17 พันล้าน) ใช้มูลค่าตามบัญชี playbook §2 ให้ใช้มูลค่าตลาดแต่ Trust sources ไม่มีมูลค่ายุติธรรมของอสังหาฯ
+  และเงินลงทุนในบริษัทร่วม/JV
+- 'peer มีธุรกิจไม่ตรงกัน: BJCHI ใกล้ที่สุดแต่ EBITDA ติดลบ, SRICHA P/E 3.19 เท่าน่าจะมีกำไรพิเศษ, CK และ STECON เป็นผู้รับเหมางานโยธาที่มีเงินลงทุนมาก'
+- EBITDA ของ peer เป็นงวดล่าสุดไม่ได้ normalize ขณะที่ของ STPI normalize แล้ว และ EV ของ peer ไม่ได้หักเงินลงทุนของ peer เอง
+- ปลายแท่งใน football field (P25–P75 ของ peer และกล่อง ±0.5% ของ DCF) เป็นการเลือกของผู้เรียน notebook ไม่มีกฎ (playbook §13)
+- ไม่มี precedent transactions และ analyst target price เพราะไม่มีข้อมูลใน Trust sources
+# ผู้รับเหมาไทย 5 ตัว (ตัด TTCL.BK ที่ส่วนผู้ถือหุ้นติดลบ, ITD.BK ที่ขาดทุน และผู้รับเหมาอาคารขนาดเล็ก) รายละเอียดใน method_choice
+peers:
+- BJCHI.BK
+- SRICHA.BK
+- PSGC.BK
+- CK.BK
+- STECON.BK
+minority_proxy: null
+inputs:
+  price:
+    from: info.price
+  shares:
+    from: info.shares_outstanding
+  week52_low:
+    from: info.week52_low
+  week52_high:
+    from: info.week52_high
+  beta:
+    from: info.beta
+  beta_unlevered:
+    from: damodaran.unlevered_beta
+  tax_rate_marginal:
+    from: damodaran.tax_rate_marginal
+  rf:
+    from: risk_free
+  country_default_spread:
+    from: damodaran.default_spread
+  erp:
+    from: damodaran.erp_country_total
+  revenue_base:
+    from:
+      stmt: income_stmt
+      item: Total Revenue
+  ebitda_ltm:
+    value: 509520453.27
+    source: 'คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) งวด 2022–2025: เฉลี่ย EBITDA ÷ Total Revenue
+      (1.09%, 8.94%, 20.55%, 29.21% เฉลี่ย 14.95%) × Total Revenue ปี 2025 ฿3,408.9 ล้าน'
+    url: https://finance.yahoo.com/quote/STPI.BK/financials/
+    asof: '2025-12-31'
+    kind: derived
+    note: EBITDA ที่ normalize แล้วตาม playbook §8 (ไม่ใช่งวดล่าสุด) · EBITDA ปี 2025 จริง ฿995.6 ล้าน · ใช้รายการ EBITDA
+      ของ Yahoo ให้นิยามเดียวกับ peer
+  eps_ltm:
+    from: info.trailing_eps
+  equity_book:
+    from:
+      stmt: balance_sheet
+      item: Stockholders Equity
+  total_debt:
+    from:
+      stmt: balance_sheet
+      item: Total Debt
+  lease_liabilities:
+    from:
+      stmt: balance_sheet
+      item: Capital Lease Obligations
+  cash:
+    from:
+      stmt: balance_sheet
+      item: Cash And Cash Equivalents
+  minority_interest:
+    from:
+      stmt: balance_sheet
+      item: Minority Interest
+  dps_ttm:
+    from:
+      dividends: ttm
+  tax_rate:
+    value: 0.2
+    source: อัตราภาษีนิติบุคคลของไทยจาก Damodaran Online, Country Default Spreads and Risk Premiums (คอลัมน์ Corporate Tax
+      Rate)
+    url: https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ctryprem.html
+    asof: '2026-01-05'
+    kind: assumption
+    note: 'ภาษีจริงในอดีตบิดเบือนจากปีขาดทุนและรายการพิเศษ (2023: −4.2%, 2024: 38.0%, 2025: 15.7%) playbook §8 ให้ normalize
+      ทุกตัวไปพร้อมกัน'
+  interest_coverage:
+    value: 2.471146
+    source: 'คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) งวด 2025–2025: EBIT ÷ Interest Expense งวดล่าสุด'
+    url: https://finance.yahoo.com/quote/STPI.BK/financials/
+    asof: '2025-12-31'
+    kind: derived
+  company_default_spread:
+    value: 0.0138
+    source: 'Damodaran Online, Ratings, Interest Coverage Ratios and Default Spread (ตารางซ้าย: For large non-financial service
+      firms)'
+    url: https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ratings.html
+    asof: '2026-01-01'
+    kind: derived
+    note: coverage 2.47 อยู่ในช่วง > 2.25 ถึง ≤ 2.49999 → rating Ba1/BB+
+  terminal_roc:
+    value: wacc
+    source: 'research/playbook.md §4: ช่วง terminal ให้ excess return เข้าหา 0 จึงตั้ง ROC = WACC (กฎเดียวกับ CPALL.BK และ
+      BDMS.BK)'
+    url: null
+    asof: null
+    kind: assumption
+    note: ROC เฉลี่ยในอดีต 2022–2025 คือ 1.99% (EBIT × (1 − tax) ÷ (Equity + Minority + Debt − Cash) จาก Yahoo)
+  revenue_growth:
+    value:
+    - 0.007985
+    - 0.007985
+    - 0.007985
+    - 0.007985
+    - 0.007985
+    source: 'research/playbook.md §8: ห้ามใส่ high growth ซ้อนบนฐานที่ normalize แล้ว จึงให้รายได้โตเท่า terminal growth ทุกปี
+      รายได้ปี 2025 (฿3,408.9 ล้าน) ใกล้ค่าเฉลี่ย 4 ปี (฿3,390 ล้าน) จึงใช้เป็นฐานได้'
+    url: null
+    asof: null
+    kind: assumption
+    note: CAGR 2022–2025 คือ −3.18% และรายได้แต่ละปีขึ้นลง (3,756 / 3,888 / 2,507 / 3,409 ล้าน)
+  ebit_margin:
+    value:
+    - 0.053528
+    - 0.053528
+    - 0.053528
+    - 0.053528
+    - 0.053528
+    source: 'คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) งวด 2022–2025: เฉลี่ย Operating Income ÷
+      Total Revenue (−3.19%, 6.61%, 5.46%, 12.53%) ใช้ค่าเดียวกันทุกปี'
+    url: https://finance.yahoo.com/quote/STPI.BK/financials/
+    asof: '2025-12-31'
+    kind: derived
+    note: ใช้ Operating Income (กำไรขั้นต้น − SG&A) ไม่ใช้ EBIT ของ Yahoo เพราะ EBIT รวมส่วนแบ่งกำไรบริษัทร่วม กำไรขายเงินลงทุน
+      และรายการพิเศษ ซึ่งจะนับซ้ำกับ non_operating_assets (playbook §12 ข้อ 5)
+  da_pct_revenue:
+    value: 0.093773
+    source: 'คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.cashflow (งบรายปี) งวด 2022–2025: เฉลี่ย Depreciation And Amortization
+      ÷ Total Revenue'
+    url: https://finance.yahoo.com/quote/STPI.BK/cash-flow/
+    asof: '2025-12-31'
+    kind: derived
+    note: ค่าเสื่อมเพิ่มจาก 4.7–5.0% เป็น 12.0–15.8% หลังซื้อกิจการปี 2024
+  capex_pct_revenue:
+    value: 0.093773
+    source: ตั้งเท่ากับ da_pct_revenue เพราะ capex ในอดีต (2.44%) ต่ำกว่า D&A (9.38%) มาก reinvestment จะติดลบ ขัดกับ playbook
+      §12 ข้อ 4 (กฎเดียวกับ CPALL.BK)
+    url: null
+    asof: null
+    kind: assumption
+    note: Capex ÷ รายได้เฉลี่ยในอดีต 2022–2025 คือ 2.44% (−Capital Expenditure ÷ Total Revenue จาก Yahoo) การลงทุนส่วนใหญ่มาในรูปซื้อกิจการ
+  nwc_pct_delta_revenue:
+    value: 0.437239
+    source: 'คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) งวด 2025: non-cash working capital ÷ Total
+      Revenue = (Current Assets − Cash − Other Short Term Investments) − (Current Liabilities − Current Debt And Capital Lease
+      Obligation) = (2,729.9 − 387.6 − 132.8) − (1,480.0 − 761.0) = ฿1,490.5 ล้าน ÷ ฿3,408.9 ล้าน'
+    url: https://finance.yahoo.com/quote/STPI.BK/balance-sheet/
+    asof: '2025-12-31'
+    kind: derived
+    note: ค่าในร่างแรก −Change In Working Capital ÷ Δรายได้ ได้ −83% เพราะรายได้ขึ้นลง ใช้ไม่ได้
+  minority_pb:
+    value: 1.2308137
+    source: 'มัธยฐาน priceToBook ของ peer 5 ตัวจาก Yahoo Finance (yfinance 1.7.0) Ticker.info: BJCHI.BK 0.38, CK.BK 0.96,
+      STECON.BK 1.23, PSGC.BK 1.95, SRICHA.BK 2.61 (playbook §2: แปลง minority interest จาก book เป็น market ด้วย P/B ของ
+      sector)'
+    url: https://finance.yahoo.com/quote/STECON.BK/key-statistics/
+    asof: '2026-10-31'
+    kind: derived
+    note: ไม่มีบริษัทลูกที่จดทะเบียนให้ใช้เป็น minority proxy หน้า key-statistics ของ peer ตัวอื่นใช้ URL รูปแบบเดียวกัน
+  non_operating_assets:
+    value: 5169851491.0
+    source: 'Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) งวด 2025: Investment Properties 2,659.2 + Long
+      Term Equity Investment (บริษัทร่วม 674.8 + JV 1,621.3) 2,296.1 + Available For Sale Securities 81.7 + Other Short Term
+      Investments 132.8 ล้านบาท'
+    url: https://finance.yahoo.com/quote/STPI.BK/balance-sheet/
+    asof: '2025-12-31'
+    kind: derived
+    note: มูลค่าตามบัญชี (playbook §2 ให้ใช้มูลค่าตลาดแต่ไม่มีใน Trust sources) · รายได้จากสินทรัพย์เหล่านี้ไม่อยู่ใน Operating
+      Income จึงไม่นับซ้ำ
+  include_leases_in_debt:
+    value: true
+    source: ค่าตั้งต้นใน config.yaml ตาม research/playbook.md
+    url: null
+    asof: null
+    kind: assumption
+  beta_method:
+    value: bottom_up
+    source: ค่าตั้งต้นใน config.yaml ตาม research/playbook.md
+    url: null
+    asof: null
+    kind: assumption
+  rf_adjust_default:
+    value: true
+    source: 'research/playbook.md §3: ถ้าพันธบัตรรัฐบาลมี default risk ให้หัก country default spread ก่อนใช้เป็น Rf'
+    url: null
+    asof: null
+    kind: assumption
+  terminal_growth:
+    value: 0.007985
+    source: 'research/playbook.md §4: g ต้องไม่เกิน Rf จึงใช้ค่าต่ำกว่าระหว่าง 2.00% (config.yaml) กับ Rf หลังหัก default
+      spread 0.80%'
+    url: null
+    asof: null
+    kind: assumption
+  ddm_growth:
+    value: 0.007985
+    source: 'research/playbook.md §4: g ต้องไม่เกิน Rf จึงใช้ค่าต่ำกว่าระหว่าง 2.00% (config.yaml) กับ Rf หลังหัก default
+      spread 0.80%'
+    url: null
+    asof: null
+    kind: assumption

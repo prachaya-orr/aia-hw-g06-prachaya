@@ -135,6 +135,8 @@ damodaran:
       Real Estate - Development: Real Estate (Development)
       REIT - Retail: Retail (REITs)
       Medical Care Facilities: Hospitals/Healthcare Facilities
+      Engineering & Construction: Engineering/Construction
+      Metal Fabrication: Engineering/Construction   # ผู้รับเหมาโครงสร้างเหล็กแบบโครงการ (เช่น STPI) ไม่ใช่ผู้ผลิตเหล็ก (Steel)
 
 # ---------- Valuation (methods.py / excel.py) ----------
 valuation:

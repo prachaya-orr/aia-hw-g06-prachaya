@@ -144,8 +144,9 @@ def sheet_wacc(wb: Workbook) -> None:
          'terminal_roc = "wacc" แปลว่า ROC = WACC (ไม่มี excess return)'),
         ("x_minority", "Minority interest ตามมูลค่าตลาด", "=in_minority_interest*in_minority_pb", "money",
          "minority (book) × P/BV"),
-        ("x_bridge", "EV → Equity สำหรับ DCF (− หนี้ + เงินสด − minority ตามมูลค่าตลาด)", "=-x_debt+in_cash-x_minority",
-         "money", "playbook §2: minority interest ตามมูลค่าตลาด"),
+        ("x_bridge", "EV → Equity สำหรับ DCF (− หนี้ + เงินสด + สินทรัพย์ที่ไม่ใช่การดำเนินงาน − minority ตามมูลค่าตลาด)",
+         "=-x_debt+in_cash+in_non_operating_assets-x_minority", "money",
+         "playbook §2: บวก cross holdings และสินทรัพย์ที่ไม่ใช่การดำเนินงาน · minority interest ตามมูลค่าตลาด"),
         ("x_bridge_book", "EV → Equity สำหรับ EV/EBITDA (− หนี้ + เงินสด − minority ตาม book)",
          "=-x_debt+in_cash-in_minority_interest", "money", "EV ของ peer รวม minority ตาม book จึงหักกลับด้วยนิยามเดียวกัน"),
     ]
