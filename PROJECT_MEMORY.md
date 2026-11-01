@@ -99,3 +99,9 @@
 - **เจออะไร:** DCF ร่างแรกของ STPI ไม่บวกเงินลงทุนได้ −฿0.46 ต่อหุ้น · ΔNWC ÷ Δรายได้ในร่างได้ −83% · CAGR รายได้ −3.18%
 - **สาเหตุ:** โมเดลไม่มีช่องบวก cross holdings ตาม playbook §2 ขณะที่ STPI ถือสินทรัพย์ที่ไม่ใช่การดำเนินงาน ฿5,170 ล้าน (51% ของมูลค่าตลาด) · รายได้แบบโครงการขึ้นลง ทำให้สูตรเฉลี่ยในร่างใช้ไม่ได้
 - **แก้อย่างไร:** เพิ่ม input `non_operating_assets` (ค่าเริ่มต้น 0) · ใช้ Operating Income แทน EBIT · normalize margin 4 ปี, รายได้โตเท่า g, NWC จากสัดส่วนในงบดุล · ผลยังต่ำกว่าราคาเพราะ ROC ในอดีต 1.99% ต่ำกว่า WACC ไม่ใช่ความผิดของสูตร
+
+### 2026-10-31 · CCET.BK: beta และ peer เปลี่ยนผลมาก
+
+- **เจออะไร:** Yahoo industry `Computer Hardware` ยังไม่มี mapping ทำให้ unlevered beta เป็น null · DCF ร่าง ฿1.02 ต่ำกว่าราคา ฿7.95 มาก · fetch และ LibreOffice verify รอบแรกถูก sandbox บล็อก และคำสั่งวิเคราะห์ scenario แบบ one-liner ผิด shell quoting สองครั้ง
+- **สาเหตุ:** ต้องจับคู่ชื่ออุตสาหกรรมของ Yahoo กับ Damodaran เอง · bottom-up beta ของ `Computers/Peripherals` ตลาดเกิดใหม่สูงถึง 1.618 (relever เป็น 1.946) เทียบ Yahoo regression beta 0.657 · CCET ซื้อขายที่ P/E และ EV/EBITDA ประมาณสองเท่าของมัธยฐาน peer · sandbox ไม่มี DNS/สิทธิ์ให้ LibreOffice ทำงานครบ · one-liner ใช้ single quote ซ้อนกัน
+- **แก้อย่างไร:** ตรวจ `betaemerg.xls` แล้วเพิ่ม mapping ที่ตรงชื่อ · ทดสอบ beta, ERP, growth และ margin ทีละตัวก่อนเชื่อผล · ใช้ peer ฮาร์ดแวร์/EMS ไต้หวัน 5 ตัวแทนหุ้นชิ้นส่วนไทย · ขอสิทธิ์เครือข่ายและ LibreOffice ตามปกติ · แก้คำสั่งวิเคราะห์ให้เก็บค่าจาก dict ในตัวแปรแทนการซ้อน quote

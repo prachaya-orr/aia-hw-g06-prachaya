@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CCET.BK Valuation</title>
+<style>
+:root {
+  --bg: #f7f6f2; --surface: #ffffff; --ink: #1d1f23; --muted: #5d636e; --line: #dcdad3;
+  --accent: #2f5fa7; --accent-soft: #dbe5f4; --price: #c2412d; --warn-bg: #fff4dc; --warn-ink: #7a5300;
+  --box: #fff1c2; --head: #eeece6; --bar: #4b77bd; --bar-base: #10284f;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171b; --surface: #1d2026; --ink: #e8e9ec; --muted: #a3a9b4; --line: #343841;
+    --accent: #8fb2ea; --accent-soft: #263652; --price: #ff8a73; --warn-bg: #3a2f14; --warn-ink: #f3d08a;
+    --box: #4a3f17; --head: #262a31; --bar: #6f97d8; --bar-base: #e8eefa;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171b; --surface: #1d2026; --ink: #e8e9ec; --muted: #a3a9b4; --line: #343841;
+  --accent: #8fb2ea; --accent-soft: #263652; --price: #ff8a73; --warn-bg: #3a2f14; --warn-ink: #f3d08a;
+  --box: #4a3f17; --head: #262a31; --bar: #6f97d8; --bar-base: #e8eefa;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.65 "IBM Plex Sans Thai", "Noto Sans Thai", "Sukhumvit Set", Thonburi, system-ui, sans-serif;
+}
+main { max-width: 980px; margin: 0 auto; padding: 32px 16px 64px; }
+h1 { font-size: 1.9rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.35rem; margin: 48px 0 12px; padding-top: 8px; border-top: 1px solid var(--line); }
+h3 { font-size: 1.08rem; margin: 28px 0 8px; }
+p { margin: 8px 0; }
+a { color: var(--accent); }
+.muted { color: var(--muted); }
+.small { font-size: .875rem; }
+.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 18px; color: var(--muted); font-size: .9rem; margin-bottom: 20px; }
+.badge { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: .8rem; background: var(--accent-soft); color: var(--accent); }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 16px 0; }
+.kpi .label { font-size: .82rem; color: var(--muted); }
+.kpi .value { font-size: 1.35rem; font-weight: 600; }
+nav.toc { font-size: .92rem; }
+nav.toc ol { margin: 6px 0 0; padding-left: 20px; columns: 2; column-gap: 24px; }
+@media (max-width: 600px) { nav.toc ol { columns: 1; } }
+
+/* football field */
+.ff { margin-top: 8px; }
+.ff-row { display: grid; grid-template-columns: 190px 1fr; gap: 12px; align-items: center; padding: 6px 0; }
+.ff-label { font-size: .92rem; line-height: 1.3; }
+.ff-label .small { display: block; }
+.ff-track { position: relative; height: 28px; }
+.ff-bar { position: absolute; top: 5px; height: 18px; background: var(--bar); border-radius: 3px; }
+.ff-base { position: absolute; top: 1px; width: 3px; height: 26px; background: var(--bar-base); border-radius: 1px; transform: translateX(-1px); }
+.ff-plot { position: relative; }
+.ff-price { position: absolute; top: 0; bottom: 22px; width: 0; border-left: 2px dashed var(--price); pointer-events: none; }
+.ff-price span { position: absolute; top: -22px; left: 4px; white-space: nowrap; font-size: .8rem; color: var(--price); font-weight: 600; }
+.ff-zero { position: absolute; top: 0; bottom: 22px; border-left: 1px solid var(--muted); opacity: .5; }
+.ff-axis { position: relative; height: 22px; border-top: 1px solid var(--line); margin-left: 202px; }
+.ff-axis span { position: absolute; top: 3px; transform: translateX(-50%); font-size: .75rem; color: var(--muted); }
+.ff-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .82rem; color: var(--muted); margin-top: 10px; }
+.swatch { display: inline-block; width: 18px; height: 10px; vertical-align: middle; margin-right: 6px; border-radius: 2px; }
+.ff-rows { position: relative; margin-left: 0; padding-top: 22px; }
+@media (max-width: 600px) {
+  .ff-row { grid-template-columns: 1fr; gap: 2px; }
+  .ff-axis { margin-left: 0; }
+  .ff-rows .ff-price, .ff-rows .ff-zero { display: none; }
+  .ff-track .ff-price-m { display: block; }
+}
+.ff-price-m { display: none; position: absolute; top: 0; bottom: 0; border-left: 2px dashed var(--price); }
+
+/* tables */
+.scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; background: var(--surface); }
+th, td { border-bottom: 1px solid var(--line); padding: 7px 10px; text-align: left; vertical-align: top; }
+th { background: var(--head); font-weight: 600; }
+td.r, th.r { text-align: right; }
+tr.hl td { font-weight: 600; }
+td.box { background: var(--box); }
+td.center { outline: 2px solid var(--ink); outline-offset: -2px; }
+.steps td:first-child { width: 34%; }
+.formula { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: .84rem; color: var(--muted); }
+.warn { background: var(--warn-bg); color: var(--warn-ink); border-radius: 8px; padding: 10px 14px; margin: 8px 0; }
+ul.tight { margin: 6px 0; padding-left: 20px; }
+ul.tight li { margin: 3px 0; }
+.src { word-break: break-word; }
+footer { margin-top: 48px; color: var(--muted); font-size: .85rem; }
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <p class="muted small" style="margin:0">Valuation step by step · CCET.BK</p>
+  <h1>Cal-Comp Electronics (Thailand) Public Company Limited</h1>
+  <div class="meta">
+    <span>Technology · Computer Hardware · Thailand</span>
+    <span>ดึงข้อมูลเมื่อ 2026-10-31 23:12</span>
+    <span>สมมติฐาน <span class="badge">draft</span></span>
+  </div>
+</header>
+
+<div class="kpis">
+  <div class="card kpi"><div class="label">ราคาล่าสุด</div><div class="value num">฿7.95</div>
+    <div class="small muted">ณ 2026-10-30</div></div>
+  <div class="card kpi"><div class="label">WACC</div><div class="value num">10.91%</div>
+    <div class="small muted">Ke 13.06% · Kd หลังภาษี 2.44%</div></div>
+  <div class="card kpi"><div class="label">DCF base</div><div class="value num">฿1.02</div>
+    <div class="small muted">ช่วง ฿0.91 – ฿1.13</div></div>
+  <div class="card kpi"><div class="label">วิธีที่ใช้</div><div class="value num">4</div>
+    <div class="small muted">ไม่ใช้ 2 วิธี</div></div>
+</div>
+
+<nav class="toc card" aria-label="สารบัญ">
+  <strong>สารบัญ</strong>
+  <ol>
+    <li><a href="#football">Football field</a></li>
+    <li><a href="#methods">วิธีที่เลือกและเหตุผล</a></li>
+    <li><a href="#wacc">Discount rate (WACC)</a></li>
+    <li><a href="#dcf">DCF ทีละขั้น</a></li>
+    <li><a href="#sensitivity">Sensitivity</a></li>
+    <li><a href="#comps">Comparable companies</a></li>
+    <li><a href="#assumptions">สมมติฐานทั้งหมดและที่มา</a></li>
+    <li><a href="#limits">คำเตือนและข้อจำกัด</a></li>
+    <li><a href="#sources">แหล่งข้อมูล</a></li>
+  </ol>
+</nav>
+
+<!-- 1. football field -->
+<h2 id="football">1. Football field</h2>
+<p>แต่ละแท่งคือช่วงมูลค่าต่อหุ้นจากวิธีหนึ่ง ขีดเข้มในแท่งคือค่า base เส้นประสีแดงคือราคาปัจจุบัน</p>
+<div class="card ff">
+  <div class="ff-rows">
+    <div style="position:absolute; left:202px; right:0; top:0; bottom:0;" class="ff-plot" aria-hidden="true">
+      <div class="ff-price" style="left: 63.6%"><span>ราคา ฿7.95</span></div>
+    </div>
+    <div class="ff-row">
+      <div class="ff-label">DCF (FCFF)
+        <span class="small muted num">฿0.91 – ฿1.13 · base ฿1.02</span>
+      </div>
+      <div class="ff-track" role="img" aria-label="DCF (FCFF) ฿0.91 ถึง ฿1.13, ราคาสูงกว่าช่วง">
+        <div class="ff-price-m" style="left: 63.6%"></div>
+        <div class="ff-bar" style="left: 7.29%; width: 1.7779999999999996%"></div>
+<div class="ff-base" style="left: 8.137%"></div>      </div>
+    </div>
+    <div class="ff-row">
+      <div class="ff-label">Comps: P/E
+        <span class="small muted num">฿3.43 – ฿3.83 · base ฿3.74</span>
+      </div>
+      <div class="ff-track" role="img" aria-label="Comps: P/E ฿3.43 ถึง ฿3.83, ราคาสูงกว่าช่วง">
+        <div class="ff-price-m" style="left: 63.6%"></div>
+        <div class="ff-bar" style="left: 27.405%; width: 3.2349999999999994%"></div>
+<div class="ff-base" style="left: 29.896%"></div>      </div>
+    </div>
+    <div class="ff-row">
+      <div class="ff-label">Comps: EV/EBITDA
+        <span class="small muted num">฿3.03 – ฿3.28 · base ฿3.05</span>
+      </div>
+      <div class="ff-track" role="img" aria-label="Comps: EV/EBITDA ฿3.03 ถึง ฿3.28, ราคาสูงกว่าช่วง">
+        <div class="ff-price-m" style="left: 63.6%"></div>
+        <div class="ff-bar" style="left: 24.268%; width: 2.0009999999999977%"></div>
+<div class="ff-base" style="left: 24.374%"></div>      </div>
+    </div>
+    <div class="ff-row">
+      <div class="ff-label">ช่วงราคา 52 สัปดาห์
+        <span class="small muted num">฿4.14 – ฿11.20</span>
+      </div>
+      <div class="ff-track" role="img" aria-label="ช่วงราคา 52 สัปดาห์ ฿4.14 ถึง ฿11.20, ราคาอยู่ในช่วง">
+        <div class="ff-price-m" style="left: 63.6%"></div>
+        <div class="ff-bar" style="left: 33.12%; width: 56.48%"></div>
+      </div>
+    </div>
+  </div>
+  <div class="ff-axis" aria-hidden="true">
+<span style="left: 0.0%">0</span><span style="left: 20.0%">2.5</span><span style="left: 40.0%">5</span><span style="left: 60.0%">7.5</span><span style="left: 80.0%">10</span><span style="left: 100.0%">12.5</span>  </div>
+  <div class="ff-legend">
+    <span><span class="swatch" style="background:var(--bar)"></span>ช่วงมูลค่า (low–high)</span>
+    <span><span class="swatch" style="background:var(--bar-base); width:3px"></span>base</span>
+    <span><span class="swatch" style="border-top:2px dashed var(--price); height:0"></span>ราคาปัจจุบัน</span>
+  </div>
+</div>
+
+<div class="scroll" style="margin-top:14px">
+<table>
+  <thead><tr><th>วิธี</th><th class="r">Low</th><th class="r">Base</th><th class="r">High</th><th>เทียบราคา ฿7.95</th></tr></thead>
+  <tbody>
+    <tr><td>DCF (FCFF)</td><td class="r num">฿0.91</td><td class="r num">฿1.02</td>
+      <td class="r num">฿1.13</td><td>ราคาสูงกว่าช่วง</td></tr>
+    <tr><td>Comps: P/E</td><td class="r num">฿3.43</td><td class="r num">฿3.74</td>
+      <td class="r num">฿3.83</td><td>ราคาสูงกว่าช่วง</td></tr>
+    <tr><td>Comps: EV/EBITDA</td><td class="r num">฿3.03</td><td class="r num">฿3.05</td>
+      <td class="r num">฿3.28</td><td>ราคาสูงกว่าช่วง</td></tr>
+    <tr><td>ช่วงราคา 52 สัปดาห์</td><td class="r num">฿4.14</td><td class="r num">–</td>
+      <td class="r num">฿11.20</td><td>ราคาอยู่ในช่วง</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="small muted">ปลายแท่ง: DCF ใช้ WACC และ terminal growth ±0.5% จากตาราง sensitivity · comps ใช้ P25–P75 ของ peer และ base = มัธยฐาน · notebook ไม่มีกฎตั้งปลายแท่ง จึงเป็นการเลือกของผู้เรียน (playbook §13)</p>
+
+<!-- 2. methods -->
+<h2 id="methods">2. วิธีที่เลือกและเหตุผล</h2>
+<p>เลือกตามประเภทธุรกิจใน <code>research/playbook.md</code> ซึ่งมาจาก NotebookLM notebook "Valuation Methods" รายละเอียดเต็มอยู่ใน <code>research/CCET.BK_method_choice.md</code></p>
+<div class="scroll">
+<table>
+  <thead><tr><th>วิธี</th><th>ใช้ไหม</th><th>เหตุผล</th></tr></thead>
+  <tbody>
+    <tr><td>DCF (FCFF)</td>
+      <td>ใช้</td>
+      <td>ผู้ผลิตฮาร์ดแวร์ที่รายได้และกำไรผันผวนตามรอบ ใช้ DCF บนรายได้และ margin ที่ normalize และรวม country risk premium สำหรับตลาดเกิดใหม่ (playbook §1, §3, §8)</td></tr>
+    <tr><td>Comps: P/E</td>
+      <td>ใช้</td>
+      <td>บริษัทมีกำไรและ peer มีกำไรทุกตัว ใช้ P/E เป็น equity multiple โดยอ่านร่วมกับความต่างด้าน growth และ risk (playbook §9)</td></tr>
+    <tr><td>Comps: EV/EBITDA</td>
+      <td>ใช้</td>
+      <td>ธุรกิจใช้เงินทุนและ leverage ต่างกัน ใช้ enterprise multiple บน EBITDA ที่คำนวณด้วยนิยามเดียวกันจากงบรายปี (playbook §8, §9)</td></tr>
+    <tr><td>ช่วงราคา 52 สัปดาห์</td>
+      <td>ใช้</td>
+      <td>แท่งมาตรฐานของ football field (playbook §13)</td></tr>
+    <tr><td>Dividend Discount Model</td>
+      <td>ไม่ใช้</td>
+      <td>payout เทียบ EPS ผันผวนจาก 19% ในปี 2022 เป็น 100% ในปี 2025 และยังไม่ได้พิสูจน์ว่าปันผลใกล้ FCFE จึงไม่ใช้ DDM (playbook §1, §5)</td></tr>
+    <tr><td>Comps: P/BV</td>
+      <td>ไม่ใช้</td>
+      <td>ตัวขับหลักของ P/BV คือ ROE และ playbook แนะนำเด่นกับธนาคาร จึงไม่ใช้เป็นวิธีหลักของผู้ผลิตฮาร์ดแวร์ (playbook §9)</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- 3. WACC -->
+<h2 id="wacc">3. Discount rate (WACC)</h2>
+<div class="scroll">
+<table class="steps">
+  <thead><tr><th>ขั้น</th><th>สูตร</th><th class="r">ผล</th></tr></thead>
+  <tbody>
+    <tr><td>Risk-free rate</td><td class="formula">พันธบัตรรัฐบาล − country default spread</td><td class="r num">0.80%</td></tr>
+    <tr><td>D/E ตามมูลค่าตลาด</td><td class="formula">หนี้ ÷ (ราคา × จำนวนหุ้น)</td><td class="r num">0.25×</td></tr>
+    <tr><td>Levered beta (bottom-up)</td><td class="formula">βu × (1 + (1 − tax marginal) × D/E)</td><td class="r num">1.95</td></tr>
+    <tr><td>Cost of equity (CAPM)</td><td class="formula">Rf + Beta × ERP</td><td class="r num">13.06%</td></tr>
+    <tr><td>Cost of debt ก่อนภาษี</td><td class="formula">Rf + country default spread + company default spread</td><td class="r num">3.05%</td></tr>
+    <tr><td>Cost of debt หลังภาษี</td><td class="formula">Kd × (1 − tax marginal)</td><td class="r num">2.44%</td></tr>
+    <tr><td>สัดส่วนทุน E/(D+E)</td><td class="formula">ราคา × จำนวนหุ้น ÷ (มูลค่าตลาดทุน + หนี้)</td><td class="r num">79.77%</td></tr>
+    <tr><td>WACC</td><td class="formula">We × Ke + Wd × Kd หลังภาษี</td><td class="r num">10.91%</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="small muted">ตัวเลขที่ใส่: พันธบัตรรัฐบาล 2.16% · country default spread 1.36% · unlevered beta อุตสาหกรรม 1.618 · ERP 6.30% · company default spread 0.89% (coverage 4.15 อยู่ในช่วง &gt; 3 ถึง ≤ 4.25 → rating A3/A-) · ภาษีตามกฎหมาย 20% · หนี้ 21.1 พันล้าน THB · มูลค่าตลาดของทุน 83.1 พันล้าน THB</p>
+
+<!-- 4. DCF -->
+<h2 id="dcf">4. DCF (FCFF) ทีละขั้น</h2>
+<h3>4.1 ประมาณการกระแสเงินสด 5 ปี</h3>
+<p>ปีฐานคือรายได้ 138.6 พันล้าน THB (งวด 2025-12-31)</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>รายการ</th><th class="r">ปี 1</th><th class="r">ปี 2</th><th class="r">ปี 3</th><th class="r">ปี 4</th><th class="r">ปี 5</th></tr></thead>
+  <tbody>
+    <tr><td>การเติบโตของรายได้</td><td class="r num">0.80%</td><td class="r num">0.80%</td><td class="r num">0.80%</td><td class="r num">0.80%</td><td class="r num">0.80%</td></tr>
+    <tr><td>รายได้</td><td class="r num">139.7 พันล้าน THB</td><td class="r num">140.9 พันล้าน THB</td><td class="r num">142.0 พันล้าน THB</td><td class="r num">143.1 พันล้าน THB</td><td class="r num">144.3 พันล้าน THB</td></tr>
+    <tr><td>EBIT (margin 2.28%)</td><td class="r num">3.2 พันล้าน THB</td><td class="r num">3.2 พันล้าน THB</td><td class="r num">3.2 พันล้าน THB</td><td class="r num">3.3 พันล้าน THB</td><td class="r num">3.3 พันล้าน THB</td></tr>
+    <tr><td>NOPAT = EBIT × (1 − 20.3%)</td><td class="r num">2.5 พันล้าน THB</td><td class="r num">2.6 พันล้าน THB</td><td class="r num">2.6 พันล้าน THB</td><td class="r num">2.6 พันล้าน THB</td><td class="r num">2.6 พันล้าน THB</td></tr>
+    <tr><td>+ D&amp;A (1.69% ของรายได้)</td><td class="r num">2.4 พันล้าน THB</td><td class="r num">2.4 พันล้าน THB</td><td class="r num">2.4 พันล้าน THB</td><td class="r num">2.4 พันล้าน THB</td><td class="r num">2.4 พันล้าน THB</td></tr>
+    <tr><td>− Capex (1.92% ของรายได้)</td><td class="r num">2.7 พันล้าน THB</td><td class="r num">2.7 พันล้าน THB</td><td class="r num">2.7 พันล้าน THB</td><td class="r num">2.8 พันล้าน THB</td><td class="r num">2.8 พันล้าน THB</td></tr>
+    <tr><td>− ΔNWC (13.63% ของรายได้ที่เพิ่ม)</td><td class="r num">0.2 พันล้าน THB</td><td class="r num">0.2 พันล้าน THB</td><td class="r num">0.2 พันล้าน THB</td><td class="r num">0.2 พันล้าน THB</td><td class="r num">0.2 พันล้าน THB</td></tr>
+    <tr class="hl"><td>FCFF</td><td class="r num">2.1 พันล้าน THB</td><td class="r num">2.1 พันล้าน THB</td><td class="r num">2.1 พันล้าน THB</td><td class="r num">2.1 พันล้าน THB</td><td class="r num">2.1 พันล้าน THB</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>4.2 จาก FCFF เป็นมูลค่าต่อหุ้น</h3>
+<div class="scroll">
+<table class="steps">
+  <thead><tr><th>ขั้น</th><th>สูตร</th><th class="r">ผล</th></tr></thead>
+  <tbody>
+    <tr><td>FCFF ปีที่ 5</td><td class="formula">NOPAT + D&amp;A − Capex − ΔNWC</td><td class="r num">2.1 พันล้าน THB</td></tr>
+    <tr><td>PV ของ FCFF ปี 1–5</td><td class="formula">Σ FCFFₜ ÷ (1 + WACC)ᵗ</td><td class="r num">7.8 พันล้าน THB</td></tr>
+    <tr><td>FCFF ปีที่ 6</td><td class="formula">NOPAT5 × (1 + g) × (1 − g ÷ ROC)</td><td class="r num">2.5 พันล้าน THB</td></tr>
+    <tr><td>Terminal value</td><td class="formula">FCFF6 ÷ (WACC − g)</td><td class="r num">24.3 พันล้าน THB</td></tr>
+    <tr><td>PV ของ terminal value</td><td class="formula">TV ÷ (1 + WACC)^5</td><td class="r num">14.5 พันล้าน THB</td></tr>
+    <tr><td>Enterprise value</td><td class="formula">PV FCFF + PV TV</td><td class="r num">22.2 พันล้าน THB</td></tr>
+    <tr><td>Minority interest ตามมูลค่าตลาด</td><td class="formula">minority (book) × P/BV</td><td class="r num">0.0 พันล้าน THB</td></tr>
+    <tr><td>หักหนี้ บวกเงินสด บวกสินทรัพย์ที่ไม่ใช่การดำเนินงาน หัก minority</td><td class="formula">− หนี้ + เงินสด + สินทรัพย์ที่ไม่ใช่การดำเนินงาน − minority (market)</td><td class="r num">−11.6 พันล้าน THB</td></tr>
+    <tr class="hl"><td>มูลค่าต่อหุ้น</td><td class="formula">(EV − หนี้ + เงินสด + สินทรัพย์ที่ไม่ใช่การดำเนินงาน − minority) ÷ จำนวนหุ้น</td><td class="r num">฿1.02</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="small muted">Terminal growth 0.80% · ROC ช่วง terminal 10.91% · terminal value เป็น 65% ของ EV · minority interest (book) 0.0 พันล้าน THB × P/BV 1.00</p>
+
+<!-- 5. sensitivity -->
+<h2 id="sensitivity">5. Sensitivity ของ DCF</h2>
+<p>มูลค่าต่อหุ้นเมื่อเปลี่ยน WACC (แถว) และ terminal growth (คอลัมน์) ช่องสีเหลืองคือช่วงที่ใช้ใน football field กรอบเข้มคือ base</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>WACC \ g</th><th class="r">-0.20%</th><th class="r">0.30%</th><th class="r">0.80%</th><th class="r">1.30%</th><th class="r">1.80%</th></tr></thead>
+  <tbody>
+    <tr><th>9.91%</th>
+      <td class="r num">฿1.23</td>
+      <td class="r num">฿1.24</td>
+      <td class="r num">฿1.25</td>
+      <td class="r num">฿1.25</td>
+      <td class="r num">฿1.26</td>
+</tr>
+    <tr><th>10.41%</th>
+      <td class="r num">฿1.11</td>
+      <td class="r num box">฿1.12</td>
+      <td class="r num box">฿1.13</td>
+      <td class="r num box">฿1.13</td>
+      <td class="r num">฿1.14</td>
+</tr>
+    <tr><th>10.91%</th>
+      <td class="r num">฿1.00</td>
+      <td class="r num box">฿1.01</td>
+      <td class="r num box center">฿1.02</td>
+      <td class="r num box">฿1.02</td>
+      <td class="r num">฿1.03</td>
+</tr>
+    <tr><th>11.41%</th>
+      <td class="r num">฿0.90</td>
+      <td class="r num box">฿0.91</td>
+      <td class="r num box">฿0.92</td>
+      <td class="r num box">฿0.92</td>
+      <td class="r num">฿0.93</td>
+</tr>
+    <tr><th>11.91%</th>
+      <td class="r num">฿0.81</td>
+      <td class="r num">฿0.82</td>
+      <td class="r num">฿0.83</td>
+      <td class="r num">฿0.83</td>
+      <td class="r num">฿0.84</td>
+</tr>
+  </tbody>
+</table>
+</div>
+
+<!-- 6. comps -->
+<h2 id="comps">6. Comparable companies</h2>
+<div class="scroll">
+<table>
+  <thead><tr><th>Ticker</th><th>บริษัท</th><th>Industry</th><th class="r">P/E (TTM)</th><th class="r">EV/EBITDA (คิดเอง)</th><th class="r">EV/EBITDA ของ Yahoo</th></tr></thead>
+  <tbody>
+    <tr><td>2312.TW</td><td>Kinpo Electronics, Inc.</td><td>Computer Hardware</td>
+      <td class="r num">24.92×</td><td class="r num">12.42×</td>
+      <td class="r num muted">13.10×</td></tr>
+    <tr><td>2324.TW</td><td>Compal Electronics, Inc.</td><td>Computer Hardware</td>
+      <td class="r num">18.24×</td><td class="r num">8.67×</td>
+      <td class="r num muted">12.16×</td></tr>
+    <tr><td>4938.TW</td><td>Pegatron Corporation</td><td>Computer Hardware</td>
+      <td class="r num">17.80×</td><td class="r num">6.56×</td>
+      <td class="r num muted">9.71×</td></tr>
+    <tr><td>3231.TW</td><td>Wistron Corporation</td><td>Computer Hardware</td>
+      <td class="r num">15.78×</td><td class="r num">8.64×</td>
+      <td class="r num muted">8.92×</td></tr>
+    <tr><td>2317.TW</td><td>Hon Hai Precision Industry Co., Ltd.</td><td>Electronic Components</td>
+      <td class="r num">16.31×</td><td class="r num">9.14×</td>
+      <td class="r num muted">8.30×</td></tr>
+    <tr class="hl"><td>CCET.BK</td><td>ตัวคูณปัจจุบัน</td><td></td>
+      <td class="r num">37.86×</td><td class="r num">18.41×</td><td></td></tr>
+  </tbody>
+</table>
+</div>
+<p class="small muted">EV/EBITDA คิดเองจากงบรายปีของทุกบริษัทด้วยนิยามเดียวกัน: (มูลค่าตลาด + หนี้รวมสัญญาเช่า + minority interest − เงินสด) ÷ EBITDA ไม่ใช้ค่าของ Yahoo เพราะ Yahoo ใช้ EBITDA ย้อนหลัง 12 เดือนที่ไม่ตรงกับงบรายปี (ตัวคูณของ CCET.BK ตามนิยามนี้ใกล้กับค่าที่หน้าเว็บ Yahoo แสดง)</p>
+
+<h3>Comps: P/E</h3>
+<div class="scroll">
+<table class="steps">
+  <thead><tr><th>ขั้น</th><th>สูตร</th><th class="r">ผล</th></tr></thead>
+  <tbody>
+    <tr><td>P25 ของ peer</td><td class="formula">PERCENTILE.INC ของ P/E (TTM) ที่ 25%</td><td class="r num">16.31×</td></tr>
+    <tr><td>P50 ของ peer</td><td class="formula">PERCENTILE.INC ของ P/E (TTM) ที่ 50%</td><td class="r num">17.80×</td></tr>
+    <tr><td>P75 ของ peer</td><td class="formula">PERCENTILE.INC ของ P/E (TTM) ที่ 75%</td><td class="r num">18.24×</td></tr>
+    <tr class="hl"><td>มูลค่าต่อหุ้นที่ P50</td><td class="formula">P/E × EPS (TTM)</td><td class="r num">฿3.74</td></tr>
+    <tr><td>ช่วงที่ใช้ใน football field</td><td class="formula">P25 – P75</td><td class="r num">฿3.43 – ฿3.83</td></tr>
+  </tbody>
+</table>
+</div>
+<h3>Comps: EV/EBITDA</h3>
+<div class="scroll">
+<table class="steps">
+  <thead><tr><th>ขั้น</th><th>สูตร</th><th class="r">ผล</th></tr></thead>
+  <tbody>
+    <tr><td>P25 ของ peer</td><td class="formula">PERCENTILE.INC ของ EV/EBITDA ที่ 25%</td><td class="r num">8.64×</td></tr>
+    <tr><td>P50 ของ peer</td><td class="formula">PERCENTILE.INC ของ EV/EBITDA ที่ 50%</td><td class="r num">8.67×</td></tr>
+    <tr><td>P75 ของ peer</td><td class="formula">PERCENTILE.INC ของ EV/EBITDA ที่ 75%</td><td class="r num">9.14×</td></tr>
+    <tr class="hl"><td>มูลค่าต่อหุ้นที่ P50</td><td class="formula">(EV/EBITDA × EBITDA − หนี้ + เงินสด − minority ตาม book) ÷ จำนวนหุ้น</td><td class="r num">฿3.05</td></tr>
+    <tr><td>ช่วงที่ใช้ใน football field</td><td class="formula">P25 – P75</td><td class="r num">฿3.03 – ฿3.28</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- 7. assumptions -->
+<h2 id="assumptions">7. สมมติฐานทั้งหมดและที่มา</h2>
+<p>ประเภท: <strong>ข้อเท็จจริง</strong> = ดึงจากแหล่งข้อมูล · <strong>คำนวณจากอดีต</strong> = คำนวณจากงบย้อนหลัง · <strong>สมมติฐาน</strong> = ผู้เรียนกำหนดโดยอ้าง playbook</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>รายการ</th><th class="r">ค่า</th><th>ประเภท</th><th>ที่มา</th><th>ข้อมูล ณ</th></tr></thead>
+  <tbody>
+    <tr><td>ราคาหุ้นล่าสุด</td><td class="r num">฿7.95</td><td>ข้อเท็จจริง</td>
+      <td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.info[&#39;currentPrice&#39;]</a><br><span class="muted">asof = regularMarketTime (เวลาราคาล่าสุดตามเขตเวลาตลาด)</span></td>
+      <td class="small num">2026-10-30</td></tr>
+    <tr><td>จำนวนหุ้นที่ออกจำหน่าย</td><td class="r num">10,450,002,831</td><td>ข้อเท็จจริง</td>
+      <td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/key-statistics/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.info[&#39;sharesOutstanding&#39;]</a><br><span class="muted">Yahoo ไม่ระบุวันที่ของค่านี้ เป็นค่าสด ณ fetched_at</span></td>
+      <td class="small num">–</td></tr>
+    <tr><td>ราคาต่ำสุด 52 สัปดาห์</td><td class="r num">฿4.14</td><td>ข้อเท็จจริง</td>
+      <td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/key-statistics/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.info[&#39;fiftyTwoWeekLow&#39;]</a><br><span class="muted">asof = regularMarketTime (เวลาราคาล่าสุดตามเขตเวลาตลาด)</span></td>
+      <td class="small num">2026-10-30</td></tr>
+    <tr><td>ราคาสูงสุด 52 สัปดาห์</td><td class="r num">฿11.20</td><td>ข้อเท็จจริง</td>
+      <td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/key-statistics/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.info[&#39;fiftyTwoWeekHigh&#39;]</a><br><span class="muted">asof = regularMarketTime (เวลาราคาล่าสุดตามเขตเวลาตลาด)</span></td>
+      <td class="small num">2026-10-30</td></tr>
+    <tr><td>Beta จาก regression ของ Yahoo</td><td class="r num">0.657</td><td>ข้อเท็จจริง</td>
+      <td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/key-statistics/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.info[&#39;beta&#39;]</a><br><span class="muted">Yahoo ไม่ระบุวันที่ของค่านี้ เป็นค่าสด ณ fetched_at</span></td>
+      <td class="small num">–</td></tr>
+    <tr><td>Unlevered beta ของอุตสาหกรรม (corrected for cash)</td><td class="r num">1.618</td><td>ข้อเท็จจริง</td>
+      <td class="src small"><a href="https://pages.stern.nyu.edu/~adamodar/pc/datasets/betaemerg.xls" rel="noopener">Damodaran Online, Betas by Sector (Emerging Markets) คอลัมน์ &#39;Unlevered beta corrected for cash&#39;, แถว &#39;Computers/Peripherals&#39;</a></td>
+      <td class="small num">2026-01-05</td></tr>
+    <tr><td>อัตราผลตอบแทนพันธบัตรรัฐบาล 10 ปี (ก่อนหัก default spread)</td><td class="r num">2.16%</td><td>ข้อเท็จจริง</td>
+      <td class="src small"><a href="https://www.thaibma.or.th/yieldcurve/gov/2026-10-30" rel="noopener">ThaiBMA Government Bond Yield Curve อายุ 10 ปี</a></td>
+      <td class="small num">2026-10-30</td></tr>
+    <tr><td>Default spread ของประเทศ (จาก rating ของรัฐบาล)</td><td class="r num">1.36%</td><td>ข้อเท็จจริง</td>
+      <td class="src small"><a href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ctryprem.html" rel="noopener">Damodaran Online, Country Default Spreads and Risk Premiums, แถว &#39;Thailand&#39; คอลัมน์ &#39;Adj. Default Spread&#39;</a></td>
+      <td class="small num">2026-01-05</td></tr>
+    <tr><td>Equity risk premium รวม country risk</td><td class="r num">6.30%</td><td>ข้อเท็จจริง</td>
+      <td class="src small"><a href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ctryprem.html" rel="noopener">Damodaran Online, Country Default Spreads and Risk Premiums, แถว &#39;Thailand&#39; คอลัมน์ &#39;Equity Risk Premium&#39;</a></td>
+      <td class="small num">2026-01-05</td></tr>
+    <tr><td>อัตราภาษีนิติบุคคลตามกฎหมาย</td><td class="r num">20.00%</td><td>ข้อเท็จจริง</td>
+      <td class="src small"><a href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ctryprem.html" rel="noopener">Damodaran Online, Country Default Spreads and Risk Premiums, แถว &#39;Thailand&#39; คอลัมน์ &#39;Corporate Tax Rate&#39;</a></td>
+      <td class="small num">2026-01-05</td></tr>
+    <tr><td>รายได้งวดล่าสุด (ปีฐานของ DCF)</td><td class="r num">138.6 พันล้าน THB</td><td>ข้อเท็จจริง</td>
+      <td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/financials/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) รายการ &#39;Total Revenue&#39;</a></td>
+      <td class="small num">2025-12-31</td></tr>
+    <tr><td>EBITDA งวดล่าสุด</td><td class="r num">5.3 พันล้าน THB</td><td>ข้อเท็จจริง</td>
+      <td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/financials/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) รายการ &#39;EBITDA&#39;</a></td>
+      <td class="small num">2025-12-31</td></tr>
+    <tr><td>EPS ย้อนหลัง 12 เดือน (TTM) ให้ตรงกับ trailing P/E ของ peer</td><td class="r num">฿0.21</td><td>ข้อเท็จจริง</td>
+      <td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/key-statistics/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.info[&#39;trailingEps&#39;]</a><br><span class="muted">asof = mostRecentQuarter เพราะหน้า Key Statistics แสดงค่านี้เป็น (mrq)</span></td>
+      <td class="small num">2026-06-30</td></tr>
+    <tr><td>ส่วนของผู้ถือหุ้นบริษัทใหญ่</td><td class="r num">24.8 พันล้าน THB</td><td>ข้อเท็จจริง</td>
+      <td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/balance-sheet/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) รายการ &#39;Stockholders Equity&#39;</a></td>
+      <td class="small num">2025-12-31</td></tr>
+    <tr><td>หนี้สินที่มีภาระดอกเบี้ยรวม (รวม lease)</td><td class="r num">21.1 พันล้าน THB</td><td>ข้อเท็จจริง</td>
+      <td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/balance-sheet/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) รายการ &#39;Total Debt&#39;</a></td>
+      <td class="small num">2025-12-31</td></tr>
+    <tr><td>หนี้สินตามสัญญาเช่า</td><td class="r num">0.4 พันล้าน THB</td><td>ข้อเท็จจริง</td>
+      <td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/balance-sheet/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) รายการ &#39;Capital Lease Obligations&#39;</a></td>
+      <td class="small num">2025-12-31</td></tr>
+    <tr><td>เงินสดและรายการเทียบเท่า</td><td class="r num">7.3 พันล้าน THB</td><td>ข้อเท็จจริง</td>
+      <td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/balance-sheet/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) รายการ &#39;Cash And Cash Equivalents&#39;</a></td>
+      <td class="small num">2025-12-31</td></tr>
+    <tr><td>ส่วนได้เสียที่ไม่มีอำนาจควบคุม (book)</td><td class="r num">0.0 พันล้าน THB</td><td>ข้อเท็จจริง</td>
+      <td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/balance-sheet/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) รายการ &#39;Minority Interest&#39;</a></td>
+      <td class="small num">2025-12-31</td></tr>
+    <tr><td>P/BV ที่ใช้แปลง minority interest เป็นมูลค่าตลาด</td><td class="r num">1.000</td><td>สมมติฐาน</td>
+      <td class="src small">ใช้ book value เพราะไม่ได้ระบุบริษัทลูกที่จดทะเบียน (minority_proxy)</td>
+      <td class="small num">–</td></tr>
+    <tr><td>สินทรัพย์ที่ไม่ใช่การดำเนินงาน (เงินลงทุนในบริษัทร่วม/JV, อสังหาฯ เพื่อการลงทุน) ที่ไม่ได้อยู่ใน EBIT</td><td class="r num">2.1 พันล้าน THB</td><td>คำนวณจากอดีต</td>
+      <td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/balance-sheet/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) งวด 2025: Investments And Advances ฿2,137.8 ล้าน</a><br><span class="muted">ใช้มูลค่าตามบัญชีเพราะ Trust sources ไม่มีมูลค่าตลาด รายได้จากเงินลงทุนไม่รวมใน Operating Income ที่ใช้ forecast</span></td>
+      <td class="small num">2025-12-31</td></tr>
+    <tr><td>เงินปันผลต่อหุ้นย้อนหลัง 12 เดือน</td><td class="r num">฿0.16</td><td>ข้อเท็จจริง</td>
+      <td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/history/?filter=div" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.dividends</a><br><span class="muted">XD ที่นับ: 2026-03-19 (0.09), 2026-08-31 (0.07)</span></td>
+      <td class="small num">2026-08-31</td></tr>
+    <tr><td>Beta ที่ใช้: bottom_up (relever จากอุตสาหกรรม) หรือ regression</td><td class="r num">bottom_up</td><td>สมมติฐาน</td>
+      <td class="src small">ค่าตั้งต้นใน config.yaml ตาม research/playbook.md</td>
+      <td class="small num">–</td></tr>
+    <tr><td>นับหนี้ lease เป็นหนี้ใน WACC และ net debt</td><td class="r num">ใช่</td><td>สมมติฐาน</td>
+      <td class="src small">ค่าตั้งต้นใน config.yaml ตาม research/playbook.md</td>
+      <td class="small num">–</td></tr>
+    <tr><td>หัก default spread ของประเทศออกจากพันธบัตรรัฐบาลเพื่อได้ Rf</td><td class="r num">ใช่</td><td>สมมติฐาน</td>
+      <td class="src small">research/playbook.md §3: ถ้าพันธบัตรรัฐบาลมี default risk ให้หัก country default spread ก่อนใช้เป็น Rf</td>
+      <td class="small num">–</td></tr>
+    <tr><td>อัตราภาษีจริงที่ใช้คิด NOPAT</td><td class="r num">20.31%</td><td>คำนวณจากอดีต</td>
+      <td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/financials/" rel="noopener">คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) งวด 2022–2025: เฉลี่ย Tax Provision ÷ Pretax Income</a></td>
+      <td class="small num">2025-12-31</td></tr>
+    <tr><td>Interest coverage (EBIT ÷ ดอกเบี้ยจ่าย) งวดล่าสุด</td><td class="r num">4.149</td><td>คำนวณจากอดีต</td>
+      <td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/financials/" rel="noopener">คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) งวด 2025–2025: EBIT ÷ Interest Expense งวดล่าสุด</a></td>
+      <td class="small num">2025-12-31</td></tr>
+    <tr><td>Default spread ของบริษัท (synthetic rating)</td><td class="r num">0.89%</td><td>คำนวณจากอดีต</td>
+      <td class="src small"><a href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ratings.html" rel="noopener">Damodaran Online, Ratings, Interest Coverage Ratios and Default Spread (ตารางซ้าย: For large non-financial service firms)</a><br><span class="muted">coverage 4.15 อยู่ในช่วง &gt; 3 ถึง ≤ 4.25 → rating A3/A-</span></td>
+      <td class="small num">2026-01-01</td></tr>
+    <tr><td>อัตราเติบโตของรายได้ต่อปี</td><td class="r num">0.80% · 0.80% · 0.80% · 0.80% · 0.80%</td><td>สมมติฐาน</td>
+      <td class="src small">research/playbook.md §8: normalize ธุรกิจตามรอบและห้ามใส่ high growth ซ้อนบนฐาน normalize จึงใช้ terminal growth 0.80% ทุกปีแทน CAGR 2022–2025 ที่ −6.88%<br><span class="muted">รายได้ลดลงทุกปี 2022–2025 การใช้ growth บวกเป็นข้อเสนอที่ต้องยืนยัน</span></td>
+      <td class="small num">–</td></tr>
+    <tr><td>EBIT margin</td><td class="r num">2.28% · 2.28% · 2.28% · 2.28% · 2.28%</td><td>คำนวณจากอดีต</td>
+      <td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/financials/" rel="noopener">คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) งวด 2022–2025: เฉลี่ย Operating Income ÷ Total Revenue (1.71%, 2.48%, 2.66%, 2.28%) ใช้ค่าเดียวกันทุกปี</a><br><span class="muted">ใช้ Operating Income เพื่อไม่รวมรายได้จากเงินลงทุนและรายการนอกการดำเนินงาน ซึ่งบวกกลับแยกใน non_operating_assets</span></td>
+      <td class="small num">2025-12-31</td></tr>
+    <tr><td>ค่าเสื่อมราคาต่อรายได้</td><td class="r num">1.69%</td><td>คำนวณจากอดีต</td>
+      <td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/cash-flow/" rel="noopener">คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.cashflow (งบรายปี) งวด 2022–2025: เฉลี่ย Depreciation And Amortization ÷ Total Revenue</a></td>
+      <td class="small num">2025-12-31</td></tr>
+    <tr><td>Capex ต่อรายได้</td><td class="r num">1.92%</td><td>คำนวณจากอดีต</td>
+      <td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/cash-flow/" rel="noopener">คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.cashflow (งบรายปี) งวด 2022–2025: เฉลี่ย −Capital Expenditure ÷ Total Revenue</a></td>
+      <td class="small num">2025-12-31</td></tr>
+    <tr><td>เงินทุนหมุนเวียนที่เพิ่มต่อรายได้ที่เพิ่ม</td><td class="r num">13.63%</td><td>คำนวณจากอดีต</td>
+      <td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/balance-sheet/" rel="noopener">คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) งวด 2025: non-cash working capital ÷ Total Revenue = (Current Assets − Cash − Other Short Term Investments) − (Current Liabilities − Current Debt And Capital Lease Obligation) = ฿18,892.6 ล้าน ÷ ฿138,635.3 ล้าน</a><br><span class="muted">ค่าในร่างอัตโนมัติ −Change In Working Capital ÷ Δรายได้ ได้ 39.64% ขณะที่รายได้ลดลงทุกปี จึงใช้สัดส่วน NWC ปัจจุบันแทน</span></td>
+      <td class="small num">2025-12-31</td></tr>
+    <tr><td>Terminal growth (DCF)</td><td class="r num">0.80%</td><td>สมมติฐาน</td>
+      <td class="src small">research/playbook.md §4: g ต้องไม่เกิน Rf จึงใช้ค่าต่ำกว่าระหว่าง 2.00% (config.yaml) กับ Rf หลังหัก default spread 0.80%</td>
+      <td class="small num">–</td></tr>
+    <tr><td>ROC ช่วง terminal (ใช้คิด reinvestment = g ÷ ROC)</td><td class="r num">wacc</td><td>สมมติฐาน</td>
+      <td class="src small">research/playbook.md §4: ช่วง terminal ให้ excess return เข้าหา 0 จึงตั้ง ROC = WACC<br><span class="muted">ROC เฉลี่ยในอดีต 2022–2025 คือ 6.40%</span></td>
+      <td class="small num">–</td></tr>
+    <tr><td>อัตราเติบโตปันผลระยะยาว (DDM)</td><td class="r num">0.80%</td><td>สมมติฐาน</td>
+      <td class="src small">research/playbook.md §4: g ต้องไม่เกิน Rf จึงใช้ค่าต่ำกว่าระหว่าง 2.00% (config.yaml) กับ Rf หลังหัก default spread 0.80%</td>
+      <td class="small num">–</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- 8. limits -->
+<h2 id="limits">8. คำเตือนและข้อจำกัด</h2>
+<div class="warn">Terminal value เป็น 65% ของ EV ผลอ่อนไหวกับ WACC และ g มาก (playbook §4: ไม่พบกฎสัดส่วนใน notebook มีแค่ตัวอย่าง 46–70%)</div><p><strong>ข้อจำกัดที่ต้องรู้ก่อนใช้ผล</strong></p>
+<ul class="tight"><li>Yahoo มีงบเต็มเพียง 4 ปี 2022–2025 สั้นกว่าช่วง 5–10 ปีที่ playbook §8 แนะนำสำหรับการ normalize ธุรกิจตามรอบ</li><li>รายได้ลดลงทุกปี 2022–2025 ร่างนี้ใช้ terminal growth 0.80% แทนการลาก CAGR ติดลบ −6.88% ต่ออีก 5 ปี ผล DCF จึงขึ้นกับสมมติฐานว่ารายได้หยุดลดลง</li><li>peer อยู่ไต้หวันและมีขนาดใหญ่กว่า CCET หลายบริษัท แม้ Yahoo จัด 4 ใน 5 ตัวอยู่หมวด Computer Hardware เดียวกัน ความเสี่ยงประเทศ สกุลเงิน และ product mix ยังต่างกัน</li><li>bottom-up beta ของ Computers/Peripherals ตลาดเกิดใหม่สูงกว่า regression beta ของ Yahoo มาก ต้องแสดง sensitivity ก่อนสรุปผล</li><li>CCET มีรายได้จากต่างประเทศ แต่ Yahoo ไม่มีสัดส่วนรายได้รายประเทศ จึงใช้ country risk premium ของไทยเต็มจำนวนแทนการถ่วงตามรายได้ (playbook §3)</li><li>P/E ใช้ EPS TTM ถึงไตรมาส 2/2026 แต่ DCF และ EV/EBITDA ใช้งบรายปี 2025 จึงเป็นคนละงวด</li><li>ไม่มี precedent transactions และ analyst target price เพราะไม่มีข้อมูลใน Trust sources</li></ul>
+<p class="small muted">รายงานนี้เป็นการบ้านเพื่อฝึกวิธี valuation ไม่ใช่คำแนะนำการลงทุน</p>
+
+<!-- 9. sources -->
+<h2 id="sources">9. แหล่งข้อมูล</h2>
+<div class="scroll">
+<table>
+  <thead><tr><th>แหล่ง</th><th>ข้อมูล ณ</th><th>ใช้กับ</th></tr></thead>
+  <tbody>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.info[&#39;currentPrice&#39;]</a></td>
+      <td class="small num">2026-10-30</td><td class="small">ราคาหุ้นล่าสุด</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/key-statistics/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.info[&#39;sharesOutstanding&#39;]</a></td>
+      <td class="small num">–</td><td class="small">จำนวนหุ้นที่ออกจำหน่าย</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/key-statistics/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.info[&#39;fiftyTwoWeekLow&#39;]</a></td>
+      <td class="small num">2026-10-30</td><td class="small">ราคาต่ำสุด 52 สัปดาห์</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/key-statistics/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.info[&#39;fiftyTwoWeekHigh&#39;]</a></td>
+      <td class="small num">2026-10-30</td><td class="small">ราคาสูงสุด 52 สัปดาห์</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/key-statistics/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.info[&#39;beta&#39;]</a></td>
+      <td class="small num">–</td><td class="small">Beta จาก regression ของ Yahoo</td></tr>
+    <tr><td class="src small"><a href="https://pages.stern.nyu.edu/~adamodar/pc/datasets/betaemerg.xls" rel="noopener">Damodaran Online, Betas by Sector (Emerging Markets) คอลัมน์ &#39;Unlevered beta corrected for cash&#39;, แถว &#39;Computers/Peripherals&#39;</a></td>
+      <td class="small num">2026-01-05</td><td class="small">Unlevered beta ของอุตสาหกรรม (corrected for cash)</td></tr>
+    <tr><td class="src small"><a href="https://www.thaibma.or.th/yieldcurve/gov/2026-10-30" rel="noopener">ThaiBMA Government Bond Yield Curve อายุ 10 ปี</a></td>
+      <td class="small num">2026-10-30</td><td class="small">อัตราผลตอบแทนพันธบัตรรัฐบาล 10 ปี (ก่อนหัก default spread)</td></tr>
+    <tr><td class="src small"><a href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ctryprem.html" rel="noopener">Damodaran Online, Country Default Spreads and Risk Premiums, แถว &#39;Thailand&#39; คอลัมน์ &#39;Adj. Default Spread&#39;</a></td>
+      <td class="small num">2026-01-05</td><td class="small">Default spread ของประเทศ (จาก rating ของรัฐบาล)</td></tr>
+    <tr><td class="src small"><a href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ctryprem.html" rel="noopener">Damodaran Online, Country Default Spreads and Risk Premiums, แถว &#39;Thailand&#39; คอลัมน์ &#39;Equity Risk Premium&#39;</a></td>
+      <td class="small num">2026-01-05</td><td class="small">Equity risk premium รวม country risk</td></tr>
+    <tr><td class="src small"><a href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ctryprem.html" rel="noopener">Damodaran Online, Country Default Spreads and Risk Premiums, แถว &#39;Thailand&#39; คอลัมน์ &#39;Corporate Tax Rate&#39;</a></td>
+      <td class="small num">2026-01-05</td><td class="small">อัตราภาษีนิติบุคคลตามกฎหมาย</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/financials/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) รายการ &#39;Total Revenue&#39;</a></td>
+      <td class="small num">2025-12-31</td><td class="small">รายได้งวดล่าสุด (ปีฐานของ DCF)</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/financials/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) รายการ &#39;EBITDA&#39;</a></td>
+      <td class="small num">2025-12-31</td><td class="small">EBITDA งวดล่าสุด</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/key-statistics/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.info[&#39;trailingEps&#39;]</a></td>
+      <td class="small num">2026-06-30</td><td class="small">EPS ย้อนหลัง 12 เดือน (TTM) ให้ตรงกับ trailing P/E ของ peer</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/balance-sheet/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) รายการ &#39;Stockholders Equity&#39;</a></td>
+      <td class="small num">2025-12-31</td><td class="small">ส่วนของผู้ถือหุ้นบริษัทใหญ่</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/balance-sheet/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) รายการ &#39;Total Debt&#39;</a></td>
+      <td class="small num">2025-12-31</td><td class="small">หนี้สินที่มีภาระดอกเบี้ยรวม (รวม lease)</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/balance-sheet/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) รายการ &#39;Capital Lease Obligations&#39;</a></td>
+      <td class="small num">2025-12-31</td><td class="small">หนี้สินตามสัญญาเช่า</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/balance-sheet/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) รายการ &#39;Cash And Cash Equivalents&#39;</a></td>
+      <td class="small num">2025-12-31</td><td class="small">เงินสดและรายการเทียบเท่า</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/balance-sheet/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) รายการ &#39;Minority Interest&#39;</a></td>
+      <td class="small num">2025-12-31</td><td class="small">ส่วนได้เสียที่ไม่มีอำนาจควบคุม (book)</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/balance-sheet/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) งวด 2025: Investments And Advances ฿2,137.8 ล้าน</a></td>
+      <td class="small num">2025-12-31</td><td class="small">สินทรัพย์ที่ไม่ใช่การดำเนินงาน (เงินลงทุนในบริษัทร่วม/JV, อสังหาฯ เพื่อการลงทุน) ที่ไม่ได้อยู่ใน EBIT</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/history/?filter=div" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.dividends</a></td>
+      <td class="small num">2026-08-31</td><td class="small">เงินปันผลต่อหุ้นย้อนหลัง 12 เดือน</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/financials/" rel="noopener">คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) งวด 2022–2025: เฉลี่ย Tax Provision ÷ Pretax Income</a></td>
+      <td class="small num">2025-12-31</td><td class="small">อัตราภาษีจริงที่ใช้คิด NOPAT</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/financials/" rel="noopener">คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) งวด 2025–2025: EBIT ÷ Interest Expense งวดล่าสุด</a></td>
+      <td class="small num">2025-12-31</td><td class="small">Interest coverage (EBIT ÷ ดอกเบี้ยจ่าย) งวดล่าสุด</td></tr>
+    <tr><td class="src small"><a href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ratings.html" rel="noopener">Damodaran Online, Ratings, Interest Coverage Ratios and Default Spread (ตารางซ้าย: For large non-financial service firms)</a></td>
+      <td class="small num">2026-01-01</td><td class="small">Default spread ของบริษัท (synthetic rating)</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/financials/" rel="noopener">คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) งวด 2022–2025: เฉลี่ย Operating Income ÷ Total Revenue (1.71%, 2.48%, 2.66%, 2.28%) ใช้ค่าเดียวกันทุกปี</a></td>
+      <td class="small num">2025-12-31</td><td class="small">EBIT margin</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/cash-flow/" rel="noopener">คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.cashflow (งบรายปี) งวด 2022–2025: เฉลี่ย Depreciation And Amortization ÷ Total Revenue</a></td>
+      <td class="small num">2025-12-31</td><td class="small">ค่าเสื่อมราคาต่อรายได้</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/cash-flow/" rel="noopener">คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.cashflow (งบรายปี) งวด 2022–2025: เฉลี่ย −Capital Expenditure ÷ Total Revenue</a></td>
+      <td class="small num">2025-12-31</td><td class="small">Capex ต่อรายได้</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/CCET.BK/balance-sheet/" rel="noopener">คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) งวด 2025: non-cash working capital ÷ Total Revenue = (Current Assets − Cash − Other Short Term Investments) − (Current Liabilities − Current Debt And Capital Lease Obligation) = ฿18,892.6 ล้าน ÷ ฿138,635.3 ล้าน</a></td>
+      <td class="small num">2025-12-31</td><td class="small">เงินทุนหมุนเวียนที่เพิ่มต่อรายได้ที่เพิ่ม</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/2312.TW/key-statistics/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.info[&#39;trailingPE&#39;] ของ 2312.TW</a></td>
+      <td class="small num">2026-10-30</td><td class="small">P/E (TTM) ของ 2312.TW</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/2312.TW/balance-sheet/" rel="noopener">คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.info[&#39;marketCap&#39;] และงบรายปี balance_sheet / income_stmt ของ 2312.TW: (marketCap + Total Debt + Minority Interest − Cash And Cash Equivalents) ÷ EBITDA งวดล่าสุดของงบรายปี</a></td>
+      <td class="small num">2025-12-31</td><td class="small">EV/EBITDA ของ 2312.TW</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/2324.TW/key-statistics/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.info[&#39;trailingPE&#39;] ของ 2324.TW</a></td>
+      <td class="small num">2026-10-30</td><td class="small">P/E (TTM) ของ 2324.TW</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/2324.TW/balance-sheet/" rel="noopener">คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.info[&#39;marketCap&#39;] และงบรายปี balance_sheet / income_stmt ของ 2324.TW: (marketCap + Total Debt + Minority Interest − Cash And Cash Equivalents) ÷ EBITDA งวดล่าสุดของงบรายปี</a></td>
+      <td class="small num">2025-12-31</td><td class="small">EV/EBITDA ของ 2324.TW</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/4938.TW/key-statistics/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.info[&#39;trailingPE&#39;] ของ 4938.TW</a></td>
+      <td class="small num">2026-10-30</td><td class="small">P/E (TTM) ของ 4938.TW</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/4938.TW/balance-sheet/" rel="noopener">คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.info[&#39;marketCap&#39;] และงบรายปี balance_sheet / income_stmt ของ 4938.TW: (marketCap + Total Debt + Minority Interest − Cash And Cash Equivalents) ÷ EBITDA งวดล่าสุดของงบรายปี</a></td>
+      <td class="small num">2025-12-31</td><td class="small">EV/EBITDA ของ 4938.TW</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/3231.TW/key-statistics/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.info[&#39;trailingPE&#39;] ของ 3231.TW</a></td>
+      <td class="small num">2026-10-30</td><td class="small">P/E (TTM) ของ 3231.TW</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/3231.TW/balance-sheet/" rel="noopener">คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.info[&#39;marketCap&#39;] และงบรายปี balance_sheet / income_stmt ของ 3231.TW: (marketCap + Total Debt + Minority Interest − Cash And Cash Equivalents) ÷ EBITDA งวดล่าสุดของงบรายปี</a></td>
+      <td class="small num">2025-12-31</td><td class="small">EV/EBITDA ของ 3231.TW</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/2317.TW/key-statistics/" rel="noopener">Yahoo Finance (yfinance 1.7.0) Ticker.info[&#39;trailingPE&#39;] ของ 2317.TW</a></td>
+      <td class="small num">2026-10-30</td><td class="small">P/E (TTM) ของ 2317.TW</td></tr>
+    <tr><td class="src small"><a href="https://finance.yahoo.com/quote/2317.TW/balance-sheet/" rel="noopener">คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.info[&#39;marketCap&#39;] และงบรายปี balance_sheet / income_stmt ของ 2317.TW: (marketCap + Total Debt + Minority Interest − Cash And Cash Equivalents) ÷ EBITDA งวดล่าสุดของงบรายปี</a></td>
+      <td class="small num">2025-12-31</td><td class="small">EV/EBITDA ของ 2317.TW</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="small muted">วิธีการและเหตุผลมาจาก NotebookLM notebook "Valuation Methods" รายชื่อ source อยู่ใน <code>research/sources.md</code> ตัวเลขทุกตัวคำนวณซ้ำได้จาก <code>CCET.BK_valuation.xlsx</code></p>
+
+<footer>สร้างด้วย <code>python -m valuation run CCET.BK</code> · ข้อมูลดึงเมื่อ 2026-10-31T23:12:38+07:00</footer>
+</main>
+</body>
+</html>

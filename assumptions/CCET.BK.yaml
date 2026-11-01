@@ -1,0 +1,205 @@
+# สมมติฐานของ CCET.BK ร่างจากข้อมูลดิบเมื่อ 2026-10-31T23:10:10+07:00
+# status: draft = ยังไม่ผ่านการรีวิว · reviewed = ผู้เรียนยืนยันแล้ว
+# ค่า kind: derived คำนวณจากอดีต · assumption ต้องอ้างเหตุผลจาก research/playbook.md ก่อนเปลี่ยน status
+ticker: CCET.BK
+status: draft
+method_choice: research/CCET.BK_method_choice.md
+methods:
+- dcf_fcff
+- comps_pe
+- comps_ev_ebitda
+- week52
+method_reasons:
+  dcf_fcff: ผู้ผลิตฮาร์ดแวร์ที่รายได้และกำไรผันผวนตามรอบ ใช้ DCF บนรายได้และ margin ที่ normalize และรวม country risk premium สำหรับตลาดเกิดใหม่ (playbook §1, §3, §8)
+  comps_pe: บริษัทมีกำไรและ peer มีกำไรทุกตัว ใช้ P/E เป็น equity multiple โดยอ่านร่วมกับความต่างด้าน growth และ risk (playbook §9)
+  comps_ev_ebitda: ธุรกิจใช้เงินทุนและ leverage ต่างกัน ใช้ enterprise multiple บน EBITDA ที่คำนวณด้วยนิยามเดียวกันจากงบรายปี (playbook §8, §9)
+  week52: แท่งมาตรฐานของ football field (playbook §13)
+  ddm: payout เทียบ EPS ผันผวนจาก 19% ในปี 2022 เป็น 100% ในปี 2025 และยังไม่ได้พิสูจน์ว่าปันผลใกล้ FCFE จึงไม่ใช้ DDM (playbook §1, §5)
+  comps_pb: ตัวขับหลักของ P/BV คือ ROE และ playbook แนะนำเด่นกับธนาคาร จึงไม่ใช้เป็นวิธีหลักของผู้ผลิตฮาร์ดแวร์ (playbook §9)
+limitations:
+- Yahoo มีงบเต็มเพียง 4 ปี 2022–2025 สั้นกว่าช่วง 5–10 ปีที่ playbook §8 แนะนำสำหรับการ normalize ธุรกิจตามรอบ
+- รายได้ลดลงทุกปี 2022–2025 ร่างนี้ใช้ terminal growth 0.80% แทนการลาก CAGR ติดลบ −6.88% ต่ออีก 5 ปี ผล DCF จึงขึ้นกับสมมติฐานว่ารายได้หยุดลดลง
+- peer อยู่ไต้หวันและมีขนาดใหญ่กว่า CCET หลายบริษัท แม้ Yahoo จัด 4 ใน 5 ตัวอยู่หมวด Computer Hardware เดียวกัน ความเสี่ยงประเทศ สกุลเงิน และ product mix ยังต่างกัน
+- bottom-up beta ของ Computers/Peripherals ตลาดเกิดใหม่สูงกว่า regression beta ของ Yahoo มาก ต้องแสดง sensitivity ก่อนสรุปผล
+- CCET มีรายได้จากต่างประเทศ แต่ Yahoo ไม่มีสัดส่วนรายได้รายประเทศ จึงใช้ country risk premium ของไทยเต็มจำนวนแทนการถ่วงตามรายได้ (playbook §3)
+- P/E ใช้ EPS TTM ถึงไตรมาส 2/2026 แต่ DCF และ EV/EBITDA ใช้งบรายปี 2025 จึงเป็นคนละงวด
+- ไม่มี precedent transactions และ analyst target price เพราะไม่มีข้อมูลใน Trust sources
+peers:
+- 2312.TW
+- 2324.TW
+- 4938.TW
+- 3231.TW
+- 2317.TW
+minority_proxy: null
+inputs:
+  price:
+    from: info.price
+  shares:
+    from: info.shares_outstanding
+  week52_low:
+    from: info.week52_low
+  week52_high:
+    from: info.week52_high
+  beta:
+    from: info.beta
+  beta_unlevered:
+    from: damodaran.unlevered_beta
+  tax_rate_marginal:
+    from: damodaran.tax_rate_marginal
+  rf:
+    from: risk_free
+  country_default_spread:
+    from: damodaran.default_spread
+  erp:
+    from: damodaran.erp_country_total
+  revenue_base:
+    from:
+      stmt: income_stmt
+      item: Total Revenue
+  ebitda_ltm:
+    from:
+      stmt: income_stmt
+      item: EBITDA
+  eps_ltm:
+    from: info.trailing_eps
+  equity_book:
+    from:
+      stmt: balance_sheet
+      item: Stockholders Equity
+  total_debt:
+    from:
+      stmt: balance_sheet
+      item: Total Debt
+  lease_liabilities:
+    from:
+      stmt: balance_sheet
+      item: Capital Lease Obligations
+  cash:
+    from:
+      stmt: balance_sheet
+      item: Cash And Cash Equivalents
+  minority_interest:
+    from:
+      stmt: balance_sheet
+      item: Minority Interest
+  dps_ttm:
+    from:
+      dividends: ttm
+  tax_rate:
+    value: 0.203135
+    source: 'คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) งวด 2022–2025: เฉลี่ย Tax Provision ÷ Pretax
+      Income'
+    url: https://finance.yahoo.com/quote/CCET.BK/financials/
+    asof: '2025-12-31'
+    kind: derived
+  interest_coverage:
+    value: 4.149055
+    source: 'คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) งวด 2025–2025: EBIT ÷ Interest Expense งวดล่าสุด'
+    url: https://finance.yahoo.com/quote/CCET.BK/financials/
+    asof: '2025-12-31'
+    kind: derived
+  company_default_spread:
+    value: 0.0089
+    source: 'Damodaran Online, Ratings, Interest Coverage Ratios and Default Spread (ตารางซ้าย: For large non-financial service
+      firms)'
+    url: https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ratings.html
+    asof: '2026-01-01'
+    kind: derived
+    note: coverage 4.15 อยู่ในช่วง > 3 ถึง ≤ 4.25 → rating A3/A-
+  terminal_roc:
+    value: wacc
+    source: 'research/playbook.md §4: ช่วง terminal ให้ excess return เข้าหา 0 จึงตั้ง ROC = WACC'
+    url: null
+    asof: null
+    kind: assumption
+    note: ROC เฉลี่ยในอดีต 2022–2025 คือ 6.40%
+  revenue_growth:
+    value:
+    - 0.007985
+    - 0.007985
+    - 0.007985
+    - 0.007985
+    - 0.007985
+    source: 'research/playbook.md §8: normalize ธุรกิจตามรอบและห้ามใส่ high growth ซ้อนบนฐาน normalize จึงใช้ terminal growth 0.80% ทุกปีแทน CAGR 2022–2025 ที่ −6.88%'
+    url: null
+    asof: null
+    kind: assumption
+    note: รายได้ลดลงทุกปี 2022–2025 การใช้ growth บวกเป็นข้อเสนอที่ต้องยืนยัน
+  ebit_margin:
+    value:
+    - 0.022847
+    - 0.022847
+    - 0.022847
+    - 0.022847
+    - 0.022847
+    source: 'คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.income_stmt (งบรายปี) งวด 2022–2025: เฉลี่ย Operating Income ÷ Total Revenue (1.71%, 2.48%, 2.66%, 2.28%) ใช้ค่าเดียวกันทุกปี'
+    url: https://finance.yahoo.com/quote/CCET.BK/financials/
+    asof: '2025-12-31'
+    kind: derived
+    note: ใช้ Operating Income เพื่อไม่รวมรายได้จากเงินลงทุนและรายการนอกการดำเนินงาน ซึ่งบวกกลับแยกใน non_operating_assets
+  da_pct_revenue:
+    value: 0.016923
+    source: 'คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.cashflow (งบรายปี) งวด 2022–2025: เฉลี่ย Depreciation And Amortization
+      ÷ Total Revenue'
+    url: https://finance.yahoo.com/quote/CCET.BK/cash-flow/
+    asof: '2025-12-31'
+    kind: derived
+  capex_pct_revenue:
+    value: 0.019228
+    source: 'คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.cashflow (งบรายปี) งวด 2022–2025: เฉลี่ย −Capital Expenditure
+      ÷ Total Revenue'
+    url: https://finance.yahoo.com/quote/CCET.BK/cash-flow/
+    asof: '2025-12-31'
+    kind: derived
+  nwc_pct_delta_revenue:
+    value: 0.136276
+    source: 'คำนวณจาก Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) งวด 2025: non-cash working capital ÷ Total Revenue = (Current Assets − Cash − Other Short Term Investments) − (Current Liabilities − Current Debt And Capital Lease Obligation) = ฿18,892.6 ล้าน ÷ ฿138,635.3 ล้าน'
+    url: https://finance.yahoo.com/quote/CCET.BK/balance-sheet/
+    asof: '2025-12-31'
+    kind: derived
+    note: ค่าในร่างอัตโนมัติ −Change In Working Capital ÷ Δรายได้ ได้ 39.64% ขณะที่รายได้ลดลงทุกปี จึงใช้สัดส่วน NWC ปัจจุบันแทน
+  minority_pb:
+    value: 1.0
+    source: ใช้ book value เพราะไม่ได้ระบุบริษัทลูกที่จดทะเบียน (minority_proxy)
+    url: null
+    asof: null
+    kind: assumption
+  non_operating_assets:
+    value: 2137777571
+    source: 'Yahoo Finance (yfinance 1.7.0) Ticker.balance_sheet (งบรายปี) งวด 2025: Investments And Advances ฿2,137.8 ล้าน'
+    url: https://finance.yahoo.com/quote/CCET.BK/balance-sheet/
+    asof: '2025-12-31'
+    kind: derived
+    note: ใช้มูลค่าตามบัญชีเพราะ Trust sources ไม่มีมูลค่าตลาด รายได้จากเงินลงทุนไม่รวมใน Operating Income ที่ใช้ forecast
+  include_leases_in_debt:
+    value: true
+    source: ค่าตั้งต้นใน config.yaml ตาม research/playbook.md
+    url: null
+    asof: null
+    kind: assumption
+  beta_method:
+    value: bottom_up
+    source: ค่าตั้งต้นใน config.yaml ตาม research/playbook.md
+    url: null
+    asof: null
+    kind: assumption
+  rf_adjust_default:
+    value: true
+    source: 'research/playbook.md §3: ถ้าพันธบัตรรัฐบาลมี default risk ให้หัก country default spread ก่อนใช้เป็น Rf'
+    url: null
+    asof: null
+    kind: assumption
+  terminal_growth:
+    value: 0.007985
+    source: 'research/playbook.md §4: g ต้องไม่เกิน Rf จึงใช้ค่าต่ำกว่าระหว่าง 2.00% (config.yaml) กับ Rf หลังหัก default
+      spread 0.80%'
+    url: null
+    asof: null
+    kind: assumption
+  ddm_growth:
+    value: 0.007985
+    source: 'research/playbook.md §4: g ต้องไม่เกิน Rf จึงใช้ค่าต่ำกว่าระหว่าง 2.00% (config.yaml) กับ Rf หลังหัก default
+      spread 0.80%'
+    url: null
+    asof: null
+    kind: assumption

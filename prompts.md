@@ -221,3 +221,35 @@ Save
   - ผู้เรียนยืนยันข้อเสนอ 5 ข้อตามร่าง ("ยืนยันตามร่าง"): วิธีที่ใช้, normalize 4 ปี, บวกสินทรัพย์ที่ไม่ใช่การดำเนินงาน, peer 5 ตัว (BJCHI, SRICHA, PSGC, CK, STECON), ใส่ P/BV ใน football field
   - ไม่ commit โฟลเดอร์ `.codex/` ที่โผล่ขึ้นมา เพราะ AI ไม่ได้สร้างและยังไม่รู้เหตุผลจากผู้เรียน (ตรวจแล้วไม่มี key)
 - **ขั้นต่อไป:** ถามผู้เรียนเรื่อง `.codex/` · เพิ่มคำถามเรื่อง beta ช่วง terminal และการ normalize ที่ประวัติสั้นใน `help.md` · พิจารณา DCF หลาย scenario
+
+---
+
+## รอบ 10 · 2026-10-31 23:15
+
+- **ทำอะไร:**
+  - ร่าง valuation หุ้นตัวที่สี่ CCET.BK ได้ `output/CCET.BK/` (Excel, HTML, results.json), `assumptions/CCET.BK.yaml` และ `research/CCET.BK_method_choice.md` โดยยังคง `status: draft` รอผู้เรียนยืนยันสมมติฐาน
+  - เพิ่ม mapping `Computer Hardware: Computers/Peripherals` ใน `config.yaml` หลังตรวจไฟล์ beta ตลาดเกิดใหม่ของ Damodaran โดยตรง
+  - ดึง candidate peer 14 ตัวจาก Yahoo แล้วคัดเหลือผู้ผลิตฮาร์ดแวร์/EMS ไต้หวัน 5 ตัว: 2312.TW, 2324.TW, 4938.TW, 3231.TW, 2317.TW
+  - ตรวจ P/BV ของ STPI ตามคำถามแทรก พบว่าสูตรถูก แต่ตัวคูณเป้าหมายใช้งบปี 2025 เทียบราคา 2026 ขณะที่ peer ใช้ `priceToBook` ของ Yahoo จึงมี period mismatch; ไม่แก้ไฟล์เพราะผู้เรียนขอให้ตรวจสอบเท่านั้น
+- **เครื่องมือ / model:** Codex Desktop · GPT-5 · yfinance 1.7.0 · Damodaran `betaemerg.xls` · LibreOffice headless
+- **Prompt ที่ใช้:**
+
+```text
+CCET
+```
+
+```text
+ตรวจสอบ P/BV ของ STPI คำนวณมาจากไหน
+```
+
+```text
+ทำ CCET ต่อ
+```
+
+- **ผลที่ได้:** ร่าง CCET ที่ราคา ฿7.95 และ WACC 10.91% ให้ DCF ฿0.91–1.13 (base ฿1.02), P/E ฿3.43–3.83 (base ฿3.74), EV/EBITDA ฿3.03–3.28 (base ฿3.05), ช่วง 52 สัปดาห์ ฿4.14–11.20 · Excel ตรงกับ Python ทั้ง 15 ค่า ต่างสูงสุด 0.0000% · ผลยังเป็นร่างและยังไม่ถือว่าผู้เรียนยืนยัน
+- **ตัดสินใจอะไร และเพราะอะไร:**
+  - เสนอใช้ DCF normalize, P/E, EV/EBITDA และช่วง 52 สัปดาห์; ตัด DDM เพราะ payout ต่อ EPS เปลี่ยน 19%–100% และตัด P/BV เพราะตัวขับหลักคือ ROE ไม่ใช่วิธีหลักของผู้ผลิตฮาร์ดแวร์ตาม playbook §9
+  - ไม่ใช้ CAGR รายได้ −6.88% ต่ออีก 5 ปี แต่เสนอ growth 0.80% เท่า terminal g และ operating margin เฉลี่ย 4 ปี 2.2847% เพราะ playbook §8 ให้ normalize ธุรกิจตามรอบ; สมมติฐานนี้ต้องให้ผู้เรียนยืนยัน
+  - ใช้ bottom-up beta 1.946 จาก Damodaran เป็น base ตามกฎใน PROJECT_MEMORY และแสดง Yahoo beta 0.657 เป็น sensitivity; DCF ด้วย Yahoo beta ได้ ฿4.38 แต่ยังต่ำกว่าราคา
+  - ผลห่างจากราคามากจึงไล่สาเหตุ: ราคาต้องอาศัย operating margin 9.18% ภายใต้ bottom-up beta หรือ 3.72% ภายใต้ Yahoo beta เทียบประวัติสูงสุด 2.66%; P/E และ EV/EBITDA ของ CCET ก็ประมาณสองเท่าของมัธยฐาน peer จึงไม่ใช่ปัญหาสูตร DCF เพียงอย่างเดียว
+- **ขั้นต่อไป:** ให้ผู้เรียนยืนยันหรือแก้ข้อเสนอ 5 ข้อใน `research/CCET.BK_method_choice.md` §8 จากนั้นเปลี่ยน `status: reviewed`, รันและ verify ซ้ำ แล้วค่อย `/save`
