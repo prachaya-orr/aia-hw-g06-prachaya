@@ -19,6 +19,7 @@
 - เปลี่ยนโครง JSON ของข้อมูลดิบเมื่อไร ต้องเพิ่ม `SCHEMA_VERSION` ใน `fetch.py`
 - หุ้นอุตสาหกรรมใหม่ ต้องเพิ่ม Yahoo industry ใน `industry_map` ของ `config.yaml` ก่อน fetch และตรวจ ticker ต่างประเทศจากชื่อใน `longName` (หุ้นมาเลเซียบน Yahoo ใช้รหัสตัวเลข เช่น IHH = 5225.KL)
 - บริษัทที่มีเงินลงทุนในบริษัทร่วม/JV หรืออสังหาฯ เพื่อการลงทุนมาก ใช้ Operating Income แทน EBIT ของ Yahoo แล้วใส่ `non_operating_assets` เพื่อไม่ให้นับซ้ำ
+- ใส่ `.nojekyll` แล้ว GitHub Pages ไม่แปลง .md เป็นหน้าเว็บ ต้องมี `index.html` ที่ root และลิงก์ไฟล์ .md ไปหน้า GitHub (`/blob/main/...`)
 
 ## บันทึกปัญหา
 

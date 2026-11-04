@@ -5,6 +5,7 @@ football field เป็นแท่ง HTML/CSS วางตำแหน่ง�
 """
 from __future__ import annotations
 
+import json
 import math
 from pathlib import Path
 
@@ -121,4 +122,42 @@ def build(res: dict, path: Path) -> Path:
     )
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(html, encoding="utf-8")
+    return path
+
+
+# ---------- หน้าแรกของ GitHub Pages ----------
+
+READING_CLASS = {"ราคาต่ำกว่าช่วง": "below", "ราคาสูงกว่าช่วง": "above", "ราคาอยู่ในช่วง": ""}
+
+
+def build_index(root: Path) -> Path:
+    """index.html ที่ root ของ repo: การ์ดของหุ้นทุกตัวใน output/ ลิงก์ไปหน้า HTML, Excel และเหตุผลการเลือกวิธี
+
+    ไฟล์ .md ลิงก์ไปหน้า GitHub เพราะ .nojekyll ทำให้ GitHub Pages ไม่แปลง markdown เป็นหน้าเว็บ
+    """
+    site = CFG["site"]
+    blob = site["repo_url"].rstrip("/") + "/blob/" + site["branch"] + "/"
+    stocks = []
+    for res_path in sorted((root / V["output_dir"]).glob("*/*_results.json")):
+        res = json.loads(res_path.read_text(encoding="utf-8"))
+        sym = SYMBOL.get(res["company"]["currency"], "")
+        t = res["ticker"]
+        rel = f"{V['output_dir']}/{t}/{t}_valuation"
+        methods = []
+        for r in res["results"]:
+            if r["skipped"]:
+                continue
+            rd = reading(res["price"], r["low"], r["high"])
+            methods.append({"label": r["label"], "low": f"{sym}{r['low']:,.2f}", "high": f"{sym}{r['high']:,.2f}",
+                            "base": "–" if r["base"] is None else f"{sym}{r['base']:,.2f}",
+                            "reading": rd, "cls": READING_CLASS[rd]})
+        stocks.append({"ticker": t, "name": res["company"]["long_name"], "status": res["status"],
+                       "industry": f"{res['company']['sector']} · {res['company']['industry']}",
+                       "price": f"{sym}{res['price']:,.2f}", "fetched": res["fetched_at"][:10], "methods": methods,
+                       "html": f"{rel}.html", "xlsx": f"{rel}.xlsx", "choice": f"{blob}{res['method_choice']}"})
+    docs = [{"label": d["label"], "note": d["note"], "url": blob + d["path"]} for d in site["docs"]]
+    env = Environment(loader=FileSystemLoader(TEMPLATES), autoescape=select_autoescape(["html"]),
+                      trim_blocks=True, lstrip_blocks=True)
+    path = root / "index.html"
+    path.write_text(env.get_template("index.html").render(stocks=stocks, docs=docs), encoding="utf-8")
     return path

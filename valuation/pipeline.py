@@ -93,6 +93,7 @@ def run(ticker: str, refetch: bool) -> int:
     payload = to_jsonable(a, raw, out)
     res.write_text(json.dumps(payload, ensure_ascii=False, indent=1), encoding="utf-8")
     page = html.build(payload, d / f"{ticker}_valuation.html")
+    html.build_index(ROOT)
     print(f"สถานะสมมติฐาน: {a.status} · WACC {out['wacc']['wacc']:.2%} · ราคา {a['price']}")
     for r in out["results"]:
         if r.skipped:

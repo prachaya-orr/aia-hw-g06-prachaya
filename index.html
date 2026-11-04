@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Valuation Football Field</title>
+<style>
+:root {
+  --bg: #f7f6f2; --surface: #ffffff; --ink: #1d1f23; --muted: #5d636e; --line: #dcdad3;
+  --accent: #2f5fa7; --accent-soft: #dbe5f4; --warn-bg: #fff4dc; --warn-ink: #7a5300;
+  --below: #1f7a4d; --above: #b3412d; --head: #eeece6;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171b; --surface: #1d2026; --ink: #e8e9ec; --muted: #a3a9b4; --line: #343841;
+    --accent: #8fb2ea; --accent-soft: #263652; --warn-bg: #3a2f14; --warn-ink: #f3d08a;
+    --below: #6fcf9c; --above: #ff8a73; --head: #262a31;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171b; --surface: #1d2026; --ink: #e8e9ec; --muted: #a3a9b4; --line: #343841;
+  --accent: #8fb2ea; --accent-soft: #263652; --warn-bg: #3a2f14; --warn-ink: #f3d08a;
+  --below: #6fcf9c; --above: #ff8a73; --head: #262a31;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.65 "IBM Plex Sans Thai", "Noto Sans Thai", "Sukhumvit Set", Thonburi, system-ui, sans-serif;
+}
+main { max-width: 980px; margin: 0 auto; padding: 32px 16px 64px; }
+h1 { font-size: 1.9rem; line-height: 1.25; margin: 0 0 6px; }
+h2 { font-size: 1.3rem; margin: 40px 0 12px; }
+h3 { font-size: 1.15rem; margin: 0; }
+p { margin: 8px 0; }
+a { color: var(--accent); }
+.muted { color: var(--muted); }
+.small { font-size: .875rem; }
+.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.grid { display: grid; gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+.card-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; }
+.badge { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: .78rem; background: var(--accent-soft); color: var(--accent); }
+.badge.draft { background: var(--warn-bg); color: var(--warn-ink); }
+.links { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 10px; font-size: .92rem; }
+.scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; margin-top: 10px; }
+th, td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; }
+th { background: var(--head); font-weight: 600; }
+td.r, th.r { text-align: right; }
+.below { color: var(--below); }
+.above { color: var(--above); }
+ul.docs { padding-left: 20px; }
+</style>
+</head>
+<body>
+<main>
+<p class="muted small">การบ้าน AI Investor Alpha · football field ต่อหุ้น</p>
+<h1>Valuation หุ้น 4 ตัว</h1>
+<p>แต่ละหน้าอธิบาย valuation ทีละขั้น: วิธีที่เลือกและเหตุผล (อ้าง NotebookLM), สูตร → ตัวเลขที่ใส่ → ผล, สมมติฐานทุกตัวพร้อมที่มาและวันที่, sensitivity และ football field เปิดได้ทันทีโดยไม่ต้องติดตั้งอะไร</p>
+<p class="small muted">ตัวเลขทั้งหมดดึงจาก Yahoo Finance, ThaiBMA และ Damodaran Online ตามวันที่ที่ระบุในแต่ละการ์ด ไม่ใช่คำแนะนำการลงทุน</p>
+
+<h2>ผลงาน</h2>
+<div class="grid">
+<section class="card">
+  <div class="card-head">
+    <h3>BDMS.BK <span class="muted small">Bangkok Dusit Medical Services Public Company Limited</span></h3>
+    <span class="badge reviewed">ผู้เรียนยืนยันสมมติฐานแล้ว</span>
+  </div>
+  <p class="small muted">Healthcare · Medical Care Facilities · ราคา <span class="num">฿19.60</span> · ดึงข้อมูลเมื่อ 2026-10-31</p>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>วิธี</th><th class="r">ช่วงมูลค่าต่อหุ้น</th><th class="r">base</th><th>ราคาอยู่ตรงไหน</th></tr></thead>
+    <tbody>
+      <tr><td>DCF (FCFF)</td><td class="r num">฿24.02 – ฿30.46</td><td class="r num">฿26.90</td>
+        <td class="below">ราคาต่ำกว่าช่วง</td></tr>
+      <tr><td>Comps: P/E</td><td class="r num">฿16.95 – ฿21.99</td><td class="r num">฿19.48</td>
+        <td class="">ราคาอยู่ในช่วง</td></tr>
+      <tr><td>Comps: EV/EBITDA</td><td class="r num">฿14.84 – ฿18.67</td><td class="r num">฿15.81</td>
+        <td class="above">ราคาสูงกว่าช่วง</td></tr>
+      <tr><td>ช่วงราคา 52 สัปดาห์</td><td class="r num">฿17.40 – ฿22.40</td><td class="r num">–</td>
+        <td class="">ราคาอยู่ในช่วง</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="links">
+    <a href="output/BDMS.BK/BDMS.BK_valuation.html">เปิด valuation ทีละขั้น →</a>
+    <a href="output/BDMS.BK/BDMS.BK_valuation.xlsx">ดาวน์โหลด Excel (สูตรจริง)</a>
+    <a href="https://github.com/prachaya-orr/aia-hw-g06-prachaya/blob/main/research/BDMS.BK_method_choice.md">เหตุผลการเลือกวิธี</a>
+  </div>
+</section>
+<section class="card">
+  <div class="card-head">
+    <h3>CCET.BK <span class="muted small">Cal-Comp Electronics (Thailand) Public Company Limited</span></h3>
+    <span class="badge draft">ร่าง: สมมติฐานยังไม่ผ่านการยืนยัน</span>
+  </div>
+  <p class="small muted">Technology · Computer Hardware · ราคา <span class="num">฿7.95</span> · ดึงข้อมูลเมื่อ 2026-10-31</p>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>วิธี</th><th class="r">ช่วงมูลค่าต่อหุ้น</th><th class="r">base</th><th>ราคาอยู่ตรงไหน</th></tr></thead>
+    <tbody>
+      <tr><td>DCF (FCFF)</td><td class="r num">฿0.91 – ฿1.13</td><td class="r num">฿1.02</td>
+        <td class="above">ราคาสูงกว่าช่วง</td></tr>
+      <tr><td>Comps: P/E</td><td class="r num">฿3.43 – ฿3.83</td><td class="r num">฿3.74</td>
+        <td class="above">ราคาสูงกว่าช่วง</td></tr>
+      <tr><td>Comps: EV/EBITDA</td><td class="r num">฿3.03 – ฿3.28</td><td class="r num">฿3.05</td>
+        <td class="above">ราคาสูงกว่าช่วง</td></tr>
+      <tr><td>ช่วงราคา 52 สัปดาห์</td><td class="r num">฿4.14 – ฿11.20</td><td class="r num">–</td>
+        <td class="">ราคาอยู่ในช่วง</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="links">
+    <a href="output/CCET.BK/CCET.BK_valuation.html">เปิด valuation ทีละขั้น →</a>
+    <a href="output/CCET.BK/CCET.BK_valuation.xlsx">ดาวน์โหลด Excel (สูตรจริง)</a>
+    <a href="https://github.com/prachaya-orr/aia-hw-g06-prachaya/blob/main/research/CCET.BK_method_choice.md">เหตุผลการเลือกวิธี</a>
+  </div>
+</section>
+<section class="card">
+  <div class="card-head">
+    <h3>CPALL.BK <span class="muted small">CP ALL Public Company Limited</span></h3>
+    <span class="badge reviewed">ผู้เรียนยืนยันสมมติฐานแล้ว</span>
+  </div>
+  <p class="small muted">Consumer Defensive · Grocery Stores · ราคา <span class="num">฿43.75</span> · ดึงข้อมูลเมื่อ 2026-10-31</p>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>วิธี</th><th class="r">ช่วงมูลค่าต่อหุ้น</th><th class="r">base</th><th>ราคาอยู่ตรงไหน</th></tr></thead>
+    <tbody>
+      <tr><td>DCF (FCFF)</td><td class="r num">฿28.78 – ฿44.13</td><td class="r num">฿35.85</td>
+        <td class="">ราคาอยู่ในช่วง</td></tr>
+      <tr><td>Comps: P/E</td><td class="r num">฿46.43 – ฿62.80</td><td class="r num">฿57.09</td>
+        <td class="below">ราคาต่ำกว่าช่วง</td></tr>
+      <tr><td>Comps: EV/EBITDA</td><td class="r num">฿-6.44 – ฿14.50</td><td class="r num">฿10.36</td>
+        <td class="above">ราคาสูงกว่าช่วง</td></tr>
+      <tr><td>ช่วงราคา 52 สัปดาห์</td><td class="r num">฿40.50 – ฿54.50</td><td class="r num">–</td>
+        <td class="">ราคาอยู่ในช่วง</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="links">
+    <a href="output/CPALL.BK/CPALL.BK_valuation.html">เปิด valuation ทีละขั้น →</a>
+    <a href="output/CPALL.BK/CPALL.BK_valuation.xlsx">ดาวน์โหลด Excel (สูตรจริง)</a>
+    <a href="https://github.com/prachaya-orr/aia-hw-g06-prachaya/blob/main/research/CPALL.BK_method_choice.md">เหตุผลการเลือกวิธี</a>
+  </div>
+</section>
+<section class="card">
+  <div class="card-head">
+    <h3>STPI.BK <span class="muted small">STP&amp;I Public Company Limited</span></h3>
+    <span class="badge reviewed">ผู้เรียนยืนยันสมมติฐานแล้ว</span>
+  </div>
+  <p class="small muted">Industrials · Metal Fabrication · ราคา <span class="num">฿5.60</span> · ดึงข้อมูลเมื่อ 2026-10-31</p>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>วิธี</th><th class="r">ช่วงมูลค่าต่อหุ้น</th><th class="r">base</th><th>ราคาอยู่ตรงไหน</th></tr></thead>
+    <tbody>
+      <tr><td>DCF (FCFF)</td><td class="r num">฿2.24 – ฿2.59</td><td class="r num">฿2.40</td>
+        <td class="above">ราคาสูงกว่าช่วง</td></tr>
+      <tr><td>Comps: EV/EBITDA</td><td class="r num">฿0.25 – ฿1.29</td><td class="r num">฿0.77</td>
+        <td class="above">ราคาสูงกว่าช่วง</td></tr>
+      <tr><td>Comps: P/BV</td><td class="r num">฿4.64 – ฿9.42</td><td class="r num">฿5.94</td>
+        <td class="">ราคาอยู่ในช่วง</td></tr>
+      <tr><td>ช่วงราคา 52 สัปดาห์</td><td class="r num">฿3.54 – ฿7.10</td><td class="r num">–</td>
+        <td class="">ราคาอยู่ในช่วง</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="links">
+    <a href="output/STPI.BK/STPI.BK_valuation.html">เปิด valuation ทีละขั้น →</a>
+    <a href="output/STPI.BK/STPI.BK_valuation.xlsx">ดาวน์โหลด Excel (สูตรจริง)</a>
+    <a href="https://github.com/prachaya-orr/aia-hw-g06-prachaya/blob/main/research/STPI.BK_method_choice.md">เหตุผลการเลือกวิธี</a>
+  </div>
+</section>
+</div>
+
+<h2>เอกสารประกอบ</h2>
+<ul class="docs">
+  <li><a href="https://github.com/prachaya-orr/aia-hw-g06-prachaya/blob/main/spec.md">โจทย์ (spec.md)</a> <span class="muted small">เป้าหมาย คำถาม แหล่งข้อมูลที่อนุญาต และเกณฑ์ผ่าน</span></li>
+  <li><a href="https://github.com/prachaya-orr/aia-hw-g06-prachaya/blob/main/research/playbook.md">Valuation playbook</a> <span class="muted small">กฎเลือกวิธีและสมมติฐานจาก NotebookLM พร้อม citation</span></li>
+  <li><a href="https://github.com/prachaya-orr/aia-hw-g06-prachaya/blob/main/docs/workflow.md">Workflow และ sequence diagram</a> <span class="muted small">ภาพรวมการทำงานของโปรแกรม</span></li>
+  <li><a href="https://github.com/prachaya-orr/aia-hw-g06-prachaya/blob/main/prompts.md">บันทึกขั้นตอน (prompts.md)</a> <span class="muted small">ทำอะไร prompt ที่ใช้ และเหตุผลแต่ละรอบ</span></li>
+  <li><a href="https://github.com/prachaya-orr/aia-hw-g06-prachaya/blob/main/PROJECT_MEMORY.md">บทเรียน (PROJECT_MEMORY.md)</a> <span class="muted small">ปัญหาที่เจอและกฎที่ได้</span></li>
+  <li><a href="https://github.com/prachaya-orr/aia-hw-g06-prachaya/blob/main/help.md">ติดตรงไหน (help.md)</a> <span class="muted small">คำถามถึงผู้สอน</span></li>
+</ul>
+<p class="small muted">หน้านี้สร้างอัตโนมัติจาก <code>output/*/*_results.json</code> ทุกครั้งที่รัน <code>python -m valuation run &lt;TICKER&gt;</code></p>
+</main>
+</body>
+</html>

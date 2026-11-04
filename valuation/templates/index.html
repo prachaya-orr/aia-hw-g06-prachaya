@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Valuation Football Field</title>
+<style>
+:root {
+  --bg: #f7f6f2; --surface: #ffffff; --ink: #1d1f23; --muted: #5d636e; --line: #dcdad3;
+  --accent: #2f5fa7; --accent-soft: #dbe5f4; --warn-bg: #fff4dc; --warn-ink: #7a5300;
+  --below: #1f7a4d; --above: #b3412d; --head: #eeece6;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171b; --surface: #1d2026; --ink: #e8e9ec; --muted: #a3a9b4; --line: #343841;
+    --accent: #8fb2ea; --accent-soft: #263652; --warn-bg: #3a2f14; --warn-ink: #f3d08a;
+    --below: #6fcf9c; --above: #ff8a73; --head: #262a31;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171b; --surface: #1d2026; --ink: #e8e9ec; --muted: #a3a9b4; --line: #343841;
+  --accent: #8fb2ea; --accent-soft: #263652; --warn-bg: #3a2f14; --warn-ink: #f3d08a;
+  --below: #6fcf9c; --above: #ff8a73; --head: #262a31;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.65 "IBM Plex Sans Thai", "Noto Sans Thai", "Sukhumvit Set", Thonburi, system-ui, sans-serif;
+}
+main { max-width: 980px; margin: 0 auto; padding: 32px 16px 64px; }
+h1 { font-size: 1.9rem; line-height: 1.25; margin: 0 0 6px; }
+h2 { font-size: 1.3rem; margin: 40px 0 12px; }
+h3 { font-size: 1.15rem; margin: 0; }
+p { margin: 8px 0; }
+a { color: var(--accent); }
+.muted { color: var(--muted); }
+.small { font-size: .875rem; }
+.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.grid { display: grid; gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+.card-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; }
+.badge { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: .78rem; background: var(--accent-soft); color: var(--accent); }
+.badge.draft { background: var(--warn-bg); color: var(--warn-ink); }
+.links { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 10px; font-size: .92rem; }
+.scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; margin-top: 10px; }
+th, td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; }
+th { background: var(--head); font-weight: 600; }
+td.r, th.r { text-align: right; }
+.below { color: var(--below); }
+.above { color: var(--above); }
+ul.docs { padding-left: 20px; }
+</style>
+</head>
+<body>
+<main>
+<p class="muted small">การบ้าน AI Investor Alpha · football field ต่อหุ้น</p>
+<h1>Valuation หุ้น {{ stocks | length }} ตัว</h1>
+<p>แต่ละหน้าอธิบาย valuation ทีละขั้น: วิธีที่เลือกและเหตุผล (อ้าง NotebookLM), สูตร → ตัวเลขที่ใส่ → ผล, สมมติฐานทุกตัวพร้อมที่มาและวันที่, sensitivity และ football field เปิดได้ทันทีโดยไม่ต้องติดตั้งอะไร</p>
+<p class="small muted">ตัวเลขทั้งหมดดึงจาก Yahoo Finance, ThaiBMA และ Damodaran Online ตามวันที่ที่ระบุในแต่ละการ์ด ไม่ใช่คำแนะนำการลงทุน</p>
+
+<h2>ผลงาน</h2>
+<div class="grid">
+{% for s in stocks %}
+<section class="card">
+  <div class="card-head">
+    <h3>{{ s.ticker }} <span class="muted small">{{ s.name }}</span></h3>
+    <span class="badge {{ s.status }}">{{ 'ผู้เรียนยืนยันสมมติฐานแล้ว' if s.status == 'reviewed' else 'ร่าง: สมมติฐานยังไม่ผ่านการยืนยัน' }}</span>
+  </div>
+  <p class="small muted">{{ s.industry }} · ราคา <span class="num">{{ s.price }}</span> · ดึงข้อมูลเมื่อ {{ s.fetched }}</p>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>วิธี</th><th class="r">ช่วงมูลค่าต่อหุ้น</th><th class="r">base</th><th>ราคาอยู่ตรงไหน</th></tr></thead>
+    <tbody>
+    {% for m in s.methods %}
+      <tr><td>{{ m.label }}</td><td class="r num">{{ m.low }} – {{ m.high }}</td><td class="r num">{{ m.base }}</td>
+        <td class="{{ m.cls }}">{{ m.reading }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  <div class="links">
+    <a href="{{ s.html }}">เปิด valuation ทีละขั้น →</a>
+    <a href="{{ s.xlsx }}">ดาวน์โหลด Excel (สูตรจริง)</a>
+    <a href="{{ s.choice }}">เหตุผลการเลือกวิธี</a>
+  </div>
+</section>
+{% endfor %}
+</div>
+
+<h2>เอกสารประกอบ</h2>
+<ul class="docs">
+{% for d in docs %}
+  <li><a href="{{ d.url }}">{{ d.label }}</a> <span class="muted small">{{ d.note }}</span></li>
+{% endfor %}
+</ul>
+<p class="small muted">หน้านี้สร้างอัตโนมัติจาก <code>output/*/*_results.json</code> ทุกครั้งที่รัน <code>python -m valuation run &lt;TICKER&gt;</code></p>
+</main>
+</body>
+</html>

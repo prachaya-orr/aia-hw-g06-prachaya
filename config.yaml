@@ -160,3 +160,15 @@ valuation:
     ddm_growth: 0.02
     include_leases_in_debt: true
     beta_method: bottom_up      # bottom_up = unlevered beta อุตสาหกรรม × (1 + (1 − tax marginal) × D/E)
+
+# ---------- หน้าแรกของ GitHub Pages (index.html ที่ root สร้างทุกครั้งที่ run) ----------
+site:
+  repo_url: https://github.com/prachaya-orr/aia-hw-g06-prachaya
+  branch: main
+  docs:                         # ไฟล์ .md ลิงก์ไปหน้า GitHub (Pages ไม่แปลง markdown เพราะมี .nojekyll)
+    - {label: "โจทย์ (spec.md)", path: spec.md, note: "เป้าหมาย คำถาม แหล่งข้อมูลที่อนุญาต และเกณฑ์ผ่าน"}
+    - {label: "Valuation playbook", path: research/playbook.md, note: "กฎเลือกวิธีและสมมติฐานจาก NotebookLM พร้อม citation"}
+    - {label: "Workflow และ sequence diagram", path: docs/workflow.md, note: "ภาพรวมการทำงานของโปรแกรม"}
+    - {label: "บันทึกขั้นตอน (prompts.md)", path: prompts.md, note: "ทำอะไร prompt ที่ใช้ และเหตุผลแต่ละรอบ"}
+    - {label: "บทเรียน (PROJECT_MEMORY.md)", path: PROJECT_MEMORY.md, note: "ปัญหาที่เจอและกฎที่ได้"}
+    - {label: "ติดตรงไหน (help.md)", path: help.md, note: "คำถามถึงผู้สอน"}
