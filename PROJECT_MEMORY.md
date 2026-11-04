@@ -113,3 +113,10 @@
 - **สาเหตุ:** pane ไม่ให้ใช้ page tools กับไฟล์ local
 - **แก้อย่างไร:** เปิดผ่าน `python3 -m http.server` ชั่วคราวด้วย `.claude/launch.json` ตรวจเสร็จแล้วหยุด server และลบ `launch.json` ทิ้ง
 
+### 2026-11-04 · GitHub Pages ขึ้น 404 หลังกด Save
+
+- **เจออะไร:** หลังผู้เรียนกด Save ใน Settings → Pages แล้ว `gh api .../pages` ยังตอบ 404 และ `has_pages: false` ไปอีกพักหนึ่ง จากนั้นงาน `pages-build-deployment` อยู่ในคิว GitHub Actions ราว 10 นาที เว็บจึงขึ้น 404
+- **สาเหตุ:** GitHub บันทึกการตั้งค่าและเริ่ม deploy ไม่ทันที
+- **แก้อย่างไร:** ไม่ต้องแก้อะไร รอจน `gh run view <id>` เป็น `completed success` แล้วตรวจลิงก์ด้วย `curl` แบบไม่ล็อกอิน
+- **ลองวิธีไหนแล้วไม่เวิร์ก:** สั่งเปิด Pages ซ้ำผ่าน `gh api -X POST .../pages` ได้ 409 "already enabled" · browser pane ไม่ได้ล็อกอิน GitHub จึงเปิดหน้า Settings ไม่ได้
+

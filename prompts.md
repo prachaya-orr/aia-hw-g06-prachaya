@@ -308,3 +308,30 @@ Save
   - AI ลิงก์ไฟล์ .md ไปหน้า GitHub (`/blob/main/...`) แทนลิงก์ตรง เพราะ Pages แบบ `.nojekyll` ส่ง .md เป็นข้อความดิบ
   - AI ให้ `run` สร้าง `index.html` ใหม่ทุกครั้งแทนการเขียนมือ เพื่อไม่ให้ตัวเลขในหน้าแรกค้างเป็นของเก่าเมื่อรันหุ้นใหม่
 - **ขั้นต่อไป:** เปิด GitHub Pages (Settings → Pages → Deploy from a branch → main → / (root) → Save) · ตรวจลิงก์จาก incognito · ใส่ลิงก์ Pages ใน `README.md`
+
+---
+
+## รอบ 13 · 2026-11-05 00:00
+
+- **ทำอะไร:** ตรวจ GitHub Pages ที่ผู้เรียนเปิดใน Settings จนใช้งานได้ที่ https://prachaya-orr.github.io/aia-hw-g06-prachaya/ แล้วใส่ลิงก์นี้ในช่อง "ลิงก์ผลงาน" ของ `README.md`
+- **เครื่องมือ / model:** Claude Desktop (แท็บ Code) · Claude Opus 5.5 · `gh api` (Pages, Actions) · `curl` · browser pane
+- **Prompt ที่ใช้:**
+
+```text
+เปิดแล้ว ตรวจเลย
+```
+
+```text
+เปิดผ่าน gh ให้เลย
+```
+
+```text
+Save
+```
+
+- **ผลที่ได้:** ลิงก์ทั้ง 18 อันในหน้าแรก (HTML 4, Excel 4, เอกสาร .md บน GitHub 10) ตอบ 200 โดยไม่ล็อกอิน · หน้า valuation 4 หน้าไม่มี script/CSS/รูปจากภายนอก · หน้าแรกบนเว็บตรงกับ `index.html` ใน repo ทุกไบต์ · ยังขาด: CCET ยังเป็น draft
+- **ตัดสินใจอะไร และเพราะอะไร:**
+  - ตรวจ 2 รอบแรก API ยังตอบว่าไม่มี Pages ผู้เรียนสั่งให้เปิดผ่าน `gh` แต่ GitHub ตอบ 409 ว่าเปิดอยู่แล้ว จึงไม่ได้เปลี่ยนการตั้งค่า (การกด Save ของผู้เรียนได้ผล แต่ API ยังไม่อัปเดตตอนตรวจ)
+  - งาน `pages-build-deployment` รอคิว GitHub Actions ราว 10 นาที AI จึงรอให้ deploy เสร็จก่อนตรวจลิงก์ แทนการสรุปจาก 404 ช่วงแรก
+  - ใส่ลิงก์ Pages ใน README เพราะผู้เรียนตอบตกลงให้ตรวจลิงก์และใส่ใน README
+- **ขั้นต่อไป:** ยืนยันข้อเสนอของ CCET แล้วเปลี่ยนเป็น reviewed · ส่งลิงก์ Pages ในห้อง

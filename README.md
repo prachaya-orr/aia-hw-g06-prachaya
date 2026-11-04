@@ -7,7 +7,7 @@
 | **ชื่อเล่น** | prachaya |
 | **กลุ่ม** | g06 · Valuation / Deep research ต่อหุ้น |
 | **โจทย์ 1 บรรทัด** | ใช้ AI ค้นวิธี valuation ที่เหมาะกับหุ้นจาก NotebookLM แล้วประเมินมูลค่าด้วยข้อมูล Yahoo Finance เพื่อตัดสินว่าราคาถูกหรือแพง |
-| **ลิงก์ผลงาน** | ดูใน `output/` |
+| **ลิงก์ผลงาน** | **https://prachaya-orr.github.io/aia-hw-g06-prachaya/** (GitHub Pages เปิดได้ทันที ไม่ต้อง clone หรือล็อกอิน) · ไฟล์อยู่ใน `output/` |
 | **สถานะ** | ร่างแรก |
 
 ---
