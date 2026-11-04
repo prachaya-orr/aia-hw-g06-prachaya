@@ -253,3 +253,32 @@ CCET
   - ใช้ bottom-up beta 1.946 จาก Damodaran เป็น base ตามกฎใน PROJECT_MEMORY และแสดง Yahoo beta 0.657 เป็น sensitivity; DCF ด้วย Yahoo beta ได้ ฿4.38 แต่ยังต่ำกว่าราคา
   - ผลห่างจากราคามากจึงไล่สาเหตุ: ราคาต้องอาศัย operating margin 9.18% ภายใต้ bottom-up beta หรือ 3.72% ภายใต้ Yahoo beta เทียบประวัติสูงสุด 2.66%; P/E และ EV/EBITDA ของ CCET ก็ประมาณสองเท่าของมัธยฐาน peer จึงไม่ใช่ปัญหาสูตร DCF เพียงอย่างเดียว
 - **ขั้นต่อไป:** ให้ผู้เรียนยืนยันหรือแก้ข้อเสนอ 5 ข้อใน `research/CCET.BK_method_choice.md` §8 จากนั้นเปลี่ยน `status: reviewed`, รันและ verify ซ้ำ แล้วค่อย `/save`
+
+---
+
+## รอบ 11 · 2026-11-04 09:00
+
+- **ทำอะไร:**
+  - เขียน `docs/workflow.md` ใหม่ให้ตรงกับงานหลังทำ CPALL, BDMS, STPI และร่าง CCET มี 2 แผนภาพ: workflow (flowchart จุดตัดสินใจของหุ้น 1 ตัว) และ sequence diagram (ใครส่งอะไรให้ใคร 6 ช่วง) พร้อมตารางหุ้นที่ผ่าน workflow แล้ว
+  - เพิ่ม `data/idisc/` ใน `.gitignore`
+- **เครื่องมือ / model:** Claude Desktop (แท็บ Code) · Claude Opus 5.5 · browser pane + mermaid 11.4.1 ตรวจการ render
+- **Prompt ที่ใช้:**
+
+```text
+สร้าง sequence diagram กับ workflow ของ project นี้
+```
+
+```text
+เพิ่มใน .gitignore
+```
+
+```text
+Save
+```
+
+- **ผลที่ได้:** แผนภาพทั้ง 2 อัน parse และ render ผ่าน · workflow แสดงจุดตัดสินใจ 6 จุด (industry_map, ประเภทธุรกิจตาม playbook §1, เงินลงทุนในบริษัทอื่น, ผลห่างจากราคา, ผู้เรียนยืนยัน, verify ≤ 0.5%) และกฎความสอดคล้องจาก PROJECT_MEMORY · ยังขาด: CCET ยังเป็น draft ในตาราง
+- **ตัดสินใจอะไร และเพราะอะไร:**
+  - AI แยกเป็น 2 แผนภาพ เพราะ sequence diagram เดิม (รอบ 7) บอกได้แค่ลำดับการส่งข้อมูล แต่ไม่บอกว่าต้องเลือกวิธีหรือแก้สมมติฐานตรงไหน ซึ่งเป็นส่วนที่เปลี่ยนไปมากในรอบ 8–10
+  - เปลี่ยนผู้เล่นเป็น "AI (Claude / Codex)" เพราะรอบ 10 ทำด้วย Codex และ repo มี agent ของทั้งสองค่าย
+  - ผู้เรียนให้เพิ่ม `data/idisc/` ใน `.gitignore` หลัง AI แจ้งว่ามีไฟล์งบ BGRIM จาก ก.ล.ต. ที่ไม่ได้อยู่ใน ignore ถ้า save จะขึ้น repo Public ด้วย
+- **ขั้นต่อไป:** ยืนยันข้อเสนอของ CCET แล้วเปลี่ยนเป็น reviewed · เพิ่มคำถามเรื่อง beta ช่วง terminal และการ normalize ที่ประวัติงบสั้นใน `help.md`

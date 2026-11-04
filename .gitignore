@@ -27,5 +27,8 @@ node_modules/
 # Valuation raw cache: re-fetchable, keep out of git
 data/raw/
 
+# SEC iDisc filings downloaded locally: re-downloadable, keep out of git
+data/idisc/
+
 # Office lock files (contain the local user name)
 ~$*

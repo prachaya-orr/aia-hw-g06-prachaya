@@ -105,3 +105,10 @@
 - **เจออะไร:** Yahoo industry `Computer Hardware` ยังไม่มี mapping ทำให้ unlevered beta เป็น null · DCF ร่าง ฿1.02 ต่ำกว่าราคา ฿7.95 มาก · fetch และ LibreOffice verify รอบแรกถูก sandbox บล็อก และคำสั่งวิเคราะห์ scenario แบบ one-liner ผิด shell quoting สองครั้ง
 - **สาเหตุ:** ต้องจับคู่ชื่ออุตสาหกรรมของ Yahoo กับ Damodaran เอง · bottom-up beta ของ `Computers/Peripherals` ตลาดเกิดใหม่สูงถึง 1.618 (relever เป็น 1.946) เทียบ Yahoo regression beta 0.657 · CCET ซื้อขายที่ P/E และ EV/EBITDA ประมาณสองเท่าของมัธยฐาน peer · sandbox ไม่มี DNS/สิทธิ์ให้ LibreOffice ทำงานครบ · one-liner ใช้ single quote ซ้อนกัน
 - **แก้อย่างไร:** ตรวจ `betaemerg.xls` แล้วเพิ่ม mapping ที่ตรงชื่อ · ทดสอบ beta, ERP, growth และ margin ทีละตัวก่อนเชื่อผล · ใช้ peer ฮาร์ดแวร์/EMS ไต้หวัน 5 ตัวแทนหุ้นชิ้นส่วนไทย · ขอสิทธิ์เครือข่ายและ LibreOffice ตามปกติ · แก้คำสั่งวิเคราะห์ให้เก็บค่าจาก dict ในตัวแปรแทนการซ้อน quote
+
+### 2026-11-04 · ตรวจ mermaid ใน browser pane ไม่ได้เมื่อเปิดไฟล์ local
+
+- **เจออะไร:** เปิดหน้า HTML ทดสอบ mermaid จาก `file://` ใน browser pane แล้วรัน JavaScript ไม่ได้ (pane แสดงไฟล์ local เป็น static snapshot)
+- **สาเหตุ:** pane ไม่ให้ใช้ page tools กับไฟล์ local
+- **แก้อย่างไร:** เปิดผ่าน `python3 -m http.server` ชั่วคราวด้วย `.claude/launch.json` ตรวจเสร็จแล้วหยุด server และลบ `launch.json` ทิ้ง
+
